@@ -1,0 +1,26 @@
+<h1>Update User</h1>
+<form method="post">
+    {% csrf_token %}
+    <label>Name:</label>
+    <input type="text" name="name" value="{{ user.name }}" required><br>
+
+    <label>Email:</label>
+    <input type="email" name="email" value="{{ user.email }}" required><br>
+
+    <label>Status:</label>
+    <select name="status" required>
+        <option value="active" {% if user.status == "active" %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if user.status == "inactive" %}selected{% endif %}>Inactive</option>
+    </select><br>
+
+    <label>Role:</label>
+    <select name="role" required>
+        <option value="ClubLeader" {% if user.role == "ClubLeader" %}selected{% endif %}>Club Leader</option>
+        <option value="Executive" {% if user.role == "Executive" %}selected{% endif %}>Executive</option>
+        <option value="Rector" {% if user.role == "Rector" %}selected{% endif %}>Rector</option>
+        <option value="ActivityCenterAdmin" {% if user.role == "ActivityCenterAdmin" %}selected{% endif %}>Activity Center Admin</option>
+        <option value="ClubMember" {% if user.role == "ClubMember" %}selected{% endif %}>Club Member</option>
+    </select><br>
+
+    <button type="submit">Update</button>
+</form>

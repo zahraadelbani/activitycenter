@@ -1,0 +1,16 @@
+<h1>Create User</h1>
+<form method="post">
+    {% csrf_token %}
+    <label>Name:</label><input type="text" name="name" required><br>
+    <label>Email:</label><input type="email" name="email" required><br>
+    <label>Password:</label><input type="password" name="password" required><br>
+    <label>Role:</label>
+    <select name="role" required>
+        <option value="ClubLeader">Club Leader</option>
+        <option value="Executive">Executive</option>
+        <option value="Rector">Rector</option>
+        <option value="ActivityCenterAdmin">Activity Center Admin</option>
+        <option value="ClubMember">Club Member</option>
+    </select><br>
+    <button type="submit">Create</button>
+</form>
