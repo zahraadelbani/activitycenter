@@ -1,0 +1,29 @@
+<h1>User List</h1>
+<a href="{% url 'create_user' %}">Create New User</a>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Role</th> <!-- Add Role Column -->
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.status }}</td>
+            <td>{{ user.get_role_display }}</td> <!-- Display Role -->
+            <td>
+                <a href="{% url 'update_user' user.id %}">Edit</a>
+                <a href="{% url 'delete_user' user.id %}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

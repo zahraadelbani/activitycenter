@@ -1,0 +1,7 @@
+<h1>Club Leader Dashboard</h1>
+<h2>Club Activities</h2>
+<ul>
+    {% for activity in club_activities %}
+    <li>{{ activity.title }} - {{ activity.description }}</li>
+    {% endfor %}
+</ul>

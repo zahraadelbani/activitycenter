@@ -1,0 +1,14 @@
+<h1>Rector Dashboard</h1>
+<h2>Clubs</h2>
+<ul>
+    {% for club in clubs %}
+    <li>{{ club.name }} - {{ club.description }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Pending Announcements</h2>
+<ul>
+    {% for announcement in announcements %}
+    <li>{{ announcement.title }} - {{ announcement.content }}</li>
+    {% endfor %}
+</ul>
