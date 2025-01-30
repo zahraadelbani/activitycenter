@@ -1,0 +1,25 @@
+<h1>Login</h1>
+
+<!-- Google Login Button -->
+<a href="{% url 'account_login' %}">
+    <button>Login with Google</button>
+</a>
+
+<!-- Manual Login Form -->
+<form method="POST">
+    {% csrf_token %}
+    
+    <label>Email:</label>
+    <input type="email" name="email" required><br>
+
+    <label>Password:</label>
+    <input type="password" name="password" required><br>
+
+    <button type="submit">Login</button>
+</form>
+
+{% if messages %}
+    {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+    {% endfor %}
+{% endif %}

@@ -1,6 +1,31 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from .models import User, ClubLeader, Executive, Rector, ActivityCenterAdmin, ClubMember
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
+@login_required(login_url='login')
+def dashboard(request):
+    return render(request, 'users/dashboard.html', {'user': request.user})
+
+
+def login_view(request):
+    if request.method == "POST":
+        email = request.POST['email']
+        password = request.POST['password']
+
+        user = authenticate(request, email=email, password=password)  # Authenticate user
+
+        if user is not None:
+            login(request, user)  # Log the user in
+            messages.success(request, "Login successful!")
+            return redirect('dashboard')  # Redirect to a protected page after login
+        else:
+            messages.error(request, "Invalid email or password.")
+
+    return render(request, 'users/login.html')  # Make sure this path is correct!
 
 
 # List Users
