@@ -4,6 +4,7 @@
     <thead>
         <tr>
             <th>ID</th>
+            <th>STUDENT ID</th>
             <th>Name</th>
             <th>Email</th>
             <th>Status</th>
@@ -15,10 +16,11 @@
         {% for user in users %}
         <tr>
             <td>{{ user.id }}</td>
+            <td>{{user.student_id}}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.status }}</td>
-            <td>{{ user.get_role_display }}</td> <!-- Display Role -->
+            <td>{{ user.get_role }}</td>
             <td>
                 <a href="{% url 'update_user' user.id %}">Edit</a>
                 <a href="{% url 'delete_user' user.id %}">Delete</a>
