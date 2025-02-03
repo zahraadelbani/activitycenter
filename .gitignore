@@ -1,0 +1,32 @@
+
+# Ignore environment variables
+.env
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore database files (if using SQLite)
+*.sqlite3
+
+# Ignore Django secret files
+*.log
+*.pot
+*.pyc
+db.sqlite3
+*.db
+
+# Ignore virtual environment (venv)
+venv/
+venv/*
+
+# Ignore static and media files (if applicable)
+staticfiles/
+media/
+
+# Ignore VSCode settings (if using VSCode)
+.vscode/
+
+# Ignore macOS system files
+.DS_Store
