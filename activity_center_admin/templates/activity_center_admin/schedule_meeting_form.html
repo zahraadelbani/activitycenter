@@ -1,0 +1,27 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Schedule Meeting for Activity</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+  <header>
+    <h1>Schedule Meeting for "{{ activity.title }}"</h1>
+  </header>
+  <main>
+    <form method="post">
+      {% csrf_token %}
+      <label for="date_time">Meeting Date & Time:</label>
+      <input type="datetime-local" name="date_time" required><br>
+      <label for="agenda">Agenda:</label>
+      <textarea name="agenda" required></textarea><br>
+      <button type="submit">Schedule Meeting</button>
+    </form>
+    <a href="{% url 'activity_center_admin:activity_list' %}">Cancel</a>
+  </main>
+</body>
+</html>

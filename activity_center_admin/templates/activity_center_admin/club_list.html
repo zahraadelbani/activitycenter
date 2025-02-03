@@ -1,0 +1,44 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Clubs</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+  <header>
+    <h1>Clubs</h1>
+    <nav>
+      <a href="{% url 'activity_center_admin:dashboard' %}">Dashboard</a> |
+      <a href="{% url 'activity_center_admin:club_create' %}">Add New Club</a>
+    </nav>
+  </header>
+  <main>
+    <ul>
+      {% for club in clubs %}
+        <li>
+          <strong>{{ club.name }}</strong><br>
+          Description: {{ club.description }}<br>
+          Quota: {{ club.quota }}<br>
+          {% if club.leader %}
+            Leader: {{ club.leader.name }}
+          {% else %}
+            Leader: Not confirmed
+          {% endif %}<br>
+          Members: {{ club.members.count }}<br>
+          Events: {{ club.events.count }}<br>
+          <a href="{% url 'activity_center_admin:club_update' club.id %}">Edit</a> |
+          <a href="{% url 'activity_center_admin:club_delete' club.id %}">Delete</a>
+        </li>
+      {% empty %}
+        <li>No clubs available.</li>
+      {% endfor %}
+    </ul>
+  </main>
+  <footer>
+    <p>&copy; {{ now|date:"Y" }} Your Organization Name</p>
+  </footer>
+</body>
+</html>

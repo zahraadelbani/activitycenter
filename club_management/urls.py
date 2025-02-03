@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('', lambda request: HttpResponseRedirect('/users/list/')),
-    path('activity-center-admin/', include('activity_center_admin.urls')),
+    path('activity-center-admin/', include('activity_center_admin.urls', namespace='activity_center_admin')),
     path('club-leader/', include('club_leader.urls')),
     path('rector/', include('rector.urls')),  # Redirect to the users list
 ]

@@ -1,0 +1,31 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  {% if view.object %}
+    <title>Update Event</title>
+  {% else %}
+    <title>Create Event</title>
+  {% endif %}
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+  <header>
+    {% if view.object %}
+      <h1>Update Event</h1>
+    {% else %}
+      <h1>Create Event</h1>
+    {% endif %}
+  </header>
+  <main>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Submit</button>
+    </form>
+    <a href="{% url 'activity_center_admin:event_list' %}">Cancel</a>
+  </main>
+</body>
+</html>
