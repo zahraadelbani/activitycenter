@@ -1,11 +1,12 @@
 from django.urls import path
 from . import views
 from .views_auth import login_view, logout_view  # Import your authentication views
-from .views import dashboard  # Import other views like dashboard
+from .views import dashboard,signup_view  # Import other views like dashboard
 
 
 urlpatterns = [
   path('login/', login_view, name='login'),
+  path("signup/", signup_view, name="signup"),
     path('logout/', logout_view, name='logout'),
     path('dashboard/', dashboard, name='dashboard'),  # Example protected route
     path('list/', views.list_users, name='list_users'),

@@ -4,7 +4,7 @@ from .models import User, ClubLeader, Executive, Rector, ActivityCenterAdmin, Cl
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from .forms import CustomSignupForm
 
 @login_required(login_url='login')
 def dashboard(request):
@@ -27,6 +27,18 @@ def login_view(request):
 
     return render(request, 'users/login.html')  # Make sure this path is correct!
 
+def signup_view(request):
+    if request.method == "POST":
+        form = CustomSignupForm(request.POST)
+        if form.is_valid():
+            user = form.save(request)
+            login(request, user)  # Log in the user after sign-up
+            messages.success(request, "Sign-up successful! Welcome to the platform.")
+            return redirect("dashboard")  # Redirect to the dashboard after sign-up
+    else:
+        form = CustomSignupForm()
+    
+    return render(request, "users/signup.html", {"form": form})
 
 # List Users
 def list_users(request):

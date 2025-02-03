@@ -60,11 +60,18 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
-AUTH_USER_MODEL = 'users.User'
+# Set your custom user model
+AUTH_USER_MODEL = "users.User"
+
+# Tell Django-Allauth to STOP using username
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 SITE_ID = 1
@@ -85,13 +92,17 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Django-AllAuth Settings
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+""" ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_REQUIRED = True"""
+ACCOUNT_EMAIL_VERIFICATION = "none" 
 SOCIALACCOUNT_AUTO_SIGNUP = False
 SOCIALACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/dashboard/"
 SOCIALACCOUNT_ADAPTER = "users.adapters.MySocialAccountAdapter"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 
 # Remove SSL/HTTPS configurations
 # These were causing the "only supports HTTP" issue
@@ -106,6 +117,7 @@ SOCIALACCOUNT_ADAPTER = "users.adapters.MySocialAccountAdapter"
 # Fix how AllAuth displays users
 ACCOUNT_USER_DISPLAY = lambda user: user.name
 
+# Force Django-Allauth to use our CustomSignupForm
 ACCOUNT_FORMS = {"signup": "users.forms.CustomSignupForm"}
 
 # Root URL configuration
