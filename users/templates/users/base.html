@@ -1,0 +1,108 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard_Digital Club Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style type="text/tailwindcss">
+    .text-customBlue {
+        --tw-text-opacity: 1;
+        color: rgb(6 58 116 / var(--tw-text-opacity));
+      }
+      .bg-customYellow {
+        --tw-text-opacity: 0.3;
+        background-color: rgb(251 176 48 / var(--tw-text-opacity));
+      }
+      .text-customGrayBlue {
+        --tw-text-opacity: 1;
+        color: rgb(95 114 157 / var(--tw-text-opacity));
+      }
+      .text-customOrange {
+        --tw-text-opacity: 1;
+        color: rgb(251 176 48 / var(--tw-text-opacity));
+      }
+      .bg-customOrange {
+        --tw-text-opacity: 1;
+        background-color: rgb(251 176 48 / var(--tw-text-opacity));
+      }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+  <div class="flex">
+    <aside id="sidebar" class="bg-white w-72 h-screen p-4 shadow-md overflow-y-auto fixed top-0 left-0 bottom-0 z-20">
+      <div class="text-5xl font-bold mb-9 text-center">
+        <span class="text-customBlue">E</span><span class="text-customGrayBlue">M</span><span class="text-customOrange">U</span>
+      </div>
+      <ul>
+        <li class="p-5 hover:bg-gray-200 rounded text-lg"><a href="#"><i class="fa-solid fa-tachometer-alt mr-2"></i>Dashboard</a></li> <!--All Users--> 
+        <li class="p-5 hover:bg-gray-200 rounded text-lg"><a href="#"><i class="fa-solid fa-user-friends mr-2"></i>Users</a></li> <!--Super Admin + Activity Center--> 
+        <li class="p-5 hover:bg-gray-200 rounded text-lg"><a href="#"><i class="fa-solid fa-users mr-2"></i>Clubs</a></li> <!--All Users--> 
+        <li class="p-5 hover:bg-gray-200 rounded text-lg"><a href="#"><i class="fa-solid fa-cogs mr-2"></i>Manage Clubs</a></li> <!--Activity Center--> 
+        <li class="p-5 hover:bg-gray-200 rounded text-lg"><a href="#"><i class="fa-solid fa-calendar-check mr-2"></i>Events</a></li> <!--Activity Center + Club Leader--> 
+        <li class="p-5 hover:bg-gray-200 rounded text-lg"><a href="#"><i class="fa-solid fa-bullhorn mr-2"></i>Announcements</a></li> <!--Activity Center + Club Leader--> 
+        <li class="p-5 hover:bg-gray-200 rounded text-lg"><a href="#"><i class="fa-solid fa-comments mr-2"></i>Event Feedback</a></li> <!--Club Leaders--> 
+        <li class="p-5 hover:bg-gray-200 rounded text-lg"><a href="#"><i class="fa-solid fa-comment-alt mr-2"></i>Chats</a></li> <!--Club Leaders + Club members--> 
+        <li class="p-5 hover:bg-gray-200 rounded text-lg"><a href="#"><i class="fa-solid fa-poll mr-2"></i>Elections</a></li> <!--Club Leaders + Club members-->
+      </ul>
+    </aside>
+
+    <div class="flex flex-col ml-72 w-full">
+      <nav class="bg-white shadow-md p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-10">
+        <div class="ml-auto flex items-center gap-6">
+          <button class="text-2xl"><i class="fa-solid fa-question"></i></button>
+          <button class="text-2xl"><i class="fa-regular fa-bell"></i></button>
+          <img src="cat2.jpg" class="w-12 h-12 rounded-full" alt="Profile">
+        </div>
+      </nav>
+
+      <main class="p-5 mt-20">
+        <div class="bg-customYellow p-7 rounded-lg mb-6">
+          <h2 class="text-2xl font-bold">Announcements</h2>
+          <p class="text-lg">— &nbsp;&nbsp; I am a club leader and I want to announce that I am a fat cat</p>
+          <button class="bg-customOrange text-white px-6 py-3 rounded mt-4">Read</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-bold">Users</h3>
+            <p class="text-3xl">12</p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-bold">Approvals in Queue</h3>
+            <p class="text-3xl">3</p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-bold">Engagement</h3>
+            <p class="text-3xl">1,400</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow mt-6">
+          <h3 class="text-xl font-bold mb-4">Calendar</h3>
+          <div id="calendar" class="grid grid-cols-7 gap-2 text-center text-lg"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    function generateCalendar() {
+      const calendar = document.getElementById("calendar");
+      const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+      let calendarHTML = "";
+      for (let i = 1; i <= daysInMonth; i++) {
+        calendarHTML += `<div class='p-4 border rounded bg-gray-200'>${i}</div>`;
+      }
+      calendar.innerHTML = calendarHTML;
+    }
+    generateCalendar();
+  </script>
+</body>
+</html>
+
