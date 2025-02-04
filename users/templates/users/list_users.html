@@ -1,31 +1,73 @@
-<h1>User List</h1>
-<a href="{% url 'create_user' %}">Create New User</a>
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>STUDENT ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th>Role</th> <!-- Add Role Column -->
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.id }}</td>
-            <td>{{user.student_id}}</td>
-            <td>{{ user.name }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.status }}</td>
-            <td>{{ user.get_role }}</td>
-            <td>
-                <a href="{% url 'update_user' user.id %}">Edit</a>
-                <a href="{% url 'delete_user' user.id %}">Delete</a>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User List</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="h-screen flex flex-col items-center justify-center bg-[#1b2a41] relative overflow-hidden">
+
+  <!-- Background Shapes -->
+  <div class="absolute w-[80%] h-[50%] bg-gradient-radial from-[#57678e] to-[#2c487c] top-[-10%] left-[-10%] rounded-full opacity-90"></div>
+  <div class="absolute w-[100%] h-[55%] bg-gradient-radial from-[#2c487c] to-[#1b2a41] bottom-0 left-0 rounded-t-full opacity-80"></div>
+  <div class="absolute w-[120%] h-[40%] bg-gradient-to-b from-[#f4a940] to-[#e48e34] top-0 right-[-10%] rounded-b-full opacity-90"></div>
+  <div class="absolute w-[90%] h-[60%] bg-gradient-to-t from-[#1b2a41] to-black bottom-[-10%] left-[-10%] rounded-full opacity-80"></div>
+
+  <!-- User List Container -->
+  <div class="relative bg-white p-6 rounded-2xl shadow-lg w-[90%] max-w-5xl z-10 bg-opacity-95">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">User List</h1>
+
+    <a href="{% url 'create_user' %}" 
+      class="inline-block px-4 py-2 bg-orange-500 text-white font-semibold rounded-lg mb-4 hover:bg-orange-600 transition duration-200">
+      + Create New User
+    </a>
+
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse rounded-lg overflow-hidden shadow-lg">
+        <thead class="bg-[#2c487c] text-white">
+          <tr>
+            <th class="p-3">Id</th>
+            <th class="p-3">Student Id</th>
+            <th class="p-3">Name</th>
+            <th class="p-3">Email</th>
+            <th class="p-3">Status</th>
+            <th class="p-3">Role</th>
+            <th class="p-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700">
+          {% for user in users %}
+          <tr class="border-b hover:bg-gray-100">
+            <td class="p-3">{{ user.id }}</td>
+            <td class="p-3">{{ user.student_id }}</td>
+            <td class="p-3">{{ user.name }}</td>
+            <td class="p-3">{{ user.email }}</td>
+            <td class="p-3">{{ user.status }}</td>
+            <td class="p-3">{{ user.get_role }}</td>
+            <td class="p-3">
+              <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{% url 'update_user' user.id %}" 
+                  class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 text-center">
+                  Edit
+                </a>
+                <a href="{% url 'delete_user' user.id %}" 
+                  class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200 text-center">
+                  Delete
+                </a>
+              </div>
             </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+
+</html>
