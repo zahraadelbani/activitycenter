@@ -6,6 +6,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
 
+def base_view(request):
+    return render(request, 'users/base.html')
+
 @login_required(login_url='login')
 def dashboard(request):
     return render(request, 'users/dashboard.html', {'user': request.user})

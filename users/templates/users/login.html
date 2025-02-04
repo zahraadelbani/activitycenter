@@ -1,25 +1,62 @@
-<h1>Login</h1>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
 
-<!-- Google Login Button -->
-<a href="{% url 'account_login' %}">
-    <button>Login with Google</button>
-</a>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
 
-<!-- Manual Login Form -->
-<form method="POST">
-    {% csrf_token %}
+<!-- <body class="h-screen flex flex-col items-center justify-center bg-[#1b2a41] relative overflow-hidden"> -->
+<body class="h-screen flex flex-col items-center justify-center relative overflow-hidden bg-[url('{% static '/background.jpg' %}')] bg-cover">
+
+
+  <!-- Background Shapes -->
+  <!-- <div class="absolute w-[80%] h-[50%] bg-gradient-radial from-[#57678e] to-[#2c487c] top-[-10%] left-[-10%] rounded-full opacity-90"></div>
+  <div class="absolute w-[100%] h-[55%] bg-gradient-radial from-[#2c487c] to-[#1b2a41] bottom-0 left-0 rounded-t-full opacity-80"></div>
+  <div class="absolute w-[120%] h-[40%] bg-gradient-to-b from-[#f4a940] to-[#e48e34] top-0 right-[-10%] rounded-b-full opacity-90"></div>
+  <div class="absolute w-[90%] h-[60%] bg-gradient-to-t from-[#1b2a41] to-black bottom-[-10%] left-[-10%] rounded-full opacity-80"></div> -->
+
+  <!-- Login Container -->
+  <div class="relative bg-white p-6 rounded-2xl shadow-lg w-[90%] max-w-md z-10 bg-opacity-95">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Login</h1>
+
     
-    <label>Email:</label>
-    <input type="email" name="email" required><br>
 
-    <label>Password:</label>
-    <input type="password" name="password" required><br>
+    <!-- Manual Login Form -->
+    <form method="POST">
+      {% csrf_token %}
+      <div class="mb-4">
+        <label for="email" class="block text-gray-700">Email:</label>
+        <input type="email" name="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+      </div>
 
-    <button type="submit">Login</button>
-</form>
+      <div class="mb-6">
+        <label for="password" class="block text-gray-700">Password:</label>
+        <input type="password" name="password" id="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+      </div>
+      <!-- Google Login Button -->
+    <a href="{% url 'account_login' %}" class="w-full mb-4">
+        <button class="w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-200 mb-4">
+          Login with Google
+        </button>
+      </a>
 
-{% if messages %}
-    {% for message in messages %}
-        <p style="color:red;">{{ message }}</p>
-    {% endfor %}
-{% endif %}
+      <button type="submit" class="w-full px-4 py-2 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition duration-200">
+        Login
+      </button>
+    </form>
+
+    {% if messages %}
+      {% for message in messages %}
+        <p class="mt-4 text-center text-red-600">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+</body>
+
+</html>

@@ -139,6 +139,14 @@ TEMPLATES = [
     },
 ]
 
+# Directory where Django will search for additional static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+# Directory where Django collects all static files (useful in production)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 WSGI_APPLICATION = 'club_management.wsgi.application'
 
 # Database Configuration
