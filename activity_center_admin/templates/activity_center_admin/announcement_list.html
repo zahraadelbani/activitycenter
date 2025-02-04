@@ -1,0 +1,32 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Review Announcements</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+  <header>
+    <h1>Announcements</h1>
+    <nav>
+      <a href="{% url 'activity_center_admin:dashboard' %}">Dashboard</a>
+    </nav>
+  </header>
+  <main>
+    <ul>
+      {% for announcement in announcements %}
+        <li>
+          {{ announcement.title }} - {{ announcement.club.name }} (Status: {{ announcement.status }})
+          <a href="{% url 'activity_center_admin:announcement_approve' announcement.id %}">Approve</a> |
+          <a href="{% url 'activity_center_admin:announcement_reject' announcement.id %}">Reject</a>
+        </li>
+      {% empty %}
+        <li>No announcements available.</li>
+      {% endfor %}
+    </ul>
+  </main>
+</body>
+</html>

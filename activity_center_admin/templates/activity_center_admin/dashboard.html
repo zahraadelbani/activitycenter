@@ -1,21 +1,32 @@
-<h1>Activity Center Admin Dashboard</h1>
-<h2>Clubs</h2>
-<ul>
-    {% for club in clubs %}
-    <li>{{ club.name }} - {{ club.description }}</li>
-    {% endfor %}
-</ul>
+{% load static %}
 
-<h2>Pending Activities</h2>
-<ul>
-    {% for activity in activities %}
-    <li>{{ activity.title }} - {{ activity.description }}</li>
-    {% endfor %}
-</ul>
 
-<h2>Pending Announcements</h2>
-<ul>
-    {% for announcement in announcements %}
-    <li>{{ announcement.title }} - {{ announcement.content }}</li>
-    {% endfor %}
-</ul>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Activity Center Admin Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+  <header>
+    <h1>Activity Center Admin Dashboard</h1>
+    <nav>
+      <a href="{% url 'activity_center_admin:club_list' %}">Manage Clubs</a> |
+      <a href="{% url 'activity_center_admin:event_list' %}">Manage Events</a> |
+      <a href="{% url 'activity_center_admin:activity_list' %}">Review Activities</a> |
+      <a href="{% url 'activity_center_admin:announcement_list' %}">Review Announcements</a>
+    </nav>
+  </header>
+  <main>
+    <section>
+      <h2>Pending Items</h2>
+      <p>Pending Club Activities: {{ pending_activities.count }}</p>
+      <p>Pending Announcements: {{ pending_announcements.count }}</p>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; {{ now|date:"Y" }} Your Organization Name</p>
+  </footer>
+</body>
+</html>

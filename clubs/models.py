@@ -14,6 +14,7 @@ class Club(models.Model):
         blank=True,  # Allow blank in forms
         related_name='club'
     )  # Optional relationship with ClubLeader
+    members = models.ManyToManyField('users.ClubMember', blank=True, related_name='clubs')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

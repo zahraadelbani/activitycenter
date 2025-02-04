@@ -1,0 +1,33 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Review Club Activities</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+  <header>
+    <h1>Club Activities</h1>
+    <nav>
+      <a href="{% url 'activity_center_admin:dashboard' %}">Dashboard</a>
+    </nav>
+  </header>
+  <main>
+    <ul>
+      {% for activity in activities %}
+        <li>
+          {{ activity.title }} - {{ activity.club.name }} (Status: {{ activity.status }})
+          <a href="{% url 'activity_center_admin:activity_approve' activity.id %}">Approve</a> |
+          <a href="{% url 'activity_center_admin:activity_reject' activity.id %}">Reject</a> |
+          <a href="{% url 'activity_center_admin:schedule_meeting' activity.id %}">Schedule Meeting</a>
+        </li>
+      {% empty %}
+        <li>No activities available.</li>
+      {% endfor %}
+    </ul>
+  </main>
+</body>
+</html>

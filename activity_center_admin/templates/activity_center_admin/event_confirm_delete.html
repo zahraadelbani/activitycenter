@@ -1,0 +1,24 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delete Event</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+  <header>
+    <h1>Delete Event</h1>
+  </header>
+  <main>
+    <p>Are you sure you want to delete the event "{{ object.title }}"?</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit">Confirm Delete</button>
+    </form>
+    <a href="{% url 'activity_center_admin:event_list' %}">Cancel</a>
+  </main>
+</body>
+</html>
