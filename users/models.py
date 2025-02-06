@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from clubs.models import Club
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, password=None, **extra_fields):
@@ -71,11 +72,17 @@ class User(AbstractBaseUser):
             return "User"
 
 class ClubLeader(User):
-    club_name = models.CharField(max_length=255) 
+    club = models.OneToOneField(
+        "clubs.Club",  # ✅ Reference to Club
+        on_delete=models.SET_NULL,
+        null=True,  # ✅ Allow null values
+        blank=True,  # ✅ Allow blank forms
+        related_name="club_leader"
+    )
     club_description = models.TextField()
 
     def __str__(self):
-        return f"Club Leader: {self.name} ({self.club_name})"
+        return f"Club Leader: {self.name} ({self.club.name})"
 
 class Executive(User):
     department = models.CharField(max_length=255)
@@ -95,9 +102,19 @@ class ActivityCenterAdmin(User):
     def __str__(self):
         return f"Activity Center Admin: {self.name} ({self.center_location})"
 
-class ClubMember(User):
-    club = models.ForeignKey(ClubLeader, on_delete=models.CASCADE, related_name='members')
+class ClubMember(models.Model):  # ✅ Don't inherit from User directly
+    user = models.OneToOneField(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="user_club_memberships"  # ✅ UNIQUE related_name
+    )
+
+    club = models.ForeignKey(
+        "clubs.Club",
+        on_delete=models.CASCADE,
+        related_name="memberships"  # ✅ UNIQUE related_name
+    )
+    joined_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Club Member: {self.name} (Club: {self.club.club_name})"
-
+        return f"Club Member: {self.user.name} (Club: {self.club.name})"

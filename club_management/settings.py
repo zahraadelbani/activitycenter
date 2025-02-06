@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'activity_center_admin',
     'club_leader',
     'rector',
+    'club_member',
 ]
 
 MIDDLEWARE = [
