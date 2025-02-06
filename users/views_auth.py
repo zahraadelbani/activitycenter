@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.contrib import messages
 
 # Login View
@@ -22,9 +22,3 @@ def login_view(request):
             print("Invalid login attempt.")  # Debugging line
 
     return render(request, 'users/login.html')
-
-# Logout View
-def logout_view(request):
-    logout(request)
-    messages.success(request, "You have been logged out.")
-    return redirect('login')
