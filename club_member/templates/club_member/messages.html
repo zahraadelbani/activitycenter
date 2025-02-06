@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Your Messages</h2>
+
+<h3>Received Messages</h3>
+<ul>
+    {% for message in received_messages %}
+        <li><strong>From:</strong> {{ message.sender.name }} <br> <strong>Message:</strong> {{ message.content }}</li>
+    {% empty %}
+        <li>No received messages.</li>
+    {% endfor %}
+</ul>
+
+<h3>Sent Messages</h3>
+<ul>
+    {% for message in sent_messages %}
+        <li><strong>To:</strong> {{ message.receiver.name }} <br> <strong>Message:</strong> {{ message.content }}</li>
+    {% empty %}
+        <li>No sent messages.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'club_member:dashboard' %}">Back to Dashboard</a>
+{% endblock %}

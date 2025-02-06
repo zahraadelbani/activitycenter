@@ -1,0 +1,67 @@
+{% block content %}
+<h2>Club Member Dashboard</h2>
+
+<!-- ✅ Display Joined Clubs -->
+<h3>Your Clubs</h3>
+{% if member_clubs %}
+    <ul>
+        {% for club in member_clubs %}
+            <li>
+                {{ club.name }}  
+                <a href="{% url 'club_member:leave_club' club.id %}">Request to Leave</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have not joined any clubs yet.</p>
+{% endif %}
+
+
+<!-- ✅ Show Join Club Form Only If There Are Available Clubs -->
+{% if available_clubs %}
+    <h3>Join a Club</h3>
+    <form method="post" action="{% url 'club_member:join_club' %}">
+        {% csrf_token %}
+        <select name="club_id" required>
+            {% for club in available_clubs %}
+                <option value="{{ club.id }}">{{ club.name }} (Quota: {{ club.quota }} members)</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Join Club</button>
+    </form>
+{% else %}
+    <p>All clubs are full or you are already in 3 clubs.</p>
+{% endif %}
+
+<!-- ✅ Display Upcoming Events -->
+<h3>Upcoming Events</h3>
+{% if upcoming_events %}
+    <ul>
+        {% for event in upcoming_events %}
+            <li>
+                {{ event.title }} - {{ event.event_date }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No upcoming events.</p>
+{% endif %}
+
+<!-- ✅ Display Membership Termination Requests -->
+<h3>Pending Membership Termination Requests</h3>
+{% if termination_requests %}
+    <ul>
+        {% for request in termination_requests %}
+            <li>
+                Request to leave {{ request.club.name }} (Status: {{ request.status }})
+                {% if request.status == "pending" %}
+                    <a href="{% url 'club_member:cancel_termination_request' request.id %}">Cancel Request</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No pending termination requests.</p>
+{% endif %}
+
+{% endblock %}

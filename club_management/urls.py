@@ -11,5 +11,5 @@ urlpatterns = [
     path('rector/', include('rector.urls')),  # Redirect to the users list
     path('accounts/', include('allauth.urls')),  # AllAuth social logins
     path('users/', include('users.urls_auth')),  # Custom authentication
-    
+    path('club-member/', include('club_member.urls')),
 ]
