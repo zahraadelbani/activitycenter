@@ -87,16 +87,12 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        },
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
         'OAUTH_PKCE_ENABLED': True,
     }
 }
+
 
 
 ACCOUNT_EMAIL_VERIFICATION = "none" 
