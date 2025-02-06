@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Club Leader Voting</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Vote for Club Leader in {{ club.name }}</h1>
+    </header>
+
+    <main>
+        <form method="post">
+            {% csrf_token %}
+            <label for="candidate_id">Choose a Candidate:</label>
+            <select name="candidate_id" id="candidate_id" required>
+                {% for candidate in candidates %}
+                    <option value="{{ candidate.id }}">{{ candidate.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Submit Vote</button>
+        </form>
+    </main>
+</body>
+</html>

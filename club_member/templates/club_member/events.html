@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Upcoming Events</h2>
+<ul>
+    {% for event in events %}
+        <li>
+            <strong>{{ event.title }}</strong> - {{ event.event_date|date:"M d, Y H:i" }}
+            (Organized by: {{ event.club.name }})
+            <form method="post" action="{% url 'club_member:attend_event' event.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit">Attend</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>No upcoming events.</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'club_member:dashboard' %}">Back to Dashboard</a>
+{% endblock %}
