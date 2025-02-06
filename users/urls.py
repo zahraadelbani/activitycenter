@@ -1,10 +1,11 @@
 from django.urls import path
 from . import views
 from .views_auth import login_view, logout_view  # Import your authentication views
-from .views import dashboard,signup_view  # Import other views like dashboard
+from .views import dashboard,signup_view, base_view  # Import other views like dashboard
 
 
 urlpatterns = [
+  path('base/', base_view, name='base'),
   path('login/', login_view, name='login'),
   path("signup/", signup_view, name="signup"),
     path('logout/', logout_view, name='logout'),
