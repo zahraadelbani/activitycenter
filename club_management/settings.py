@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from django.contrib.messages import constants as messages
 
 # Load environment variables from .env file
 load_dotenv()
@@ -31,8 +32,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-
-    # Social Providers
     'allauth.socialaccount.providers.google',
 
     # Your apps
@@ -68,33 +67,37 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_SIGNUP_AUTO_LOGIN = False  # Prevents auto-login after signup
+
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-SITE_ID = 1
-LOGIN_REDIRECT_URL = 'dashboard'
-LOGOUT_REDIRECT_URL = 'login'
+SITE_ID = 2
 
-# Google OAuth Config
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
+ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/login/'  
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        'APP': {
-            'client_id': os.getenv("GOOGLE_CLIENT_ID"),
-            'secret': os.getenv("GOOGLE_CLIENT_SECRET"),
-            'key': ''
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
         },
-        'SCOPE': ['email', 'profile'],
-        'AUTH_PARAMS': {'access_type': 'online'},
+        'OAUTH_PKCE_ENABLED': True,
     }
 }
 
-# Django-AllAuth Settings
-""" ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_REQUIRED = True"""
+
 ACCOUNT_EMAIL_VERIFICATION = "none" 
 SOCIALACCOUNT_AUTO_SIGNUP = False
 SOCIALACCOUNT_EMAIL_REQUIRED = True
@@ -126,7 +129,7 @@ ROOT_URLCONF = 'club_management.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / "templates"],  # Corrected path
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -138,6 +141,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 # Directory where Django will search for additional static files
 """ STATICFILES_DIRS = [
@@ -177,3 +181,12 @@ STATIC_URL = "/static/"
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'error',
+}

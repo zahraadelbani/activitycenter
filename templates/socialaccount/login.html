@@ -1,0 +1,51 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% load allauth account static %}
+{% load socialaccount %}
+
+{% block extra_head %}
+    <script src="https://cdn.tailwindcss.com"></script>
+{% endblock %}
+
+{% block head_title %}
+    {% trans "Sign In" %}
+{% endblock head_title %}
+
+{% block content %}
+<body class="h-screen flex flex-col items-center justify-center relative overflow-hidden bg-[url('{% static 'background.jpg' %}')] bg-cover bg-no-repeat bg-center">
+    <div class="relative bg-white p-8 rounded-xl shadow-2xl w-[90%] max-w-md z-10 bg-opacity-95">
+        
+        <!-- Title -->
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">
+            {% if process == "connect" %}
+                {% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}
+            {% else %}
+                {% blocktrans with provider.name as provider %}Sign In Via {{ provider }}{% endblocktrans %}
+            {% endif %}
+        </h1>
+
+        <!-- Description -->
+        <p class="text-center text-gray-600 mb-6">
+            {% if process == "connect" %}
+                {% blocktrans with provider.name as provider %}You are about to connect a new third-party account from {{ provider }}.{% endblocktrans %}
+            {% else %}
+                {% blocktrans with provider.name as provider %}You are about to sign in using a third-party account from {{ provider }}.{% endblocktrans %}
+            {% endif %}
+        </p>
+
+        <!-- Social Login Form -->
+        {% element form method="post" no_visible_fields=True class="space-y-4" %}
+            {% slot actions %}
+                {% csrf_token %}
+                <button type="submit" class="w-full px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition duration-300">
+                    {% trans "Continue" %}
+                </button>
+            {% endslot %}
+        {% endelement %}
+    </div>
+</body>
+{% endblock content %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}
