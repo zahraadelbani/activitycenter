@@ -6,12 +6,18 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
 
+from django.shortcuts import redirect
+from allauth.account.views import SignupView
+
+class CustomSignupView(SignupView):
+    success_url = '/accounts/login/'
+    
 def base_view(request):
     return render(request, 'users/base.html')
 
 @login_required(login_url='login')
 def dashboard(request):
-    return render(request, 'users/dashboard.html', {'user': request.user})
+    return render(request, 'dashboard.html', {'user': request.user})
 
 
 def login_view(request):
@@ -34,14 +40,15 @@ def signup_view(request):
     if request.method == "POST":
         form = CustomSignupForm(request.POST)
         if form.is_valid():
-            user = form.save(request)
-            login(request, user)  # Log in the user after sign-up
-            messages.success(request, "Sign-up successful! Welcome to the platform.")
-            return redirect("dashboard")  # Redirect to the dashboard after sign-up
+            form.save(request)  # Save the user but don't log them in
+            messages.success(request, "Sign-up successful! Please log in.")
+            return redirect("account_login")  # Redirect to the login page instead of dashboard
     else:
         form = CustomSignupForm()
     
     return render(request, "users/signup.html", {"form": form})
+
+
 
 # List Users
 def list_users(request):

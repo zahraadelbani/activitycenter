@@ -8,8 +8,8 @@ urlpatterns = [
     path('', lambda request: HttpResponseRedirect('/users/list/')),
     path('activity-center-admin/', include('activity_center_admin.urls')),
     path('club-leader/', include('club_leader.urls')),
-    path('rector/', include('rector.urls')),  # Redirect to the users list
-    path('accounts/', include('allauth.urls')),  # AllAuth social logins
-    path('users/', include('users.urls_auth')),  # Custom authentication
+    path('rector/', include('rector.urls')),  
+    path('accounts/', include('allauth.urls')),  
+    path('users/', include('users.urls_auth')),  
     
 ]
