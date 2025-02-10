@@ -1,0 +1,7 @@
+<h2>Results for: {{ poll.question }}</h2>
+<ul>
+    {% for choice in poll.choices.all %}
+        <li>{{ choice.text }} - {{ choice.votes }} votes</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'poll_list' %}">Back to Polls</a>

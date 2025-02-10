@@ -1,0 +1,10 @@
+<h2>Polls</h2>
+<a href="{% url 'select_num_choices' %}">Create Poll</a>
+<ul>
+    {% for poll in polls %}
+        <li>
+            <a href="{% url 'vote' poll.id %}">{{ poll.question }}</a>
+            <a href="{% url 'update_poll' poll.id %}">Edit</a>  <!-- ✅ Edit Poll Button -->
+        </li>
+    {% endfor %}
+</ul>

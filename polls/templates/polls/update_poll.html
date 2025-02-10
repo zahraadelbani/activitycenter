@@ -1,0 +1,19 @@
+<h2>Update Poll: {{ poll.question }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ poll_form.as_p }}
+
+    <h3>Edit Existing Choices</h3>
+    {% for form in choice_forms %}
+        {{ form.as_p }}
+    {% endfor %}
+
+    <h3>Add a New Choice (Optional)</h3>
+    <p>Leave blank if you don't want to add a new choice.</p>
+    {{ new_choice_form.as_p }}
+
+    <button type="submit">Save Changes</button>
+</form>
+
+<a href="{% url 'poll_list' %}">Back to Polls</a>

@@ -12,4 +12,5 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # AllAuth social logins
     path('users/', include('users.urls_auth')),  # Custom authentication
     path('club-member/', include('club_member.urls')),
+    path('polls/', include('polls.urls')),
 ]
