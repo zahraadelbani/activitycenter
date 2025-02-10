@@ -1,0 +1,16 @@
+{% for feedback in feedbacks %}
+    <div class="feedback-card">
+        <p><strong>Category:</strong> {{ feedback.category }}</p>
+        <p><strong>Content:</strong> {{ feedback.content }}</p>
+        
+        {% if feedback.category == "suggestion" %}
+            <p><strong>Submitted by:</strong> {{ feedback.submitted_by.name }}</p>
+        {% else %}
+            <p><strong>Submitted by:</strong> Anonymous</p>
+        {% endif %}
+
+        <p><strong>Status:</strong> {{ feedback.status }}</p>
+
+        <a href="{% url 'review_feedback' feedback.id %}">Mark as Reviewed</a>
+    </div>
+{% endfor %}

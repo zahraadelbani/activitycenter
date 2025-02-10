@@ -1,0 +1,12 @@
+
+
+{% block content %}
+<h2>Club Analytics</h2>
+
+<p><strong>Total Members:</strong> {{ analytics.total_members }}</p>
+<p><strong>Total Events:</strong> {{ analytics.total_events }}</p>
+<p><strong>Total Polls:</strong> {{ analytics.total_polls }}</p>
+
+<a href="{% url 'club_leader_dashboard' %}">Back to Dashboard</a>
+
+{% endblock %}

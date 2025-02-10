@@ -8,9 +8,9 @@ class ClubAdmin(admin.ModelAdmin):
 
 @admin.register(ClubActivity)
 class ClubActivityAdmin(admin.ModelAdmin):
-    list_display = ('id', 'club', 'title', 'status', 'created_at')
-    list_filter = ('status',)
-    search_fields = ('title',)
+    list_display = ('title', 'club', 'approval_status', 'datetime')  # ✅ Changed 'date' → 'datetime'
+    list_filter = ('approval_status',)  
+    search_fields = ('title', 'club__name')  
 
 @admin.register(Meeting)
 class MeetingAdmin(admin.ModelAdmin):

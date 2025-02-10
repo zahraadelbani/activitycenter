@@ -4,8 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import ClubMember, MembershipTerminationRequest
 from clubs.models import Club, ClubDocument
 from events.models import Event
-from polls.models import LeaderVote
-from feedback.models import ClubFeedback
+from feedback.models import Feedback
 from users.models import User
 
 
@@ -97,38 +96,6 @@ def leave_club(request, club_id):
 
     return redirect("club_member:dashboard")
 
-
-# @login_required
-def vote_leader(request, club_id):
-    """Vote for a leader"""
-    club = get_object_or_404(Club, id=club_id)
-    candidates = User.objects.filter(clubleader__club=club)
-
-    if request.method == "POST":
-        candidate = get_object_or_404(User, id=request.POST.get("candidate_id"))
-
-        if LeaderVote.objects.filter(voter=request.user, club=club).exists():
-            messages.error(request, "You have already voted.")
-        else:
-            LeaderVote.objects.create(voter=request.user, club=club, candidate=candidate)
-            messages.success(request, "Vote submitted.")
-
-    return redirect("club_member:dashboard")
-
-
-'''@login_required
-def view_messages(request):
-    """Displays recent messages for the user."""
-    user = request.user
-    received_messages = Message.objects.filter(receiver=user).order_by("-timestamp")
-    sent_messages = Message.objects.filter(sender=user).order_by("-timestamp")
-
-    context = {
-        "received_messages": received_messages,
-        "sent_messages": sent_messages,
-    }
-    return render(request, "club_member/messages.html", context)
-'''
 
 # @login_required
 def view_documents(request, club_id):

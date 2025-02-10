@@ -21,18 +21,24 @@ class Club(models.Model):
 
 
 class ClubActivity(models.Model):
-    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='activities')
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    status = models.CharField(
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name="activities")
+    title = models.CharField(max_length=255)  # Subject of Activity
+    datetime = models.DateTimeField()  # ✅ Changed from DateField to DateTimeField
+    participants = models.TextField()  # Names of Participants
+    image = models.ImageField(upload_to="activity_images/", blank=True, null=True)  # Image Upload
+    needs = models.TextField()  # List of needs (parsed JSON or plain text)
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Total Cost
+    transportation_request = models.BooleanField(default=False)  # Transport Request
+    approval_status = models.CharField(
         max_length=20,
         choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')],
         default='pending'
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    supporting_documents = models.FileField(upload_to="activity_documents/", blank=True, null=True)  # File Attachments
 
     def __str__(self):
-        return f"{self.title} ({self.status})"
+        return f"{self.title} ({self.approval_status})"
 
 
 class Meeting(models.Model):

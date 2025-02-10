@@ -1,7 +1,95 @@
-<h1>Club Leader Dashboard</h1>
-<h2>Club Activities</h2>
+
+
+{% block content %}
+<h2>Club Leader Dashboard</h2>
+
+<h2>Active Polls</h2>
 <ul>
-    {% for activity in club_activities %}
-    <li>{{ activity.title }} - {{ activity.description }}</li>
+    {% for poll in club.polls.all %}
+        <li>
+            <a href="{% url 'polls:view_poll' poll.id %}">{{ poll.question }}</a> 
+            (Created by {{ poll.created_by.name }})
+        </li>
+    {% empty %}
+        <li>No active polls.</li>
     {% endfor %}
 </ul>
+
+
+<h3>Pending Activity Requests</h3>
+{% if activity_requests %}
+    <ul>
+        {% for request in activity_requests %}
+            <li>
+                <strong>{{ request.title }}</strong> - {{ request.date }} <br>
+                <strong>Participants:</strong> {{ request.participants }} <br>
+                <strong>Needs:</strong> {{ request.needs }} <br>
+                <strong>Total Cost:</strong> ${{ request.total_cost }} <br>
+                <strong>Transportation Required:</strong> {{ request.transportation_request|yesno:"Yes,No" }} <br>
+                {% if request.image %}
+                    <img src="{{ request.image.url }}" width="100">
+                {% endif %}
+                <a href="{% url 'approve_activity_request' request.id %}">Approve</a> |
+                <a href="{% url 'reject_activity_request' request.id %}">Reject</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No pending activity requests.</p>
+{% endif %}
+
+
+<!-- Termination Requests -->
+<h3>Pending Membership Termination Requests</h3>
+{% if termination_requests %}
+    <ul>
+        {% for request in termination_requests %}
+            <li>
+                {{ request.club_member.user.name }} - {{ request.club.name }}
+                <a href="{% url 'approve_termination' request.id %}">Approve</a> |
+                <a href="{% url 'reject_termination' request.id %}">Reject</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No termination requests pending.</p>
+{% endif %}
+
+<!-- Announcements -->
+<h3>Pending Announcements</h3>
+{% if announcements %}
+    <ul>
+        {% for announcement in announcements %}
+            <li>
+                <strong>{{ announcement.title }}</strong> - {{ announcement.content }}
+                <a href="{% url 'approve_announcement' announcement.id %}">Approve</a> |
+                <a href="{% url 'reject_announcement' announcement.id %}">Reject</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No announcements pending.</p>
+{% endif %}
+
+<!-- Feedback -->
+<h3>Pending Feedback</h3>
+{% if feedbacks %}
+    <ul>
+        {% for feedback in feedbacks %}
+            <li>
+                {{ feedback.content }} - <strong>{{ feedback.category }}</strong>
+                <a href="{% url 'review_feedback' feedback.id %}">Mark as Reviewed</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No new feedback.</p>
+{% endif %}
+
+<!-- Analytics -->
+<h3>Club Analytics</h3>
+<p><strong>Total Members:</strong> {{ analytics.total_members }}</p>
+<p><strong>Total Events:</strong> {{ analytics.total_events }}</p>
+<p><strong>Total Polls:</strong> {{ analytics.total_polls }}</p>
+
+{% endblock %}

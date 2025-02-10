@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'clubs',
     'events',
     'messaging',
-    'polls',
+    #'polls',
     'feedback',
     'announcements',
     'analytics',
