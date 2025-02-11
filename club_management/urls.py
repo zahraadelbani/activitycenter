@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponseRedirect
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -13,4 +15,8 @@ urlpatterns = [
     path('users/', include('users.urls_auth')),  # Custom authentication
     path('club-member/', include('club_member.urls')),
     path('polls/', include('polls.urls')),
+    path("events/", include("events.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

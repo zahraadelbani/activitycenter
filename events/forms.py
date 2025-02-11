@@ -1,4 +1,4 @@
-from django import forms
+""" from django import forms
 from django.utils import timezone
 from .models import Event
 
@@ -20,4 +20,16 @@ class EventForm(forms.ModelForm):
         if self.instance and self.instance.pk and self.instance.event_date:
             # Convert the event_date to local time if it's timezone-aware
             local_dt = timezone.localtime(self.instance.event_date)
-            self.initial['event_date'] = local_dt.strftime('%Y-%m-%dT%H:%M')
+            self.initial['event_date'] = local_dt.strftime('%Y-%m-%dT%H:%M') """
+
+
+from django import forms
+from .models import Event
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'description', 'date', 'location', 'image']
+        widgets = {
+            'date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }

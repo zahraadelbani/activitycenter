@@ -3,6 +3,10 @@
 {% block content %}
 <h2>Club Leader Dashboard</h2>
 
+<h2>Club Leader Dashboard</h2>
+<a href="{% url 'list_events' %}" class="btn btn-primary">Manage Events</a>
+
+
 <h2>Active Polls</h2>
 <ul>
     {% for poll in club.polls.all %}

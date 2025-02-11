@@ -1,0 +1,42 @@
+{% block content %}
+<h2>Club Events</h2>
+
+<a href="{% url 'create_event' %}" class="btn btn-primary">Create New Event</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Image</th>  <!-- ✅ Added Image Column -->
+            <th>Title</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for event in events %}
+        <tr>
+            <td>
+                {% if event.image %}
+                    <img src="{{ event.image.url }}" alt="Event Image" width="100">
+                {% else %}
+                    <p>No Image</p>
+                {% endif %}
+            </td>
+            <td>{{ event.title }}</td>
+            <td>{{ event.date }}</td>
+            <td>{{ event.location }}</td>
+            <td>
+                <a href="{% url 'update_event' event.id %}" class="btn btn-warning">Edit</a>
+                <a href="{% url 'delete_event' event.id %}" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No events found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

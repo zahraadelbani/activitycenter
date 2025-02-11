@@ -82,7 +82,8 @@ class ClubLeader(User):
     club_description = models.TextField()
 
     def __str__(self):
-        return f"Club Leader: {self.name} ({self.club.name})"
+        club_name = self.club.name if self.club else "No Club Assigned"
+        return f"Club Leader: {self.name} ({club_name})"
 
 class Executive(User):
     department = models.CharField(max_length=255)
