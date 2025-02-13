@@ -4,4 +4,4 @@
         <li>{{ choice.text }} - {{ choice.votes }} votes</li>
     {% endfor %}
 </ul>
-<a href="{% url 'poll_list' %}">Back to Polls</a>
+<a href="{% url 'polls:poll_list' %}" class="btn btn-secondary">Back to Polls</a>

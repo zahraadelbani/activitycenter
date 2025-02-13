@@ -1,9 +1,14 @@
 from django.db import models
 
+from clubs.models import Club
+from users.models import User
+
 class Poll(models.Model):
     question = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=True)  # Add default value
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='polls', default=1)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE,default=1)
 
 
     def __str__(self):

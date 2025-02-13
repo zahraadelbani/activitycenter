@@ -1,17 +1,20 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
-from club_leader.forms import ActivityRequestForm
-from users.models import ClubLeader, User  # Use existing ClubLeader from users app
+from club_leader.forms import ActivityRequestForm, ClubDocumentForm
+from users.models import ClubLeader, User  
 from club_member.models import MembershipTerminationRequest
-from clubs.models import Announcement, ClubActivity
+from clubs.models import Announcement, ClubActivity, ClubDocument
 from feedback.models import Feedback
 from analytics.models import ClubAnalytics
 
-# Club Leader Dashboard
+from clubs.models import ClubDocument  # Import the model
+
 def club_leader_dashboard(request):
     """Club Leader Dashboard"""
     leader = get_object_or_404(ClubLeader, id=request.user.id)
     club = leader.club  # Ensure club exists before proceeding
+    documents = ClubDocument.objects.filter(club=club)
 
     termination_requests = MembershipTerminationRequest.objects.filter(club=club, status="pending")
     announcements = Announcement.objects.filter(club=club, status="pending")
@@ -27,8 +30,11 @@ def club_leader_dashboard(request):
         "announcements": announcements,
         "feedbacks": feedbacks,
         "analytics": analytics,
+        "documents": documents,
+        'club': club,
     }
     return render(request, "club_leader/dashboard.html", context)
+
 
 
 # Approve/Reject Membership Termination Requests
@@ -113,3 +119,36 @@ def reject_activity_request(request, activity_id):
     activity.save()
     messages.error(request, "Activity request rejected.")
     return redirect('club_leader_dashboard')
+
+
+#@login_required
+def upload_document(request):
+    if request.user.get_role() != "Club Leader":
+        raise PermissionDenied
+    leader = get_object_or_404(ClubLeader, id=request.user.id)
+    if request.method == 'POST':
+        form = ClubDocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            document = form.save(commit=False)
+            document.club = leader.club  # Assign the club manually
+            print("Leader's Club:", leader.club)
+            document.save()
+            return redirect('club_leader:club_leader_dashboard')
+    else:
+        form = ClubDocumentForm()
+    return render(request, 'club_leader/upload_document.html', {'form': form})
+
+#@login_required
+def delete_document(request, pk):
+    document = get_object_or_404(ClubDocument, pk=pk)
+    if request.user.get_role() != "Club Leader":
+        raise PermissionDenied
+    document.delete()
+    return redirect('club_leader:club_leader_dashboard')
+
+#@login_required
+def list_documents(request):
+    if request.user.get_role() not in ["Club Leader", "Club Member"]:
+        raise PermissionDenied
+    documents = ClubDocument.objects.filter(is_approved=True)
+    return render(request, 'club_leader/document_list.html', {'documents': documents})

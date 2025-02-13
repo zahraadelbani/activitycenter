@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = 'club_leader'
+
 urlpatterns = [
     path("dashboard/", views.club_leader_dashboard, name="club_leader_dashboard"),
     path("approve-termination/<int:request_id>/", views.approve_termination_request, name="approve_termination"),
@@ -12,5 +14,9 @@ urlpatterns = [
     path("activity-request/", views.submit_activity_request, name="submit_activity_request"),
     path("activity-request/approve/<int:activity_id>/", views.approve_activity_request, name="approve_activity_request"),
     path("activity-request/reject/<int:activity_id>/", views.reject_activity_request, name="reject_activity_request"),
+    path('upload-document/', views.upload_document, name='upload_document'),
+    path('delete-document/<int:pk>/', views.delete_document, name='delete_document'),
+    path('documents/', views.list_documents, name='list_documents'),
+
 
 ]

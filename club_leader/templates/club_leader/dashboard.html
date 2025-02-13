@@ -1,10 +1,24 @@
-
-
-{% block content %}
+<h1>club : {{ club.name }}</h1>
 <h2>Club Leader Dashboard</h2>
+<a href="{% url 'list_events' %}" class="btn btn-primary">Manage Events</a> | <a href="{% url 'polls:select_num_choices' %}">Create Poll</a>
 
-<h2>Club Leader Dashboard</h2>
-<a href="{% url 'list_events' %}" class="btn btn-primary">Manage Events</a>
+
+
+
+<h2>Club Documents</h2>
+<a href="{% url 'club_leader:upload_document' %}">Upload New Document</a>
+
+{% for doc in documents %}
+    <div>
+        <h3>{{ doc.title }}</h3>
+        <a href="{{ doc.file.url }}" download>Download</a>
+    </div>
+{% empty %}
+    <p>No documents available.</p>
+{% endfor %}
+
+
+
 
 
 <h2>Active Polls</h2>
@@ -96,4 +110,3 @@
 <p><strong>Total Events:</strong> {{ analytics.total_events }}</p>
 <p><strong>Total Polls:</strong> {{ analytics.total_polls }}</p>
 
-{% endblock %}

@@ -1,5 +1,5 @@
 from django import forms
-from clubs.models import ClubActivity
+from clubs.models import ClubActivity,ClubDocument
 
 class ActivityRequestForm(forms.ModelForm):
     class Meta:
@@ -13,3 +13,8 @@ class ActivityRequestForm(forms.ModelForm):
             'participants': forms.Textarea(attrs={'rows': 3}),
             'needs': forms.Textarea(attrs={'rows': 5}),
         }
+
+class ClubDocumentForm(forms.ModelForm):
+    class Meta:
+        model = ClubDocument
+        fields = ['title', 'file']
