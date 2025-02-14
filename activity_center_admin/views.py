@@ -19,7 +19,7 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['clubs'] = Club.objects.all()
-        context['pending_activities'] = ClubActivity.objects.filter(status='pending')
+        context['pending_activities'] = ClubActivity.objects.filter(approval_status='pending')
         context['pending_announcements'] = Announcement.objects.filter(status='pending')
         return context
 
