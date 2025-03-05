@@ -1,7 +1,119 @@
-<h1>Welcome, {{ user.name }}!</h1>
-<p>Your email: {{ user.email }}</p>
-<p>your role : {{user.get_role}}</p>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
 
-<!-- Logout Link -->
-<!-- dashboard.html -->
-<a href="{% url 'account_logout' %}">Logout</a>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Club Management System</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+ 
+  <link rel="stylesheet" href="https://cdn.tailwindcss.com">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Container -->
+  <div class="container">
+    <!-- SIDEBAR DIV -->
+    <div class="sidebar-div">
+      <aside>
+        <div class="top">
+          <div class="logo">
+            <img src="{% static 'emu.png'%}" alt="">
+            <h2>EMU <span class="primary">A.CENTER</span></h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <a href="{% url 'club_leader:dashboard' %}">
+            <span class="material-icons-sharp">grid_view</span>
+            <h3>Club Leader Dashboard</h3>
+          </a>
+          <a href="{% url 'account_logout' %}"">
+            <span class="material-icons-sharp">person</span>
+            <h3>Profile</h3>
+          </a>
+         
+          <a href="{% url 'events:list_events' %}">
+            <span class="material-icons-sharp">event_available</span>
+            <h3>Events</h3>
+          </a>
+          <a href="{% url 'club_leader:list_resources' %}">
+            <span class="material-icons-sharp">folder_open</span>
+            <h3>Resources</h3>
+          </a>
+          <a href="{% url 'polls:select_num_choices' %}">
+            <span class="material-icons-sharp">how_to_reg</span>
+
+            <h3>Polls</h3>
+          </a>
+         
+          <a href="{% url 'announcements:list_announcements' %}">
+            <span class="material-icons-sharp">campaign</span>
+            <h3>Announcements</h3>
+          </a>
+          
+
+          <a href="{% url 'account_logout' %}">
+            <span class="material-icons-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+    </div>
+
+    <!-- MIDDLE DIV -->
+    <div class="middle-div">
+
+      <!-- NAVBAR DIV -->
+      <div class="navbar-div">
+
+        <div class="nav-dashboard-div">
+          <div class="nav-dashboard-button">
+            <button id="menu-btn">
+              <span class="material-icons-sharp">menu</span>
+            </button>
+          </div>
+          <div class="nav-dashboard-title">
+            <h1>Dashboard</h1>
+          </div>
+        </div>
+
+        <div class="nav-left-div">
+          <div class="theme-toggler">
+            <span class="material-icons-sharp active">light_mode</span>
+            <span class="material-icons-sharp">dark_mode</span>
+          </div>
+
+
+          <div class="profile">
+            <div class="info">
+              <!-- <p>Welcome <b>{{ user.name }} !</b></p> -->
+              <h3>Welcome <b>Bamlak!</b></h3>
+              <small class="text-muted">Admin</small>
+            </div>
+            <div class="profile-photo">
+              <img src="{% static 'emu.png'%}" alt="">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- CONTENT DIV -->
+      <div class="content-div">
+        {% block content %}
+
+        {% endblock content %}
+      </div>
+    </div>
+  </div>
+  </div>
+  <script src="{% static 'js/script.js' %}"></script>
+</body>
+
+</html>

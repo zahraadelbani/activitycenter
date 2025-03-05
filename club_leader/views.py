@@ -10,7 +10,7 @@ from analytics.models import ClubAnalytics
 
 from clubs.models import ClubDocument  # Import the model
 
-def club_leader_dashboard(request):
+def dashboard(request):
     """Club Leader Dashboard"""
     leader = get_object_or_404(ClubLeader, id=request.user.id)
     club = leader.club  # Ensure club exists before proceeding
@@ -33,7 +33,7 @@ def club_leader_dashboard(request):
         "documents": documents,
         'club': club,
     }
-    return render(request, "club_leader/dashboard.html", context)
+    return render(request, 'club_leader/dashboard.html')
 
 
 
@@ -152,3 +152,7 @@ def list_documents(request):
         raise PermissionDenied
     documents = ClubDocument.objects.filter(is_approved=True)
     return render(request, 'club_leader/document_list.html', {'documents': documents})
+
+# @login_required
+def list_resources(request):
+    return render(request, 'club_leader/list_resources.html')

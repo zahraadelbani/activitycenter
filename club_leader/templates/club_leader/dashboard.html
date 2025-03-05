@@ -1,112 +1,262 @@
-<h1>club : {{ club.name }}</h1>
-<h2>Club Leader Dashboard</h2>
-<a href="{% url 'list_events' %}" class="btn btn-primary">Manage Events</a> | <a href="{% url 'polls:select_num_choices' %}">Create Poll</a>
+{% extends "dashboard.html" %}
+{% load static %}
+{% block content %}
+<div class="dashboard-content">
+  <div class="dash-middle">
+    <div class="middle-top">
+
+      <!-- MIDDLE_TOP ANALYTICS -->
+      <h2>Club name: {{ club.name }}</h2>
+
+      <main>
+        <div class="insights">
+          <div class="members">
+            <span class="material-icons-sharp">groups</span>
+            <div class="mid">
+              <div class="left">
+                <h3>Total Members</h3>
+                <h1>{{ analytics.total_members }}</h1>
+              </div>
+              <div class="progress">
+                <svg>
+                  <circle cx="38" cy="38" r="36"></circle>
+                </svg>
+                <div class="number">
+                  <p>{{ analytics.total_members }}%</p>
+                </div>
+              </div>
+            </div>
+            <small class="text-muted">Last 24 Hours</small>
+          </div>
 
 
+          <div class="events">
+            <span class="material-icons-sharp">event_available</span>
+            <div class="mid">
+              <div class="left">
+                <h3>Total Events</h3>
+                <h1>{{ analytics.total_events }}</h1>
+              </div>
+              <div class="progress">
+                <svg>
+                  <circle cx="38" cy="38" r="36"></circle>
+                </svg>
+                <div class="number">
+                  <p> {{ analytics.total_events }}%</p>
+                </div>
+              </div>
+            </div>
+            <small class="text-muted">Last 24 Hours</small>
+          </div>
 
-
-<h2>Club Documents</h2>
-<a href="{% url 'club_leader:upload_document' %}">Upload New Document</a>
-
-{% for doc in documents %}
-    <div>
-        <h3>{{ doc.title }}</h3>
-        <a href="{{ doc.file.url }}" download>Download</a>
+          <div class="polls">
+            <span class="material-icons-sharp">how_to_reg</span>
+            <div class="mid">
+              <div class="left">
+                <h3>Total Polls</h3>
+                <h1> {{ analytics.total_polls }}</h1>
+              </div>
+              <div class="progress">
+                <svg>
+                  <circle cx="38" cy="38" r="36"></circle>
+                </svg>
+                <div class="number">
+                  <p>{{ analytics.total_polls }}%</p>
+                </div>
+              </div>
+            </div>
+            <small class="text-muted">Last 24 Hours</small>
+          </div>
+        </div>
+      </main>
     </div>
-{% empty %}
-    <p>No documents available.</p>
-{% endfor %}
 
-
-
-
-
-<h2>Active Polls</h2>
-<ul>
-    {% for poll in club.polls.all %}
-        <li>
-            <a href="{% url 'polls:view_poll' poll.id %}">{{ poll.question }}</a> 
-            (Created by {{ poll.created_by.name }})
-        </li>
-    {% empty %}
-        <li>No active polls.</li>
-    {% endfor %}
-</ul>
-
-
-<h3>Pending Activity Requests</h3>
-{% if activity_requests %}
-    <ul>
-        {% for request in activity_requests %}
-            <li>
-                <strong>{{ request.title }}</strong> - {{ request.date }} <br>
-                <strong>Participants:</strong> {{ request.participants }} <br>
-                <strong>Needs:</strong> {{ request.needs }} <br>
-                <strong>Total Cost:</strong> ${{ request.total_cost }} <br>
-                <strong>Transportation Required:</strong> {{ request.transportation_request|yesno:"Yes,No" }} <br>
-                {% if request.image %}
+    <!-- ############### TABLE FOR REQUESTS ##############-->
+     
+    <div class="middle-bottom">
+      <main>
+        <div class="carousel-container ">
+          <button class="carousel-btn prev" onclick="moveSlide(-1)">&#10094;</button>
+          <div class="carousel">
+            <div class="slide">
+              <div class="recent-orders">
+                <h3>Pending Activity Requests</h3>
+                {% if activity_requests %}
+                <ul>
+                  {% for request in activity_requests %}
+                  <li>
+                    <strong>{{ request.title }}</strong> - {{ request.date }} <br>
+                    <strong>Participants:</strong> {{ request.participants }} <br>
+                    <strong>Needs:</strong> {{ request.needs }} <br>
+                    <strong>Total Cost:</strong> ${{ request.total_cost }} <br>
+                    <strong>Transportation Required:</strong> {{ request.transportation_request|yesno:"Yes,No" }} <br>
+                    {% if request.image %}
                     <img src="{{ request.image.url }}" width="100">
+                    {% endif %}
+                    <a href="{% url 'approve_activity_request' request.id %}">Approve</a> |
+                    <a href="{% url 'reject_activity_request' request.id %}">Reject</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% else %}
+                <p>No pending activity requests.</p>
                 {% endif %}
-                <a href="{% url 'approve_activity_request' request.id %}">Approve</a> |
-                <a href="{% url 'reject_activity_request' request.id %}">Reject</a>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No pending activity requests.</p>
-{% endif %}
+              </div>
+            </div>
 
+            <div class="slide">
+              <div class="recent-orders">
+                <h3>Pending Membership Termination Requests</h3>
+                {% if termination_requests %}
+                <ul>
+                  {% for request in termination_requests %}
+                  <li>
+                    {{ request.club_member.user.name }} - {{ request.club.name }}
+                    <a href="{% url 'approve_termination' request.id %}">Approve</a> |
+                    <a href="{% url 'reject_termination' request.id %}">Reject</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% else %}
+                <p>No termination requests pending.</p>
+                {% endif %}
+              </div>
+            </div>
 
-<!-- Termination Requests -->
-<h3>Pending Membership Termination Requests</h3>
-{% if termination_requests %}
-    <ul>
-        {% for request in termination_requests %}
-            <li>
-                {{ request.club_member.user.name }} - {{ request.club.name }}
-                <a href="{% url 'approve_termination' request.id %}">Approve</a> |
-                <a href="{% url 'reject_termination' request.id %}">Reject</a>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No termination requests pending.</p>
-{% endif %}
+            <div class="slide">
+              <div class="recent-orders">
+                <h3>Pending Announcements</h3>
+                {% if announcements %}
+                <ul>
+                  {% for announcement in announcements %}
+                  <li>
+                    <strong>{{ announcement.title }}</strong> - {{ announcement.content }}
+                    <a href="{% url 'approve_announcement' announcement.id %}">Approve</a> |
+                    <a href="{% url 'reject_announcement' announcement.id %}">Reject</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% else %}
+                <p>No announcements pending.</p>
+                {% endif %}
+              </div>
+            </div>
 
-<!-- Announcements -->
-<h3>Pending Announcements</h3>
-{% if announcements %}
-    <ul>
-        {% for announcement in announcements %}
-            <li>
-                <strong>{{ announcement.title }}</strong> - {{ announcement.content }}
-                <a href="{% url 'approve_announcement' announcement.id %}">Approve</a> |
-                <a href="{% url 'reject_announcement' announcement.id %}">Reject</a>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No announcements pending.</p>
-{% endif %}
+            <div class="slide">
+              <div class="recent-orders">
+                <h3>Pending Feedback</h3>
+                {% if feedbacks %}
+                <ul>
+                  {% for feedback in feedbacks %}
+                  <li>
+                    {{ feedback.content }} - <strong>{{ feedback.category }}</strong>
+                    <a href="{% url 'review_feedback' feedback.id %}">Mark as Reviewed</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% else %}
+                <p>No new feedback.</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <button class="carousel-btn next" onclick="moveSlide(1)">&#10095;</button>
+      </main>
+    </div>
+  </div>
 
-<!-- Feedback -->
-<h3>Pending Feedback</h3>
-{% if feedbacks %}
-    <ul>
-        {% for feedback in feedbacks %}
-            <li>
-                {{ feedback.content }} - <strong>{{ feedback.category }}</strong>
-                <a href="{% url 'review_feedback' feedback.id %}">Mark as Reviewed</a>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No new feedback.</p>
-{% endif %}
+  <!-- ##############  RIGHT ANALYTICS ##################-->
+  <div class="dash-right">
+    <div class="right-top">
+      <div class="right">
+        <!-- RECENT UPDATES -->
+        <div class="recent-updates">
+          <h2>Recent Updates</h2>
+          <div class="updates">
+            <div class="update">
+              <div class="profile-photo">
+                <img src="{% static 'emu.png'%}" alt="">
+              </div>
+              <div class="message">
+                <p><b>Bamlak</b> terminated a member called Khalid</p>
+                <small class="text-muted">2 hours ago</small>
+              </div>
+            </div>
+            <div class="update">
+              <div class="profile-photo">
+                <img src="{% static 'emu.png'%}" alt="">
+              </div>
+              <div class="message">
+                <p><b>Rayan</b> found the perfect lip liner</p>
+                <small class="text-muted">2 hours ago</small>
+              </div>
+            </div>
+            <div class="update">
+              <div class="profile-photo">
+                <img src="{% static 'emu.png'%}" alt="">
+              </div>
+              <div class="message">
+                <p><b>Zahraa</b> created a cooking event</p>
+                <small class="text-muted">2 hours ago</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<!-- Analytics -->
-<h3>Club Analytics</h3>
-<p><strong>Total Members:</strong> {{ analytics.total_members }}</p>
-<p><strong>Total Events:</strong> {{ analytics.total_events }}</p>
-<p><strong>Total Polls:</strong> {{ analytics.total_polls }}</p>
+    </div>
+    <div class="right-bottom">
+      <div class="right">
+        <!-- RECENT COMMENTS -->
+        <div class="sales-analytics">
+          <h2>Student Analytics</h2>
+          <div class="item online">
+            <div class="icon">
+              <span class="material-icons-sharp">shopping_cart</span>
+            </div>
+            <div class="right">
+              <div class="info">
+                <h3>Memberships</h3>
+                <small class="text-mute">Last 24 Hours</small>
+              </div>
+              <h5 class="success">+39%</h5>
+              <h3>3847</h3>
+            </div>
+          </div>
 
+          <div class="item offline">
+            <div class="icon"><span class="material-icons-sharp">local_mall</span></div>
+            <div class="right">
+              <div class="info">
+                <h3>Events</h3>
+                <small class="text-mute">Last 24 Hours</small>
+              </div>
+              <h5 class="danger">-9%</h5>
+              <h3>110</h3>
+            </div>
+          </div>
+          <div class="item customers">
+            <div class="icon">
+              <span class="material-icons-sharp">person</span>
+            </div>
+            <div class="right">
+              <div class="info">
+                <h3>NEW Members</h3>
+                <small class="text-mute">Last 24 Hours</small>
+              </div>
+              <h5 class="success">+25%</h5>
+              <h3>839</h3>
+            </div>
+          </div>
+          <div class="item add-product">
+            <div>
+              <span class="material-icons-sharp">add</span>
+              <h3>Add Product</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

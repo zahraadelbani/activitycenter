@@ -4,7 +4,7 @@ from . import views
 app_name = 'club_leader'
 
 urlpatterns = [
-    path("dashboard/", views.club_leader_dashboard, name="club_leader_dashboard"),
+    path('dashboard/', views.dashboard, name='dashboard'),
     path("approve-termination/<int:request_id>/", views.approve_termination_request, name="approve_termination"),
     path("reject-termination/<int:request_id>/", views.reject_termination_request, name="reject_termination"),
     path("approve-announcement/<int:announcement_id>/", views.approve_announcement, name="approve_announcement"),
@@ -17,6 +17,8 @@ urlpatterns = [
     path('upload-document/', views.upload_document, name='upload_document'),
     path('delete-document/<int:pk>/', views.delete_document, name='delete_document'),
     path('documents/', views.list_documents, name='list_documents'),
+    
+    path('list_resources/', views.list_resources, name='list_resources'),
 
 
 ]

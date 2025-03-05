@@ -15,6 +15,9 @@ class CustomSignupView(SignupView):
 def base_view(request):
     return render(request, 'users/base.html')
 
+def profile(request):
+    return render(request, 'users/profile.html')
+
 @login_required(login_url='login')
 def dashboard(request):
     return render(request, 'dashboard.html', {'user': request.user})

@@ -1,10 +1,59 @@
-
+{% extends "dashboard.html" %}
+{% load static %}
 {% block content %}
-<h2>Upload Club Document</h2>
+<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-sm transform transition-all duration-300 hover:shadow-md">
+    <!-- Header -->
+    <h2 class="text-4xl font-bold text-gray-900 mb-8 text-center">Upload Club Document</h2>
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Upload</button>
-</form>
+    <!-- Upload Form -->
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        <div class="space-y-6">
+            {% for field in form %}
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700" for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                <p class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                <p class="text-sm text-red-500 mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Upload Button -->
+        <button type="submit" class="w-full md:w-2/3 mx-auto px-4 py-3 bg-blue-600 text-white font-semibold text-lg rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95">
+            Upload Document
+        </button>
+    </form>
+
+    <!-- Club Documents Section -->
+    <div class="mt-12">
+        <h3 class="text-2xl font-semibold text-gray-900 mb-6 text-center">Available Documents</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for doc in documents %}
+            <div class="p-6 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900">{{ doc.title }}</h4>
+                        <p class="text-sm text-gray-500 mt-1">Uploaded on {{ doc.uploaded_at|date:"M d, Y" }}</p>
+                    </div>
+                    <a href="{{ doc.file.url }}" download class="text-blue-600 hover:text-blue-800 flex items-center space-x-2 transition-all duration-300 ease-in-out transform hover:scale-110">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        <span class="font-medium">Download</span>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="col-span-full text-gray-500 text-center py-8">No documents available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}
