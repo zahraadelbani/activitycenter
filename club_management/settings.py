@@ -77,7 +77,7 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-SITE_ID = 4
+SITE_ID = 5
 
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/login/'  
@@ -145,9 +145,9 @@ TEMPLATES = [
 
 
 # Directory where Django will search for additional static files
-""" STATICFILES_DIRS = [
+STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-] """
+] 
 
 # Directory where Django collects all static files (useful in production)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

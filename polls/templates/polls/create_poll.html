@@ -1,3 +1,7 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block content %}
+
 <h2>Create a Poll</h2>
 <form method="post">
     {% csrf_token %}
@@ -10,3 +14,4 @@
 
     <button type="submit">Create Poll</button>
 </form>
+{% endblock content %}

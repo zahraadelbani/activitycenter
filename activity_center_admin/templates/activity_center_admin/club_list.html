@@ -17,24 +17,30 @@
   </header>
   <main>
     <ul>
-      {% for club in clubs %}
-        <li>
-          <strong>{{ club.name }}</strong><br>
-          Description: {{ club.description }}<br>
-          Quota: {{ club.quota }}<br>
-          {% if club.leader %}
-            Leader: {{ club.leader.name }}
-          {% else %}
-            Leader: Not confirmed
-          {% endif %}<br>
-          Members: {{ club.members.count }}<br>
-          Events: {{ club.events.count }}<br>
-          <a href="{% url 'activity_center_admin:club_update' club.id %}">Edit</a> |
-          <a href="{% url 'activity_center_admin:club_delete' club.id %}">Delete</a>
-        </li>
-      {% empty %}
-        <li>No clubs available.</li>
-      {% endfor %}
+       
+
+ {% for club in clubs %}
+ <tr class="border hover:bg-gray-100 transition">
+     <td class="border p-3 font-semibold">{{ club.name }}</td>
+     <td class="border p-3 text-gray-600">{{ club.description }}</td>
+     <td class="border p-3 text-gray-600">{{ club.quota }}</td>
+     <td class="border p-3 text-gray-600">{{ club.leader|default:"Not confirmed" }}</td>
+     <td class="border p-3 text-gray-600">{{ club.members.count }}</td>
+     <td class="border p-3 text-gray-600">{{ club.events.count }}</td>
+     <td class="border p-3 flex justify-center space-x-3">
+         <a href="{% url 'activity_center_admin:club_update' club.id %}" class="text-yellow-500 hover:underline">
+             <i class="fa-solid fa-edit"></i> Edit
+         </a>
+         <a href="{% url 'activity_center_admin:club_delete' club.id %}" class="text-red-500 hover:underline">
+             <i class="fa-solid fa-trash"></i> Delete
+         </a>
+     </td>
+ </tr>
+ {% empty %}
+ <tr>
+     <td colspan="7" class="text-center p-4 text-gray-500">No clubs available</td>
+ </tr>
+ {% endfor %}
     </ul>
   </main>
   <footer>

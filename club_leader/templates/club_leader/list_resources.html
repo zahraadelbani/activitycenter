@@ -1,0 +1,18 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block content %}
+  
+  <!-- ADD DOCUMENTS-->
+  <h2>Club Documents</h2>
+  <a href="{% url 'club_leader:upload_document' %}">Upload New Document</a>
+
+  {% for doc in documents %}
+  <div>
+    <h3>{{ doc.title }}</h3>
+    <a href="{{ doc.file.url }}" download>Download</a>
+  </div>
+  {% empty %}
+  <p>No documents available.</p>
+  {% endfor %}
+
+  {% endblock %}

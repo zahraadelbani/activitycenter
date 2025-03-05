@@ -1,6 +1,33 @@
-<h2>Select Number of Choices</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Next</button>
-</form>
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-lg mx-auto mt-10">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">Select Number of Choices</h2>
+  <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      {% csrf_token %}
+      <div class="mb-4">
+          {{ form.as_p|safe }}
+      </div>
+      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          Next
+      </button>
+  </form>
+</div>
+
+ <!-- ACTIVE POLLS-->
+
+ <h2>Active Polls</h2>
+ <ul>
+   {% for poll in club.polls.all %}
+   <li>
+     <a href="{% url 'polls:view_poll' poll.id %}">{{ poll.question }}</a>
+     (Created by {{ poll.created_by.name }})
+   </li>
+   {% empty %}
+   <li>No active polls.</li>
+   {% endfor %}
+ </ul>
+
+
+{% endblock%}
