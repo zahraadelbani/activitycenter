@@ -35,7 +35,7 @@
             <span class="material-icons-sharp">grid_view</span>
             <h3>Club Leader Dashboard</h3>
           </a>
-          <a href="{% url 'account_logout' %}"">
+          <a href="{% url 'users:profile' %}">
             <span class="material-icons-sharp">person</span>
             <h3>Profile</h3>
           </a>
@@ -94,12 +94,14 @@
 
           <div class="profile">
             <div class="info">
-              <!-- <p>Welcome <b>{{ user.name }} !</b></p> -->
-              <h3>Welcome <b>Bamlak!</b></h3>
+              <p>Welcome <b>{{ user.name }} !</b></p>
+              <!-- <h3>Welcome <b>Bamlak!</b></h3> -->
               <small class="text-muted">Admin</small>
             </div>
             <div class="profile-photo">
-              <img src="{% static 'emu.png'%}" alt="">
+              <!-- <img src="{% static 'emu.png'%}" alt=""> -->
+              <img src="{{ user.profile_picture.url }}" alt="Profile Picture">
+<!-- BAMLOUKA YOU NEED TO FIX THE SIZING BECAUSE WHEN I UNCOMMENTED IT IT WAS A SCROLLBAR -->
             </div>
           </div>
         </div>

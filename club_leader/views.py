@@ -13,27 +13,27 @@ from clubs.models import ClubDocument  # Import the model
 def dashboard(request):
     """Club Leader Dashboard"""
     leader = get_object_or_404(ClubLeader, id=request.user.id)
-    club = leader.club  # Ensure club exists before proceeding
+    club = leader.club
     documents = ClubDocument.objects.filter(club=club)
 
     termination_requests = MembershipTerminationRequest.objects.filter(club=club, status="pending")
     announcements = Announcement.objects.filter(club=club, status="pending")
     feedbacks = Feedback.objects.filter(club=club, status="pending")
 
-    analytics = None  # Prevent errors if analytics entry does not exist
-    if club:
-        analytics, created = ClubAnalytics.objects.get_or_create(club=club)
-        analytics.update_stats()
+    analytics, created = ClubAnalytics.objects.get_or_create(club=club)
+    analytics.update_stats()
 
     context = {
         "termination_requests": termination_requests,
         "announcements": announcements,
         "feedbacks": feedbacks,
         "analytics": analytics,
+        "members_percentage": analytics.members_percentage(),  # Pass percentage
         "documents": documents,
-        'club': club,
+        "club": club,
     }
-    return render(request, 'club_leader/dashboard.html')
+    return render(request, 'club_leader/dashboard.html', context)
+
 
 
 

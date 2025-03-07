@@ -84,9 +84,6 @@ ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -145,9 +142,9 @@ TEMPLATES = [
 
 
 # Directory where Django will search for additional static files
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-] 
+#STATICFILES_DIRS = [
+ #   os.path.join(BASE_DIR, 'static'),
+#] 
 
 # Directory where Django collects all static files (useful in production)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -176,8 +173,11 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
-STATIC_URL = "/static/"
+# MEDIA & STATIC FILES
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]  # ✅ Corrected
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"  # ✅ Corrected
 
 
 # Default primary key field type

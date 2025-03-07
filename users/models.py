@@ -27,9 +27,9 @@ class User(AbstractBaseUser):
         ('active', 'Active'),
         ('inactive', 'Inactive'),
     ]
-
     id = models.AutoField(primary_key=True)
     student_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    profile_picture = models.ImageField(upload_to="profile_pictures/", default="profile_pictures/default.jpg")
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')

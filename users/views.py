@@ -15,12 +15,29 @@ class CustomSignupView(SignupView):
 def base_view(request):
     return render(request, 'users/base.html')
 
-def profile(request):
-    return render(request, 'users/profile.html')
+@login_required
+def profile_view(request):
+    user = request.user  # Get the logged-in user
 
-@login_required(login_url='login')
+    if request.method == "POST" and "profile_picture" in request.FILES:
+        uploaded_file = request.FILES["profile_picture"]
+        print(f"Uploaded file: {uploaded_file.name}")  # Debugging
+
+        if user.profile_picture:  
+            user.profile_picture.delete(save=False)  # ✅ Delete old image to avoid clutter
+
+        user.profile_picture = uploaded_file
+        user.save()  # ✅ Save the new profile picture
+
+        print(f"New Profile Picture URL: {user.profile_picture.url}")  
+        return redirect(request.path)  
+
+    return render(request, "users/profile.html", {"user": user})
+
+
+@login_required
 def dashboard(request):
-    return render(request, 'dashboard.html', {'user': request.user})
+    return render(request, "dashboard.html", {"user": request.user})
 
 
 def login_view(request):

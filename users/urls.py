@@ -1,11 +1,12 @@
 from django.urls import path
 from . import views
-from .views import CustomSignupView, dashboard, base_view 
+from .views import CustomSignupView, dashboard, base_view, profile_view 
 
+app_name = "users"
 
 urlpatterns = [
     path('base/', base_view, name='base'),
-    path('profile/', views.profile, name='profile'),
+    path("profile/", profile_view, name="profile"),
     path('dashboard/', dashboard, name='dashboard'),
     path('list/', views.list_users, name='list_users'),
     path('create/', views.create_user, name='create_user'),
