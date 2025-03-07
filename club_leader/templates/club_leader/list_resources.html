@@ -1,18 +1,37 @@
 {% extends "dashboard.html" %}
 {% load static %}
 {% block content %}
-  
-  <!-- ADD DOCUMENTS-->
-  <h2>Club Documents</h2>
-  <a href="{% url 'club_leader:upload_document' %}">Upload New Document</a>
 
-  {% for doc in documents %}
-  <div>
-    <h3>{{ doc.title }}</h3>
-    <a href="{{ doc.file.url }}" download>Download</a>
+
+
+<div class="container-events">
+  <h2>Club Resources</h2>
+  <div class="controls">
+    <a href="{% url 'club_leader:upload_document' %}"><button>Upload New Document</button></a>
   </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Event Name</th>
+        <th>Date Created</th>
+        <th>Status</th>
+        <th>Status</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in documents %}
+      <tr>
+        <td>{{ doc.title }}</td>
+        <td>date uploaded: </td>
+        <td>Uploaded by: </td>
+        <td>Status: </td>
+        <td><a href="{{ doc.file.url }}" download>Download</a></td>
+      </tr>
+    </tbody>
+  </table>
   {% empty %}
-  <p>No documents available.</p>
+  <p>No documents available</p>
   {% endfor %}
-
-  {% endblock %}
+</div>
+{% endblock %}
