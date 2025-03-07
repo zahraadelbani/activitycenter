@@ -8,7 +8,7 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView,
 # from club_management.decorators import role_required  # Temporarily removed
 from clubs.models import Club, ClubActivity, Meeting
 from events.models import Event  # Ensure you have an Event model in events/models.py
-from announcements.models import Announcement
+from clubs.models import Announcement  # ✅ Correct import
 from events.forms import EventForm
 
 # --- Dashboard ---

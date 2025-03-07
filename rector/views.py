@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from clubs.models import Club
-from announcements.models import Announcement
+from clubs.models import Announcement  # ✅ Correct import
 
 def dashboard(request):
     clubs = Club.objects.all()  # Example: Rector oversees all clubs

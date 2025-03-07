@@ -17,7 +17,7 @@ urlpatterns = [
     path('club-member/', include('club_member.urls')),
     path('polls/', include('polls.urls')),
     path('events/', include('events.urls', namespace='events')), 
-    path('announcements/', include('announcements.urls', namespace='announcements')), 
+    #path('announcements/', include('announcements.urls', namespace='announcements')), 
     path('dashboard/', dashboard, name='dashboard'),
 ]
 

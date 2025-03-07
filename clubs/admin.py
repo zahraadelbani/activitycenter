@@ -19,6 +19,5 @@ class MeetingAdmin(admin.ModelAdmin):
 
 @admin.register(Announcement)
 class AnnouncementAdmin(admin.ModelAdmin):
-    list_display = ('id', 'club', 'title', 'status', 'created_at')
-    list_filter = ('status',)
+    list_display = ('id', 'club', 'title', 'created_at')
     search_fields = ('title',)

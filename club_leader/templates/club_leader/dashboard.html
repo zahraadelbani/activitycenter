@@ -129,12 +129,11 @@
                 {% if announcements %}
                 <ul>
                   {% for announcement in announcements %}
-                  <li>
-                    <strong>{{ announcement.title }}</strong> - {{ announcement.content }}
-                    <a href="{% url 'approve_announcement' announcement.id %}">Approve</a> |
-                    <a href="{% url 'reject_announcement' announcement.id %}">Reject</a>
-                  </li>
-                  {% endfor %}
+<li>
+    <strong>{{ announcement.title }}</strong> - {{ announcement.content }}
+</li>
+{% endfor %}
+
                 </ul>
                 {% else %}
                 <p>No announcements pending.</p>

@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'messaging',
     'polls',
     'feedback',
-    'announcements',
+    #'announcements',
     'analytics',
     'activity_center_admin',
     'club_leader',
