@@ -233,7 +233,6 @@ b{
   border-radius: 8px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
   max-width: 1000px;
-  margin: auto;
   text-align: center;
 }
 header {
@@ -308,8 +307,7 @@ header {
 
 /* =================  EVENT TABLE=========================== */
 
-.container-events {
-  margin-left: 16px; 
+.container-events { 
   margin-top: 30px; 
   width: 100%;
   max-width: 1000px;
@@ -322,7 +320,7 @@ header {
 
 .controls {
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   margin-bottom: 10px;
 }
 .controls input {
@@ -334,7 +332,7 @@ header {
 .controls button {
   padding: 8px 12px;
   border: none;
-  background-color: #007BFF;
+  background-color: var(--color-primary);
   color: white;
   border-radius: 5px;
   cursor: pointer;
@@ -350,7 +348,7 @@ th, td {
   border-bottom: 1px solid #ddd;
 }
 th {
-  background-color: #007BFF;
+  background-color: #768faa;
   color: white;
 }
 tr:nth-child(even) {
@@ -411,7 +409,7 @@ aside .sidebar{
   background: var(--color-white);
   display: flex;
   flex-direction: column; 
-  height: 86vh;
+  height: 750px;
   position: relative;
   top: 2.6rem;
 }
