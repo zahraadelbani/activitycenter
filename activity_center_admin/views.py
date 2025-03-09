@@ -8,7 +8,7 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView,
 # from club_management.decorators import role_required  # Temporarily removed
 from clubs.models import Club, ClubActivity, Meeting
 from events.models import Event  # Ensure you have an Event model in events/models.py
-from announcements.models import Announcement
+from clubs.models import Announcement  # ✅ Correct import
 from events.forms import EventForm
 
 # --- Dashboard ---
@@ -19,7 +19,7 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['clubs'] = Club.objects.all()
-        context['pending_activities'] = ClubActivity.objects.filter(status='pending')
+        context['pending_activities'] = ClubActivity.objects.filter(approval_status='pending')
         context['pending_announcements'] = Announcement.objects.filter(status='pending')
         return context
 

@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponseRedirect
 from django.conf.urls.static import static
+from users.views import dashboard 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -16,7 +17,8 @@ urlpatterns = [
     path('club-member/', include('club_member.urls')),
     path('polls/', include('polls.urls')),
     path('events/', include('events.urls', namespace='events')), 
-    path('announcements/', include('announcements.urls', namespace='announcements')), 
+    #path('announcements/', include('announcements.urls', namespace='announcements')), 
+    path('dashboard/', dashboard, name='dashboard'),
 ]
 
 if settings.DEBUG:

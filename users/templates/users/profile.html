@@ -2,17 +2,31 @@
 {% load static %}
 {% block content %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile</title>
-</head>
-<body>
-  Nothing here yet
-  
-</body>
-</html>
+<style>
+  .profile-pic {
+      width: 100px;  /* Adjust width as needed */
+      height: 100px; /* Adjust height to maintain aspect ratio */
+      border-radius: 50%; /* Makes it circular */
+      object-fit: cover; /* Ensures the image fits well */
+  }
+</style>
+
+<div class="profile-container">
+  <h2>Profile Information</h2>
+  <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
+  <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="profile_picture">
+      <button type="submit">Update Picture</button>
+  </form>
+  <p><strong>Name:</strong> {{ user.name }}</p>
+  <p><strong>Email:</strong> {{ user.email }}</p>
+  {% if user.student_id %}
+      <p><strong>Student ID:</strong> {{ user.student_id }}</p>
+  {% endif %}
+  <p><strong>Status:</strong> {{ user.get_status_display }}</p>
+  <p><strong>Role:</strong> {{ user.get_role }}</p>
+</div>
+
 
 {% endblock content %}

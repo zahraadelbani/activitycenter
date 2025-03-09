@@ -35,7 +35,7 @@
             <span class="material-icons-sharp">grid_view</span>
             <h3>Club Leader Dashboard</h3>
           </a>
-          <a href="{% url 'account_logout' %}">
+          <a href="{% url 'account_logout' %}"">
             <span class="material-icons-sharp">person</span>
             <h3>Profile</h3>
           </a>
@@ -44,9 +44,9 @@
             <span class="material-icons-sharp">event_available</span>
             <h3>Events</h3>
           </a>
-          <a href="{% url 'club_leader:list_resources' %}">
+          <a href="{% url 'club_leader:list_documents' %}">
             <span class="material-icons-sharp">folder_open</span>
-            <h3>Resources</h3>
+            <h3>Documents</h3>
           </a>
           <a href="{% url 'polls:select_num_choices' %}">
             <span class="material-icons-sharp">how_to_reg</span>
@@ -54,10 +54,11 @@
             <h3>Polls</h3>
           </a>
          
-          <a href="{% url 'announcements:list_announcements' %}">
+          <a href="{% url 'club_leader:list_announcements' %}">
             <span class="material-icons-sharp">campaign</span>
             <h3>Announcements</h3>
           </a>
+          
           
 
           <a href="{% url 'account_logout' %}">
@@ -94,12 +95,14 @@
 
           <div class="profile">
             <div class="info">
-              <!-- <p>Welcome <b>{{ user.name }} !</b></p> -->
-              <h3>Welcome <b>Bamlak!</b></h3>
+              <p>Welcome <b>{{ user.name }} !</b></p>
+              <!-- <h3>Welcome <b>Bamlak!</b></h3> -->
               <small class="text-muted">Admin</small>
             </div>
             <div class="profile-photo">
-              <img src="{% static 'emu.png'%}" alt="">
+              <!-- <img src="{% static 'emu.png'%}" alt=""> -->
+              <img src="{{ user.profile_picture.url }}" alt="Profile Picture">
+<!-- BAMLOUKA YOU NEED TO FIX THE SIZING BECAUSE WHEN I UNCOMMENTED IT IT WAS A SCROLLBAR -->
             </div>
           </div>
         </div>

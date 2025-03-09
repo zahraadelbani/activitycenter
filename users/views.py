@@ -15,12 +15,29 @@ class CustomSignupView(SignupView):
 def base_view(request):
     return render(request, 'users/base.html')
 
-def profile(request):
-    return render(request, 'users/profile.html')
+@login_required
+def profile_view(request):
+    user = request.user  # Get the logged-in user
 
-@login_required(login_url='login')
+    if request.method == "POST" and "profile_picture" in request.FILES:
+        uploaded_file = request.FILES["profile_picture"]
+        print(f"Uploaded file: {uploaded_file.name}")  # Debugging
+
+        if user.profile_picture:  
+            user.profile_picture.delete(save=False)  # ✅ Delete old image to avoid clutter
+
+        user.profile_picture = uploaded_file
+        user.save()  # ✅ Save the new profile picture
+
+        print(f"New Profile Picture URL: {user.profile_picture.url}")  
+        return redirect(request.path)  
+
+    return render(request, "users/profile.html", {"user": user})
+
+
+@login_required
 def dashboard(request):
-    return render(request, 'dashboard.html', {'user': request.user})
+    return render(request, "dashboard.html", {"user": request.user})
 
 
 def login_view(request):
@@ -81,7 +98,7 @@ def create_user(request):
             user = User.objects.create_user(email=email, name=name, password=password)  # Default to User
 
         user.save()
-        return redirect('list_users')
+        return redirect('users:list_users')
 
     return render(request, 'users/create_user.html')
 
@@ -129,7 +146,7 @@ def update_user(request, user_id):
             user.status = status
 
         user.save()
-        return redirect('list_users')
+        return redirect('users:list_users')
 
     return render(request, 'users/update_user.html', {'user': user})
 
@@ -137,4 +154,4 @@ def update_user(request, user_id):
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
-    return redirect('list_users')
+    return redirect('users:list_users')

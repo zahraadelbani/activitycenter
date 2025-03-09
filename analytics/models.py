@@ -15,5 +15,12 @@ class ClubAnalytics(models.Model):
         self.total_polls = self.club.polls.count()
         self.save()
 
+    def members_percentage(self):
+        """Calculate percentage of members based on club quota."""
+        if self.club.quota > 0:
+            return round((self.total_members / self.club.quota) * 100, 2)
+        return 0  # Avoid division by zero
+
     def __str__(self):
         return f"Analytics for {self.club.name}"
+
