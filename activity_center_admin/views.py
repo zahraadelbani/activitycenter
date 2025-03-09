@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 
 # from club_management.decorators import role_required  # Temporarily removed
-from clubs.models import Club, ClubActivity, Meeting
+from clubs.models import Club, Meeting, Event
 from events.models import Event  # Ensure you have an Event model in events/models.py
 from clubs.models import Announcement  # ✅ Correct import
 from events.forms import EventForm
@@ -19,7 +19,7 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['clubs'] = Club.objects.all()
-        context['pending_activities'] = ClubActivity.objects.filter(approval_status='pending')
+        context['pending_activities'] = Event.objects.filter(approval_status='pending')
         context['pending_announcements'] = Announcement.objects.filter(status='pending')
         return context
 
@@ -104,14 +104,14 @@ class EventDeleteView(DeleteView):
 # --- Club Activities Actions ---
 # @method_decorator([login_required, role_required('Activity Center Admin')], name='dispatch')
 class ActivityListView(ListView):
-    model = ClubActivity
+    model = Event
     template_name = 'activity_center_admin/activity_list.html'
     context_object_name = 'activities'
 
 # @login_required
 # @role_required('Activity Center Admin')
 def activity_approve(request, activity_id):
-    activity = get_object_or_404(ClubActivity, id=activity_id)
+    activity = get_object_or_404(Event, id=activity_id)
     activity.status = 'approved'
     activity.save()
     messages.success(request, "Activity approved.")
@@ -120,7 +120,7 @@ def activity_approve(request, activity_id):
 # @login_required
 # @role_required('Activity Center Admin')
 def activity_reject(request, activity_id):
-    activity = get_object_or_404(ClubActivity, id=activity_id)
+    activity = get_object_or_404(Event, id=activity_id)
     activity.status = 'rejected'
     activity.save()
     messages.success(request, "Activity rejected.")
@@ -130,7 +130,7 @@ def activity_reject(request, activity_id):
 # @login_required
 # @role_required('Activity Center Admin')
 def schedule_meeting(request, activity_id):
-    activity = get_object_or_404(ClubActivity, id=activity_id)
+    activity = get_object_or_404(Event, id=activity_id)
     if request.method == 'POST':
         date_time = request.POST.get('date_time')
         agenda = request.POST.get('agenda')

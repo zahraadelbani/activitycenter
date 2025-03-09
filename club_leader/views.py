@@ -1,10 +1,12 @@
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
-from club_leader.forms import ActivityRequestForm, AnnouncementForm, ClubDocumentForm
+from club_leader.forms import AnnouncementForm, ClubDocumentForm, EventRequestForm
 from users.models import ClubLeader, User  
 from club_member.models import MembershipTerminationRequest
-from clubs.models import Announcement, ClubActivity, ClubDocument
+from clubs.models import Announcement, ClubDocument, Event, RescheduleRequest
 from feedback.models import Feedback
 from analytics.models import ClubAnalytics
 
@@ -90,35 +92,68 @@ def club_analytics(request):
 
     return render(request, "club_leader/analytics.html", {"analytics": analytics})
 
-# ✅ Submit Activity Request
-def submit_activity_request(request):
+@login_required
+def submit_event_request(request):
+    """Handles event creation by club leaders."""
+
+    # Ensure the user is a Club Leader
+    if not ClubLeader.objects.filter(id=request.user.id).exists():
+        return redirect('club_leader:dashboard')  # Unauthorized users redirected
+
+    leader = ClubLeader.objects.get(id=request.user.id)
+
     if request.method == 'POST':
-        form = ActivityRequestForm(request.POST, request.FILES)
+        form = EventRequestForm(request.POST, request.FILES)
         if form.is_valid():
-            activity = form.save(commit=False)
-            activity.created_by = request.user  # Assign the current user
-            activity.status = 'pending'  # Ensure event starts as pending
-            activity.save()
-            messages.success(request, "Activity request submitted successfully!")
-            return redirect('club_leader_dashboard')
-    else:
-        form = ActivityRequestForm()
-    return render(request, 'club_leader/submit_activity_request.html', {'form': form})
+            event = form.save(commit=False)
+            event.club = leader.club  # ✅ Automatically assign club
+            event.created_by = request.user
+            event.approval_status = 'pending'
+            event.save()
+            return redirect('club_leader:calendar')
 
-# ✅ Approve/Reject Activity Request
-def approve_activity_request(request, activity_id):
-    activity = get_object_or_404(ClubActivity, id=activity_id)
-    activity.approval_status = 'approved'
-    activity.save()
-    messages.success(request, "Activity request approved.")
+    return redirect('club_leader:calendar') 
+
+# ✅ Approve/Reject Event Request
+def approve_event_request(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    event.approval_status = 'approved'
+    event.save()
+    messages.success(request, "Event request approved.")
     return redirect('club_leader_dashboard')
 
-def reject_activity_request(request, activity_id):
-    activity = get_object_or_404(ClubActivity, id=activity_id)
-    activity.approval_status = 'rejected'
-    activity.save()
-    messages.error(request, "Activity request rejected.")
+def reject_event_request(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    event.approval_status = 'rejected'
+    event.save()
+    messages.error(request, "Event request rejected.")
     return redirect('club_leader_dashboard')
+
+
+#activity center rescheduling 
+def request_reschedule(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    if not request.user.groups.filter(name='ActivityCenterAdmin').exists():
+        raise PermissionDenied
+
+    reschedule, created = RescheduleRequest.objects.get_or_create(event=event, club_leader=event.club.leader)
+    messages.success(request, "Reschedule request sent to the club leader.")
+    return redirect('pending_events')
+
+def approve_reschedule(request, reschedule_id):
+    reschedule = get_object_or_404(RescheduleRequest, id=reschedule_id)
+
+    if not request.user.groups.filter(name='ActivityCenterAdmin').exists():
+        raise PermissionDenied
+
+    reschedule.status = "approved"
+    reschedule.event.rescheduled = True
+    reschedule.event.save()
+    reschedule.save()
+    messages.success(request, "Event reschedule approved.")
+    return redirect('pending_events')
+
 
 
 #@login_required
@@ -239,25 +274,39 @@ def toggle_visibility(request, pk):
     return redirect("club_leader:list_announcements")
 
 
-from django.contrib.auth.decorators import login_required, user_passes_test
+#calendar of events
+@login_required
+def event_calendar(request):
+    """Renders the club leader's event calendar."""
 
-def is_activity_center_admin(user):
-    return user.groups.filter(name='ActivityCenterAdmin').exists()
+    if not ClubLeader.objects.filter(id=request.user.id).exists():
+        return redirect('club_leader:dashboard')  
+
+    leader = ClubLeader.objects.get(id=request.user.id)
+    events = Event.objects.filter(club=leader.club).order_by('event_date')  
+    form = EventRequestForm()  
+
+    return render(request, 'club_leader/calendar.html', {'events': events, 'form': form})
+
 
 @login_required
-@user_passes_test(is_activity_center_admin)
-def approve_activity_request(request, activity_id):
-    activity = get_object_or_404(ClubActivity, id=activity_id)
-    activity.status = 'approved'
-    activity.save()
-    messages.success(request, "Activity request approved.")
-    return redirect('pending_events')
+def get_events(request):
+    # Example: only fetch the current user's club events
+    if not ClubLeader.objects.filter(id=request.user.id).exists():
+        return JsonResponse({"error": "Unauthorized"}, status=403)
 
-@login_required
-@user_passes_test(is_activity_center_admin)
-def reject_activity_request(request, activity_id):
-    activity = get_object_or_404(ClubActivity, id=activity_id)
-    activity.status = 'rejected'
-    activity.save()
-    messages.error(request, "Activity request rejected.")
-    return redirect('pending_events')
+    leader = ClubLeader.objects.get(id=request.user.id)
+    events = Event.objects.filter(club=leader.club)
+
+    # Format them for FullCalendar
+    event_list = []
+    for e in events:
+        event_list.append({
+            "title": e.title,
+            "start": e.event_date.isoformat(),  # key is 'start' for FullCalendar
+            "approval_status": e.approval_status,  # custom field
+        })
+
+    return JsonResponse(event_list, safe=False)
+
+

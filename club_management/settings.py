@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'club_leader',
     'rector',
     'club_member',
+    #'rest_framework',
 ]
 
 MIDDLEWARE = [
