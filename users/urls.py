@@ -1,8 +1,8 @@
 from django.urls import path
 from . import views
-from .views import CustomSignupView, dashboard, base_view, profile_view 
+from .views import CustomSignupView, dashboard, base_view, profile_view
 
-app_name = "users"
+app_name = "users" 
 
 urlpatterns = [
     path('base/', base_view, name='base'),
@@ -13,5 +13,4 @@ urlpatterns = [
     path('update/<int:user_id>/', views.update_user, name='update_user'),
     path('delete/<int:user_id>/', views.delete_user, name='delete_user'),
     path("accounts/signup/", CustomSignupView.as_view(), name="account_signup"),
-   
 ]

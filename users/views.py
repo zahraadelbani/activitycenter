@@ -98,7 +98,7 @@ def create_user(request):
             user = User.objects.create_user(email=email, name=name, password=password)  # Default to User
 
         user.save()
-        return redirect('list_users')
+        return redirect('users:list_users')
 
     return render(request, 'users/create_user.html')
 
@@ -146,7 +146,7 @@ def update_user(request, user_id):
             user.status = status
 
         user.save()
-        return redirect('list_users')
+        return redirect('users:list_users')
 
     return render(request, 'users/update_user.html', {'user': user})
 
@@ -154,4 +154,4 @@ def update_user(request, user_id):
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
-    return redirect('list_users')
+    return redirect('users:list_users')
