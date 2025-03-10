@@ -1,32 +1,131 @@
 {% extends "dashboard.html" %}
 {% load static %}
 {% block content %}
-<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-sm transform transition-all duration-300 hover:shadow-md">
+
+<!-- Custom CSS -->
+<style>
+    .profile-upload-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .profile-upload-container:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-upload-header {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #333;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .profile-upload-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .input-wrapper input,
+    .input-wrapper textarea {
+        padding: 1rem;
+        font-size: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+    .input-wrapper input:focus,
+    .input-wrapper textarea:focus {
+        border-color: #4CAF50;
+        outline: none;
+    }
+
+    .help-text {
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    .error-text {
+        font-size: 0.875rem;
+        color: #ff4d4d;
+    }
+
+    .submit-btn {
+        padding: 1rem 2rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #ffffff;
+        background-color: #4CAF50;
+        border: none;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+    }
+
+    .submit-btn:hover {
+        background-color: #45a049;
+    }
+
+    .submit-btn:active {
+        transform: scale(0.98);
+    }
+
+</style>
+
+<div class="profile-upload-container">
     <!-- Header -->
-    <h2 class="text-4xl font-bold text-gray-900 mb-8 text-center">Upload Club Document</h2>
+    <h2 class="profile-upload-header">
+        Upload Club Document
+    </h2>
 
     <!-- Upload Form -->
-    <form method="post" enctype="multipart/form-data" class="space-y-6">
+    <form method="post" enctype="multipart/form-data" class="profile-upload-form">
         {% csrf_token %}
-        <div class="space-y-6">
+        <div class="form-fields">
             {% for field in form %}
-            <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700" for="{{ field.id_for_label }}">
+            <div class="form-field">
+                <label for="{{ field.id_for_label }}" class="form-label">
                     {{ field.label }}
                 </label>
-                {{ field }}
+                <div class="input-wrapper">
+                    {{ field }}
+                </div>
                 {% if field.help_text %}
-                <p class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>
+                <p class="help-text">{{ field.help_text }}</p>
                 {% endif %}
                 {% for error in field.errors %}
-                <p class="text-sm text-red-500 mt-1">{{ error }}</p>
+                <p class="error-text">{{ error }}</p>
                 {% endfor %}
             </div>
             {% endfor %}
         </div>
 
         <!-- Upload Button -->
-        <button type="submit" class="w-full md:w-2/3 mx-auto px-4 py-3 bg-blue-600 text-white font-semibold text-lg rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95">
+        <button type="submit" class="submit-btn">
             Upload Document
         </button>
     </form>

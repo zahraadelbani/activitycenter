@@ -2,7 +2,8 @@
 
 :root {
   --color-primary: #4e7ce9;
-  --color-danger: #FBB030;
+  --color-prim: #4e7de9a4;
+  --color-danger: #fb3d30bc;
   --color-success: #a6b9e4;
   --color-warning: #ffbb55;
   --color-white: #fff;
@@ -24,6 +25,8 @@
 
   --box-shadow: 0 2rem 3rem var(--color-light);
 }
+
+/* var(--color-primary); */
 
 /* ================= DARK THEME=========================== */
 
@@ -69,9 +72,8 @@ body
   
 }
 
-.container
+.container-css
 {
- 
   background: var(--color-background);
   display: grid;
   grid-template-columns: 14rem auto;
@@ -161,14 +163,19 @@ a
 
 img{
   display: block; 
-  width: 100%; 
+  width: 100%;
+  height: 100%; 
+ 
 }
 
 .profile-photo{
   width: 2.8rem;
   height: 2.8rem;
   border-radius: 50%;
-  overflow-x: hidden;
+  overflow-y: hidden;
+  border: 2px solid #2554ac;
+  
+  
 }
 
 h1{
@@ -224,6 +231,8 @@ b{
 .warning{
   color: var(--color-warning)
 }
+
+
 
 /* ================= CALENDAR 
 =========================== */
@@ -839,7 +848,7 @@ main .recent-orders a {
 
 @media screen and (max-width: 1200px){
 
-  .container
+  .container-css
   {
     width: 94%;
     grid-template-columns: 5rem auto;
@@ -892,7 +901,7 @@ main .recent-orders a {
 
 @media screen and (max-width: 768px){
 
-  .container
+  .container-css
   {
     width: 100%;
     grid-template-columns: 1fr;
