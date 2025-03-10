@@ -309,4 +309,22 @@ def get_events(request):
 
     return JsonResponse(event_list, safe=False)
 
+@login_required
+def edit_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
 
+    # Ensure only the club leader who created the event can edit it
+    if request.user != event.created_by:
+        raise PermissionDenied
+
+    if request.method == "POST":
+        form = EventRequestForm(request.POST, request.FILES, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Event updated successfully! Approval required.")
+            return redirect("club_leader:calendar")  # Redirect to event calendar
+
+    else:
+        form = EventRequestForm(instance=event)
+
+    return render(request, "club_leader/edit_event.html", {"form": form, "event": event})

@@ -3,7 +3,6 @@ from clubs.models import Announcement,ClubDocument
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from clubs.models import Event
 
-
 class EventRequestForm(forms.ModelForm):
     class Meta:
         model = Event
@@ -18,13 +17,14 @@ class EventRequestForm(forms.ModelForm):
             'needs': forms.Textarea(attrs={'rows': 5}),
         }
 
-
     def save(self, commit=True):
         event = super().save(commit=False)
-        event.approval_status = 'pending'
+        if event.pk:  # If the event already exists, reset approval status
+            event.approval_status = 'pending'
         if commit:
             event.save()
         return event
+
 
 
 class ClubDocumentForm(forms.ModelForm):

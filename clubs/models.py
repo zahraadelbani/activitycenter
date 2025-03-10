@@ -48,9 +48,15 @@ class Event(models.Model):
     approval_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     rescheduled = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        # Check if the event already exists in the database
+        if self.pk:
+            # Reset approval status to 'pending' upon update
+            self.approval_status = 'pending'
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.title
-    
 
 class RescheduleRequest(models.Model):
     event = models.OneToOneField(Event, on_delete=models.CASCADE)
