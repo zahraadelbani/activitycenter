@@ -1,7 +1,7 @@
 from django.db import models
 from users.models import User  # ✅ Import the User model
 from clubs.models import Club  # ✅ Import the Club model
-from events.models import Event
+#from events.models import Event
 
 
 class ClubMember(models.Model):

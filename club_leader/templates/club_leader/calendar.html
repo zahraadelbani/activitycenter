@@ -1,0 +1,253 @@
+{% extends "dashboard.html" %} {% block content %}
+
+<!-- FullCalendar Styles & Scripts -->
+<link
+  href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css"
+  rel="stylesheet"
+/>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
+
+<div class="calendar-container">
+  <h1>ACTIVITY CENTER CALENDAR</h1>
+  <button class="add-event" onclick="openModal()">+ Add Event</button>
+  <div id="calendar"></div>
+</div>
+
+<!-- Upcoming Events Table -->
+<div class="container-events">
+  <h2>Upcoming Events</h2>
+  <div class="controls">
+    <input
+      type="text"
+      id="search"
+      placeholder="Search events..."
+      onkeyup="searchEvents()"
+    />
+    <button onclick="sortByApproval()">Sort by Approval</button>
+    <button onclick="sortByDate()">Sort by Date</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Event Name</th>
+        <th>Date</th>
+        <th>Club</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="event-list">
+      {% for event in events %}
+      <tr>
+        <td>{{ event.title }}</td>
+        <td>{{ event.event_date|date:"F d, Y" }}</td>
+        <td>{{ event.club.name }}</td>
+        <td
+          class="{% if event.approval_status == 'approved' %}approved{% elif event.approval_status == 'pending' %}pending{% else %}rejected{% endif %}"
+        >
+          {{ event.approval_status|title }}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">No upcoming events.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Event Modal -->
+<div id="event-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-event" onclick="closeModal()">&times;</span>
+    <h2>Add Event</h2>
+    <form
+      id="event-form"
+      method="post"
+      action="{% url 'club_leader:submit_event_request' %}"
+    >
+      {% csrf_token %}
+      <!-- <label for="event-date">Event Date:</label>
+      <input type="datetime-local" id="event-date" name="event_date" required />
+      -->
+      {{ form.as_p }}
+      <button type="submit">Save</button>
+    </form>
+  </div>
+</div>
+
+<!-- Styles for Modal & Table -->
+<style>
+  /* Calendar Container */
+  .calendar-container {
+    margin: 20px;
+    text-align: center;
+  }
+
+  /* Button Styles */
+  .add-event {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .add-event:hover {
+    background-color: #0056b3;
+  }
+
+  /* Events Table */
+  .container-events {
+    margin: 20px;
+  }
+
+  .container-events table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .container-events th,
+  .container-events td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .container-events th {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .approved {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  .pending {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  .rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1051;
+    position: relative;
+    max-width: 400px;
+    width: 100%;
+  }
+
+  /* Ensure modal appears above FullCalendar */
+  #calendar {
+    position: relative;
+    z-index: 1;
+  }
+
+  .modal {
+    z-index: 2000;
+  }
+</style>
+
+<!-- JavaScript for Calendar and Modal -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var calendarEl = document.getElementById("calendar");
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: "dayGridMonth",
+      headerToolbar: {
+        left: "prev,next today",
+        center: "title",
+        right: "",
+      },
+      selectable: true,
+      editable: false,
+      events: "{% url 'club_leader:get_events' %}",
+      eventColor: "#3788d8",
+      eventDidMount: function (info) {
+        if (info.event.extendedProps.approval_status === "pending") {
+          info.el.style.backgroundColor = "#ffc107";
+        } else if (info.event.extendedProps.approval_status === "approved") {
+          info.el.style.backgroundColor = "#28a745";
+        } else if (info.event.extendedProps.approval_status === "rejected") {
+          info.el.style.backgroundColor = "#dc3545";
+        }
+      },
+      dateClick: function (info) {
+        let eventDateField = document.querySelector("input[name='event_date']");
+        if (eventDateField) {
+          eventDateField.value = info.dateStr + "T12:00"; // Set clicked date
+        }
+        openModal();
+      },
+    });
+
+    calendar.render();
+  });
+
+  // Modal Functions
+  function openModal() {
+    document.getElementById("event-modal").style.display = "flex";
+  }
+  function closeModal() {
+    document.getElementById("event-modal").style.display = "none";
+  }
+
+  // Event Table Functions
+  function searchEvents() {
+    let input = document.getElementById("search").value.toLowerCase();
+    let rows = document.querySelectorAll("#event-list tr");
+    rows.forEach((row) => {
+      row.style.display = row.innerText.toLowerCase().includes(input)
+        ? ""
+        : "none";
+    });
+  }
+
+  function sortByDate() {
+    let tbody = document.getElementById("event-list");
+    let rows = Array.from(tbody.querySelectorAll("tr"));
+    rows.sort(
+      (a, b) => new Date(a.cells[1].innerText) - new Date(b.cells[1].innerText)
+    );
+    tbody.innerHTML = "";
+    rows.forEach((row) => tbody.appendChild(row));
+  }
+
+  function sortByApproval() {
+    let tbody = document.getElementById("event-list");
+    let rows = Array.from(tbody.querySelectorAll("tr"));
+    rows.sort((a, b) =>
+      a.cells[3].innerText.localeCompare(b.cells[3].innerText)
+    );
+    tbody.innerHTML = "";
+    rows.forEach((row) => tbody.appendChild(row));
+  }
+</script>
+
+{% endblock %}

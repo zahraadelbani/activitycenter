@@ -306,6 +306,7 @@ header {
   padding: 20px;
   border-radius: 8px;
   text-align: center;
+  z-index: 2000;
 }
 .close-event {
   float: right;

@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
+
+
+
 class Club(models.Model):
     id = models.AutoField(primary_key=True)  # Add ID as primary key
     name = models.CharField(max_length=255)
@@ -20,32 +23,45 @@ class Club(models.Model):
         return self.name
 
 
-class ClubActivity(models.Model):
+class Event(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
     ]
 
-    club = models.ForeignKey('clubs.Club', on_delete=models.CASCADE)
+    club = models.ForeignKey('clubs.Club', on_delete=models.CASCADE, related_name="events")
     title = models.CharField(max_length=255)
-    datetime = models.DateTimeField()
+    event_date = models.DateTimeField()
     participants = models.TextField()
-    image = models.ImageField(upload_to='activity_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='event_images/', blank=True, null=True)
     needs = models.TextField(blank=True, null=True)
     total_cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     transportation_request = models.BooleanField(default=False)
-    supporting_documents = models.FileField(upload_to='activity_docs/', blank=True, null=True)
+    supporting_documents = models.FileField(upload_to='event_docs/', blank=True, null=True)
     created_by = models.ForeignKey(
-    'users.User', 
-    on_delete=models.SET_NULL,  # 👈 This allows null values
-    null=True,  # 👈 Allows null values for existing rows
-    blank=True  # 👈 Allows form submissions without this field
-)
-    approval_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')  # ✅ Ensure this exists
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    approval_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    rescheduled = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
+    
+
+class RescheduleRequest(models.Model):
+    event = models.OneToOneField(Event, on_delete=models.CASCADE)
+    club_leader = models.ForeignKey('users.ClubLeader', on_delete=models.CASCADE)
+    requested_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('approved', 'Approved')], default='pending')
+
+    def __str__(self):
+        return f"Reschedule Request for {self.event.title}"
+
+
 
 
 

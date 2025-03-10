@@ -16,7 +16,7 @@ urlpatterns = [
     path('users/', include('users.urls_auth')),  # Custom authentication
     path('club-member/', include('club_member.urls')),
     path('polls/', include('polls.urls')),
-    path('events/', include('events.urls', namespace='events')), 
+    #path('events/', include('events.urls', namespace='events')), 
     #path('announcements/', include('announcements.urls', namespace='announcements')), 
     path('dashboard/', dashboard, name='dashboard'),
 ]

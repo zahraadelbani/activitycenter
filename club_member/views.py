@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import ClubMember, MembershipTerminationRequest
 from clubs.models import Club, ClubDocument
-from events.models import Event
+from clubs.models import Event
 from feedback.models import Feedback
 from users.models import User
 

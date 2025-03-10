@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     # Your apps
     'users',
     'clubs',
-    'events',
+    #'events',
     'messaging',
     'polls',
     'feedback',
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'club_leader',
     'rector',
     'club_member',
+    #'rest_framework',
 ]
 
 MIDDLEWARE = [
