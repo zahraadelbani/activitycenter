@@ -7,9 +7,9 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView,
 
 # from club_management.decorators import role_required  # Temporarily removed
 from clubs.models import Club, Meeting, Event
-from events.models import Event  # Ensure you have an Event model in events/models.py
+#from events.models import Event  # Ensure you have an Event model in events/models.py
 from clubs.models import Announcement  # ✅ Correct import
-from events.forms import EventForm
+#from events.forms import EventForm
 
 # --- Dashboard ---
 # @method_decorator([login_required, role_required('Activity Center Admin')], name='dispatch')
@@ -72,7 +72,7 @@ class EventListView(ListView):
 # @method_decorator([login_required, role_required('Activity Center Admin')], name='dispatch')
 class EventCreateView(CreateView):
     model = Event
-    form_class = EventForm  # Use the custom form with a date picker
+    #form_class = EventForm  # Use the custom form with a date picker
     template_name = 'activity_center_admin/event_form.html'
     success_url = reverse_lazy('activity_center_admin:event_list')
 
@@ -83,7 +83,7 @@ class EventCreateView(CreateView):
 # @method_decorator([login_required, role_required('Activity Center Admin')], name='dispatch')
 class EventUpdateView(UpdateView):
     model = Event
-    form_class = EventForm  # Use the custom form with a date picker
+    #form_class = EventForm  # Use the custom form with a date picker
     template_name = 'activity_center_admin/event_form.html'
     success_url = reverse_lazy('activity_center_admin:event_list')
 

@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     # Your apps
     'users',
     'clubs',
-    'events',
+    #'events',
     'messaging',
     'polls',
     'feedback',

@@ -1,9 +1,0 @@
-{% block content %}
-<h2>Edit Event: {{ event.title }}</h2>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-warning">Update Event</button>
-</form>
-<a href="{% url 'list_events' %}" class="btn btn-secondary">Back to Events</a>
-{% endblock %}

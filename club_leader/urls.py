@@ -38,5 +38,5 @@ urlpatterns = [
 
     path('calendar/', views.event_calendar, name='calendar'),
     path('submit-event/', views.submit_event_request, name='submit_event_request'),
-    path('get-events/', view_events, name='get_events'), 
+    path('get-events/', views.get_events, name='get_events'), 
 ]

@@ -30,7 +30,7 @@ class Event(models.Model):
         ('rejected', 'Rejected'),
     ]
 
-    club = models.ForeignKey('clubs.Club', on_delete=models.CASCADE)
+    club = models.ForeignKey('clubs.Club', on_delete=models.CASCADE, related_name="events")
     title = models.CharField(max_length=255)
     event_date = models.DateTimeField()
     participants = models.TextField()
