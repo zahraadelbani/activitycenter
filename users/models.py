@@ -103,19 +103,53 @@ class ActivityCenterAdmin(User):
     def __str__(self):
         return f"Activity Center Admin: {self.name} ({self.center_location})"
 
-class ClubMember(models.Model):  # ✅ Don't inherit from User directly
+class ClubMember(models.Model):
+    """
+    Represents a student's membership in a club.
+    - Users can join up to 3 clubs.
+    - Users can request to leave a club (requires approval).
+    """
     user = models.OneToOneField(
         "users.User",
         on_delete=models.CASCADE,
-        related_name="user_club_memberships"  # ✅ UNIQUE related_name
+        related_name="user_club_memberships"
     )
 
     club = models.ForeignKey(
-        "clubs.Club",
+        Club,
         on_delete=models.CASCADE,
-        related_name="memberships"  # ✅ UNIQUE related_name
+        related_name="memberships"
     )
     joined_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Club Member: {self.user.name} (Club: {self.club.name})"
+
+    def can_join_club(self, club):
+        """Check if a student can join a club (max 3 clubs & check quota)."""
+        if ClubMember.objects.filter(user=self.user).count() >= 3:
+            return False, "You cannot join more than 3 clubs."
+        if club.memberships.count() >= club.quota:
+            return False, "Club quota is full."
+        return True, None
+
+    def join_club(self, club):
+        """Attempt to join a club."""
+        can_join, error_message = self.can_join_club(club)
+        if can_join:
+            ClubMember.objects.create(user=self.user, club=club)
+            return True, "Successfully joined the club."
+        return False, error_message
+
+    def request_leave_club(self):
+        """Request to leave a club (requires club leader approval)."""
+        from club_member.models import MembershipTerminationRequest  # ✅ Import here to avoid circular imports
+        
+        request, created = MembershipTerminationRequest.objects.get_or_create(
+            club_member=self, club=self.club, status="pending"
+        )
+        return (
+            "Membership termination request sent to the club leader."
+            if created
+            else "You already have a pending termination request."
+        )

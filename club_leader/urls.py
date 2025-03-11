@@ -8,8 +8,8 @@ app_name = 'club_leader'
 urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path("dashboard/", views.dashboard, name="club_leader_dashboard"),
-    path("approve-termination/<int:request_id>/", views.approve_termination_request, name="approve_termination"),
-    path("reject-termination/<int:request_id>/", views.reject_termination_request, name="reject_termination"),
+    path("termination-request/approve/<int:request_id>/", views.approve_termination_request, name="approve_termination"),
+    path("termination-request/reject/<int:request_id>/", views.reject_termination_request, name="reject_termination"),
     #path("approve-announcement/<int:announcement_id>/", views.approve_announcement, name="approve_announcement"),
     #path("reject-announcement/<int:announcement_id>/", views.reject_announcement, name="reject_announcement"),
     path("review-feedback/<int:feedback_id>/", views.review_feedback, name="review_feedback"),
@@ -40,5 +40,10 @@ urlpatterns = [
     path('submit-event/', views.submit_event_request, name='submit_event_request'),
     path('get-events/', views.get_events, name='get_events'), 
     path('event/edit/<int:event_id>/', views.edit_event, name='edit_event'),
+    path("club-members/", views.club_members, name="club_members"),
+    path("remove-member/<int:member_id>/", views.remove_member, name="remove_member"),
+    path("termination-requests/", views.termination_requests, name="termination_requests"),
+
+
 
 ]

@@ -1,0 +1,41 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container-events">
+  <h2>Membership Termination Requests</h2>
+
+  <table id="requestsTable">
+    <thead>
+      <tr>
+        <th>Member Name</th>
+        <th>Requested At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for request in requests %}
+      <tr>
+        <td>{{ request.club_member.user.name }}</td>
+        <td>{{ request.created_at|date:"M d, Y" }}</td>
+        <td>
+          <form action="{% url 'club_leader:approve_termination' request.id %}" method="POST" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="approve-btn">✅ Approve</button>
+          </form>
+          <form action="{% url 'club_leader:reject_termination' request.id %}" method="POST" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="delete-btn">❌ Reject</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" style="text-align:center;">No pending requests.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

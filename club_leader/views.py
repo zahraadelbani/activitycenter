@@ -3,14 +3,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
+from django.utils.timezone import now
 from club_leader.forms import AnnouncementForm, ClubDocumentForm, EventRequestForm
-from users.models import ClubLeader, User  
+from users.models import ClubLeader, User,ClubMember  
 from club_member.models import MembershipTerminationRequest
 from clubs.models import Announcement, ClubDocument, Event, RescheduleRequest
 from feedback.models import Feedback
 from analytics.models import ClubAnalytics
 
-from clubs.models import ClubDocument  # Import the model
 
 def dashboard(request):
     """Club Leader Dashboard"""
@@ -19,7 +19,7 @@ def dashboard(request):
     documents = ClubDocument.objects.filter(club=club)
 
     termination_requests = MembershipTerminationRequest.objects.filter(club=club, status="pending")
-    announcements = Announcement.objects.filter(club=club)  # ✅ Fixed! Removed "status" filter
+    announcements = Announcement.objects.filter(club=club) 
     feedbacks = Feedback.objects.filter(club=club, status="pending")
 
     analytics, created = ClubAnalytics.objects.get_or_create(club=club)
@@ -36,22 +36,86 @@ def dashboard(request):
     }
     return render(request, 'club_leader/dashboard.html', context)
 
+@login_required
+def club_members(request):
+    """Displays all members of the club leader's club."""
+    
+    # Get the club leader's club
+    leader = get_object_or_404(ClubLeader, id=request.user.id)
 
+    if not leader.club:
+        return render(request, "club_leader/members.html", {"error": "You are not assigned to any club."})
+
+    # Get members of the club
+    members = ClubMember.objects.filter(club=leader.club)
+
+    return render(request, "club_leader/members.html", {"members": members, "club": leader.club})
+
+@login_required
+def remove_member(request, member_id):
+    """Allows the club leader to remove a member from their club."""
+    
+    leader = get_object_or_404(ClubLeader, id=request.user.id)
+
+    if not leader.club:
+        messages.error(request, "You are not assigned to a club.")
+        return redirect("club_leader:club_members")
+
+    member = get_object_or_404(ClubMember, id=member_id, club=leader.club)
+
+    if request.method == "POST":
+        member.delete()
+        messages.success(request, "Member successfully removed from the club.")
+        return redirect("club_leader:club_members")
+
+    raise PermissionDenied
+
+@login_required
+def termination_requests(request):
+    """Displays all pending termination requests for the club leader's club."""
+    
+    leader = get_object_or_404(ClubLeader, id=request.user.id)
+
+    if not leader.club:
+        return render(request, "club_leader/termination_requests.html", {"error": "You are not assigned to a club."})
+
+    requests = MembershipTerminationRequest.objects.filter(club=leader.club, status="pending")
+
+    return render(request, "club_leader/termination_requests.html", {"requests": requests, "club": leader.club})
 
 # Approve/Reject Membership Termination Requests
+@login_required
 def approve_termination_request(request, request_id):
-    request_obj = get_object_or_404(MembershipTerminationRequest, id=request_id, club=request.user.club)
-    request_obj.status = "approved"
-    request_obj.save()
-    messages.success(request, "Membership termination request approved.")
-    return redirect("club_leader_dashboard")
+    """Approves a membership termination request and removes the member from the club."""
+    request_obj = get_object_or_404(MembershipTerminationRequest, id=request_id, club=request.user.clubleader.club)
 
+    # Get the member instance from `users.ClubMember`
+    member = get_object_or_404(ClubMember, id=request_obj.club_member.id)
+
+    # ✅ Step 1: Update the termination request status first
+    request_obj.status = "approved"
+    request_obj.reviewed_at = now()
+    request_obj.save()  # Save the request update BEFORE deleting the member
+
+    # ✅ Step 2: Now safely delete the member
+    member.delete()
+
+    messages.success(request, "Membership termination request approved. The member has been removed from the club.")
+    return redirect("club_leader:termination_requests") 
+
+
+
+@login_required
 def reject_termination_request(request, request_id):
-    request_obj = get_object_or_404(MembershipTerminationRequest, id=request_id, club=request.user.club)
+    """Rejects a membership termination request."""
+    request_obj = get_object_or_404(MembershipTerminationRequest, id=request_id, club=request.user.clubleader.club)
     request_obj.status = "rejected"
+    request_obj.reviewed_at = now()  # ✅ Record the review time
     request_obj.save()
+
     messages.error(request, "Membership termination request rejected.")
-    return redirect("club_leader_dashboard")
+    return redirect("club_leader:termination_requests")  # ✅ Redirect to the new termination requests page
+
 
 # Approve/Reject Announcements
 """ def approve_announcement(request, announcement_id):

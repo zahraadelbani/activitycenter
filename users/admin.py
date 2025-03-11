@@ -11,4 +11,12 @@ admin.site.register(ClubLeader)
 admin.site.register(Executive)
 admin.site.register(Rector)
 admin.site.register(ActivityCenterAdmin)
-admin.site.register(ClubMember)
+
+@admin.register(ClubMember)
+class ClubMemberAdmin(admin.ModelAdmin):
+    """Admin interface for managing club memberships."""
+    list_display = ('user', 'club', 'joined_at')
+    list_filter = ('club', 'joined_at')
+    search_fields = ('user__name', 'club__name')
+    ordering = ('-joined_at',)
+    date_hierarchy = 'joined_at'
