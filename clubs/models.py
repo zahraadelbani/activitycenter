@@ -49,14 +49,23 @@ class Event(models.Model):
     rescheduled = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        # Check if the event already exists in the database
+        # If the event already exists and is being updated
         if self.pk:
-            # Reset approval status to 'pending' upon update
-            self.approval_status = 'pending'
+            # Fetch the original event status before saving
+            original_event = Event.objects.filter(pk=self.pk).first()
+            if original_event:
+                if original_event.approval_status != self.approval_status:
+                    print(f"Status changed from {original_event.approval_status} to {self.approval_status}")
+
+                # If it's being edited by the club leader, reset to pending
+                if original_event.approval_status == "approved" or original_event.approval_status == "rejected":
+                    self.approval_status = "pending"
+
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
+
 
 class RescheduleRequest(models.Model):
     event = models.OneToOneField(Event, on_delete=models.CASCADE)
