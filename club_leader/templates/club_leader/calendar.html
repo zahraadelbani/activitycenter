@@ -34,6 +34,7 @@
         <th>Date</th>
         <th>Club</th>
         <th>Status</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody id="event-list">
@@ -47,6 +48,10 @@
         >
           {{ event.approval_status|title }}
         </td>
+        <td>
+          <a href="{% url 'club_leader:edit_event' event.id %}" class="edit-btn">Edit</a>
+        </td>
+        
       </tr>
       {% empty %}
       <tr>
