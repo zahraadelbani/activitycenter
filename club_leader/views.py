@@ -11,30 +11,69 @@ from clubs.models import Announcement, ClubDocument, Event, RescheduleRequest
 from feedback.models import Feedback
 from analytics.models import ClubAnalytics
 
-
+@login_required
 def dashboard(request):
     """Club Leader Dashboard"""
+
     leader = get_object_or_404(ClubLeader, id=request.user.id)
     club = leader.club
     documents = ClubDocument.objects.filter(club=club)
 
+    # Fetch membership termination requests
     termination_requests = MembershipTerminationRequest.objects.filter(club=club, status="pending")
-    announcements = Announcement.objects.filter(club=club) 
-    feedbacks = Feedback.objects.filter(club=club, status="pending")
 
+    # Fetch feedback (Complaints & Suggestions separately)
+    complaints = Feedback.objects.filter(club=club, category="complaint", status="pending")
+    suggestions = Feedback.objects.filter(club=club, category="suggestion", status="pending")
+
+    pending_events = Event.objects.filter(club=club, approval_status="pending")
+
+
+    # Fetch announcements & analytics
+    announcements = Announcement.objects.filter(club=club)
     analytics, created = ClubAnalytics.objects.get_or_create(club=club)
     analytics.update_stats()
 
     context = {
         "termination_requests": termination_requests,
         "announcements": announcements,
-        "feedbacks": feedbacks,
+        "complaints": complaints,
+        "suggestions": suggestions,
         "analytics": analytics,
-        "members_percentage": analytics.members_percentage(),  
+        "members_percentage": analytics.members_percentage(),
         "documents": documents,
         "club": club,
+        "pending_events": pending_events,
     }
+    
     return render(request, 'club_leader/dashboard.html', context)
+
+
+@login_required
+def review_feedback(request, feedback_id):
+    #Marks a feedback entry as reviewed by the club leader.
+
+    # Get the ClubLeader instance using `email`
+    try:
+        leader = ClubLeader.objects.get(email=request.user.email)
+    except ClubLeader.DoesNotExist:
+        messages.error(request, "You are not assigned as a club leader.")
+        return redirect("club_leader_dashboard")  
+
+    club = leader.club  # ✅ Get the associated club
+
+    # Retrieve the feedback related to this club
+    feedback = get_object_or_404(Feedback, id=feedback_id, club=club)
+
+    # Update the status to "reviewed"
+    feedback.status = "reviewed"
+    feedback.save()
+
+    messages.success(request, "Feedback marked as reviewed.")
+    return redirect("club_leader:club_leader_dashboard")  
+
+
+
 
 @login_required
 def club_members(request):
@@ -92,12 +131,12 @@ def approve_termination_request(request, request_id):
     # Get the member instance from `users.ClubMember`
     member = get_object_or_404(ClubMember, id=request_obj.club_member.id)
 
-    # ✅ Step 1: Update the termination request status first
+    # Step 1: Update the termination request status first
     request_obj.status = "approved"
     request_obj.reviewed_at = now()
     request_obj.save()  # Save the request update BEFORE deleting the member
 
-    # ✅ Step 2: Now safely delete the member
+    # Step 2: Now safely delete the member
     member.delete()
 
     messages.success(request, "Membership termination request approved. The member has been removed from the club.")
@@ -110,11 +149,11 @@ def reject_termination_request(request, request_id):
     """Rejects a membership termination request."""
     request_obj = get_object_or_404(MembershipTerminationRequest, id=request_id, club=request.user.clubleader.club)
     request_obj.status = "rejected"
-    request_obj.reviewed_at = now()  # ✅ Record the review time
+    request_obj.reviewed_at = now()  # Record the review time
     request_obj.save()
 
     messages.error(request, "Membership termination request rejected.")
-    return redirect("club_leader:termination_requests")  # ✅ Redirect to the new termination requests page
+    return redirect("club_leader:termination_requests")  # Redirect to the new termination requests page
 
 
 # Approve/Reject Announcements
@@ -133,12 +172,12 @@ def reject_announcement(request, announcement_id):
     return redirect("club_leader_dashboard") """
 
 # Review Feedback
-def review_feedback(request, feedback_id):
+""" def review_feedback(request, feedback_id):
     feedback = get_object_or_404(Feedback, id=feedback_id, club=request.user.club)
     feedback.status = "reviewed"
     feedback.save()
     messages.success(request, "Feedback marked as reviewed.")
-    return redirect("club_leader_dashboard")
+    return redirect("club_leader_dashboard") """
 
 # Club Analytics View
 def club_analytics(request):
@@ -170,7 +209,7 @@ def submit_event_request(request):
         form = EventRequestForm(request.POST, request.FILES)
         if form.is_valid():
             event = form.save(commit=False)
-            event.club = leader.club  # ✅ Automatically assign club
+            event.club = leader.club  # Automatically assign club
             event.created_by = request.user
             event.approval_status = 'pending'
             event.save()
@@ -178,7 +217,7 @@ def submit_event_request(request):
 
     return redirect('club_leader:calendar') 
 
-# ✅ Approve/Reject Event Request
+# Approve/Reject Event Request
 def approve_event_request(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     event.approval_status = 'approved'
@@ -268,7 +307,7 @@ def list_documents(request):
 
     return render(request, 'club_leader/list_documents.html', {'documents': documents})
 
-# ✅ Create an Announcement (Club Leaders Only)
+# Create an Announcement (Club Leaders Only)
 def create_announcement(request):
     if request.user.get_role() != "Club Leader":
         raise PermissionDenied
@@ -288,7 +327,7 @@ def create_announcement(request):
 
     return render(request, "club_leader/create_announcement.html", {"form": form})
 
-# ✅ List Announcements (For Club Members & Leaders)
+# List Announcements (For Club Members & Leaders)
 def list_announcements(request):
     """List all announcements for a specific club."""
     leader = get_object_or_404(ClubLeader, id=request.user.id)
@@ -296,7 +335,7 @@ def list_announcements(request):
 
     return render(request, "club_leader/list_announcements.html", {"announcements": announcements})
 
-# ✅ Delete an Announcement (Club Leaders Only)
+# Delete an Announcement (Club Leaders Only)
 def delete_announcement(request, pk):
     announcement = get_object_or_404(Announcement, pk=pk)
 
@@ -307,7 +346,7 @@ def delete_announcement(request, pk):
     messages.success(request, "Announcement deleted successfully!")
     return redirect("club_leader:list_announcements")
 
-# ✅ Edit an Announcement (Club Leaders Only)
+# Edit an Announcement (Club Leaders Only)
 def edit_announcement(request, pk):
     announcement = get_object_or_404(Announcement, pk=pk)
 
@@ -325,7 +364,7 @@ def edit_announcement(request, pk):
 
     return render(request, "club_leader/edit_announcement.html", {"form": form})
 
-# ✅ Toggle Announcement Visibility (Club Leaders Only)
+# Toggle Announcement Visibility (Club Leaders Only)
 def toggle_visibility(request, pk):
     announcement = get_object_or_404(Announcement, pk=pk)
 
@@ -336,7 +375,6 @@ def toggle_visibility(request, pk):
     announcement.save()
     messages.success(request, f"Announcement is now {'visible' if announcement.visible else 'hidden'}.")
     return redirect("club_leader:list_announcements")
-
 
 #calendar of events
 @login_required
@@ -351,7 +389,6 @@ def event_calendar(request):
     form = EventRequestForm()  
 
     return render(request, 'club_leader/calendar.html', {'events': events, 'form': form})
-
 
 @login_required
 def get_events(request):
