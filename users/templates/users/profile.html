@@ -2,31 +2,51 @@
 {% load static %}
 {% block content %}
 
-<style>
-  .profile-pic {
-      width: 100px;  /* Adjust width as needed */
-      height: 100px; /* Adjust height to maintain aspect ratio */
-      border-radius: 50%; /* Makes it circular */
-      object-fit: cover; /* Ensures the image fits well */
-  }
-</style>
 
-<div class="profile-container">
-  <h2>Profile Information</h2>
-  <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
-  <form method="POST" enctype="multipart/form-data">
+<div class="profile-div">
+  <div class="profile-left">
+    <div class="profile-image">
+      <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
+    </div>
+    <div class="profile-update-buttons">
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <button type="submit">Update Picture</button>
+        <input type="file" name="profile_picture">
+      </form>
+    </div>
+  </div>
+
+  <div class="profile-right">
+    <div class="profile-header">Profile Information</div>
+    <form method="POST">
       {% csrf_token %}
-      <input type="file" name="profile_picture">
-      <button type="submit">Update Picture</button>
-  </form>
-  <p><strong>Name:</strong> {{ user.name }}</p>
-  <p><strong>Email:</strong> {{ user.email }}</p>
-  {% if user.student_id %}
-      <p><strong>Student ID:</strong> {{ user.student_id }}</p>
-  {% endif %}
-  <p><strong>Status:</strong> {{ user.get_status_display }}</p>
-  <p><strong>Role:</strong> {{ user.get_role }}</p>
-</div>
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ user.name }}" disabled>
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ user.email }}" disabled>
+      </div>
+      {% if user.student_id %}
+      <div class="form-group">
+        <label for="student_id">Student ID:</label>
+        <input type="text" id="student_id" name="student_id" value="{{ user.student_id }}" disabled>
+      </div>
+      {% endif %}
+      <div class="form-group">
+        <label for="status">Status:</label>
+        <input type="text" id="status" name="status" value="{{ user.get_status_display }}" disabled>
+      </div>
+      <div class="form-group">
+        <label for="role">Role:</label>
+        <input type="text" id="role" name="role" value="{{ user.get_role }}" disabled>
+      </div>
 
+      <button type="submit" class="update-profile-btn">Update Profile</button>
+    </form>
+  </div>
+</div>
 
 {% endblock content %}

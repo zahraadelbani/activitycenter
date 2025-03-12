@@ -2,49 +2,254 @@
 {% load static %}
 {% block content %}
 
-<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-    <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Announcements</h2>
+<style>
+    /* Reusable Styles */
+    .container-announcements {
+        max-width: 56rem;
+        margin: 2.5rem auto;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-    <a href="{% url 'club_leader:create_announcement' %}" class="block w-full text-center py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 mb-6">
-        ➕ Create Announcement
+    .heading {
+        font-size: 1.875rem;
+        font-weight: bold;
+        color: #1a202c;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .button {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        text-align: center;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        transition: background-color 0.3s ease;
+        margin-bottom: 30px; 
+        background-color:  #4e7ce9;
+    }
+
+    .button-primary {
+        color: white; 
+    }
+
+    .button-primary:hover {
+        background-color: #15803d;
+    }
+
+    .announcement-card {
+        padding: 1.5rem;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .announcement-card:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .announcement-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .announcement-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1a202c;
+    }
+
+    .announcement-date {
+        font-size: 0.875rem;
+        color: #4b5563;
+        margin-top: 0.25rem;
+    }
+
+    .announcement-content {
+        margin-top: 0.75rem;
+        color: #374151;
+        display: none; /* Hidden by default */
+    }
+
+    .announcement-content.expanded {
+        display: block; /* Show when expanded */
+    }
+
+    .visibility-text {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-top: 0.75rem;
+    }
+
+    .visibility-visible {
+        color: #16a34a;
+    }
+
+    .visibility-hidden {
+        color: #dc2626;
+    }
+
+    .action-buttons {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .action-button {
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        border-radius: 0.375rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .action-button-edit {
+        background-color: #2563eb;
+        color: white;
+    }
+
+    .action-button-edit:hover {
+        background-color: #1d4ed8;
+    }
+
+    .action-button-toggle {
+        background-color: #4b5563;
+        color: white;
+    }
+
+    .action-button-toggle:hover {
+        background-color: #374151;
+    }
+
+    .action-button-delete {
+        background-color: #dc2626;
+        color: white;
+    }
+
+    .action-button-delete:hover {
+        background-color: #b91c1c;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #6b7280;
+    }
+
+    /* Pagination Styles */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+        gap: 0.5rem;
+    }
+
+    .pagination a {
+        padding: 0.5rem 1rem;
+        background: #e5e7eb;
+        border-radius: 0.375rem;
+        color: #1a202c;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .pagination a:hover {
+        background: #d1d5db;
+    }
+
+    .pagination .current {
+        padding: 0.5rem 1rem;
+        background: #3b82f6;
+        border-radius: 0.375rem;
+        color: white;
+    }
+</style>
+
+<div class=" .container-announcements">
+    <h2 class="heading">Announcements</h2>
+    <a href="{% url 'club_leader:create_announcement' %}" class="button button-primary">
+        <span class="material-icons-sharp">add</span> <h3>Create Announcement</h3>
     </a>
-
+ 
     {% for announcement in announcements %}
-    <div class="p-6 bg-gray-50 border border-gray-200 rounded-lg mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">{{ announcement.title }}</h3>
-        <p class="text-sm text-gray-600 mt-1">Posted on {{ announcement.created_at|date:"M d, Y" }}</p>
-        <p class="mt-3">{{ announcement.content }}</p>
-
-        <!-- Fixed Visibility Display -->
-        <p class="text-sm font-semibold">
-            Visibility: 
-            {% if announcement.visible %}
-                <span class="text-green-600">Visible to Members</span>
-            {% else %}
-                <span class="text-red-600">Hidden</span>
-            {% endif %}
-        </p>
-
-        {% if user.get_role == "Club Leader" %}
-        <div class="mt-3 flex space-x-3">
-            <a href="{% url 'club_leader:edit_announcement' announcement.id %}" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                ✏️ Edit
-            </a>
-            <a href="{% url 'club_leader:toggle_visibility' announcement.id %}" class="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
-                👁 Toggle Visibility
-            </a>
-            <form method="post" action="{% url 'club_leader:delete_announcement' announcement.id %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700" onclick="return confirm('Are you sure you want to delete this announcement?');">
-                    ❌ Delete
-                </button>
-            </form>
+    <div class="announcement-card">
+        <div class="announcement-header" onclick="toggleContent(this)">
+            <div>
+                <h3 class="announcement-title">{{ announcement.title }}</h3>
+                <p class="announcement-date">Posted on {{ announcement.created_at|date:"M d, Y" }}</p>
+            </div>
+            <span class="material-icons-sharp">expand_more</span>
         </div>
-        {% endif %}
+
+        <div class="announcement-content">
+            <p>{{ announcement.content }}</p>
+
+            <!-- Visibility Display -->
+            <p class="visibility-text">
+                Visibility: 
+                {% if announcement.visible %}
+                    <span class="visibility-visible">Visible to Members</span>
+                {% else %}
+                    <span class="visibility-hidden">Hidden</span>
+                {% endif %}
+            </p>
+
+            {% if user.get_role == "Club Leader" %}
+            <div class="action-buttons">
+                <a href="{% url 'club_leader:edit_announcement' announcement.id %}" class="action-button action-button-edit">
+                    <span class="material-icons-sharp">edit</span>
+                </a>
+                <a href="{% url 'club_leader:toggle_visibility' announcement.id %}" class="action-button action-button-toggle">
+                    <span class="material-icons-sharp">visibility</span>
+                </a>
+                <form method="post" action="{% url 'club_leader:delete_announcement' announcement.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="action-button action-button-delete" onclick="return confirm('Are you sure you want to delete this announcement?');">
+                        <span class="material-icons-sharp">delete</span>
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
     </div>
     {% empty %}
-    <p class="text-gray-500 text-center">No announcements yet.</p>
+    <p class="empty-state">No announcements yet.</p>
     {% endfor %}
+
+    <!-- Pagination -->
+    {% if announcements.has_other_pages %}
+    <div class="pagination">
+        {% if announcements.has_previous %}
+        <a href="?page=1">&laquo; First</a>
+        <a href="?page={{ announcements.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ announcements.number }} of {{ announcements.paginator.num_pages }}
+        </span>
+
+        {% if announcements.has_next %}
+        <a href="?page={{ announcements.next_page_number }}">Next</a>
+        <a href="?page={{ announcements.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
+
+<script>
+    // JavaScript to toggle announcement content visibility
+    function toggleContent(header) {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('.material-icons-sharp');
+        content.classList.toggle('expanded');
+        icon.textContent = content.classList.contains('expanded') ? 'expand_less' : 'expand_more';
+    }
+</script>
 
 {% endblock %}

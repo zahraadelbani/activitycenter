@@ -1,0 +1,41 @@
+ <!-- Upcoming Events Table -->
+ <div class="container-events">
+  <h2>Upcoming Events</h2>
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search events..." onkeyup="searchEvents()" />
+    <button onclick="sortByApproval()">Sort by Approval</button>
+    <button onclick="sortByDate()">Sort by Date</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Event Name</th>
+        <th>Date</th>
+        <th>Club</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="event-list">
+      {% for event in events %}
+      <tr>
+        <td>{{ event.title }}</td>
+        <td>{{ event.event_date|date:"F d, Y" }}</td>
+        <td>{{ event.club.name }}</td>
+        <td
+          class="{% if event.approval_status == 'approved' %}approved{% elif event.approval_status == 'pending' %}pending{% else %}rejected{% endif %}">
+          {{ event.approval_status|title }}
+        </td>
+        <td>
+          <a href="{% url 'club_leader:edit_event' event.id %}" class="edit-btn primary">Edit</a>
+        </td>
+
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">No upcoming events.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
