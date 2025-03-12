@@ -2,7 +2,6 @@
 {% load static %}
 {% block content %}
 
-
 <div class="profile-div">
   <div class="profile-left">
     <div class="profile-image">
@@ -11,8 +10,8 @@
     <div class="profile-update-buttons">
       <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <button type="submit">Update Picture</button>
         <input type="file" name="profile_picture">
+        <button type="submit">Update Picture</button>
       </form>
     </div>
   </div>
@@ -21,32 +20,43 @@
     <div class="profile-header">Profile Information</div>
     <form method="POST">
       {% csrf_token %}
+
+      <div class="form-group">
+        <label for="student_id">Student ID:</label>
+        <input type="text" id="student_id" name="student_id" value="{{ user.student_id|default:"Not Assigned" }}" disabled>
+      </div>
+      
       <div class="form-group">
         <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="{{ user.name }}" disabled>
+        <input type="text" id="name" name="name" value="{{ user.name }}">
       </div>
+
       <div class="form-group">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" value="{{ user.email }}" disabled>
       </div>
-      {% if user.student_id %}
-      <div class="form-group">
-        <label for="student_id">Student ID:</label>
-        <input type="text" id="student_id" name="student_id" value="{{ user.student_id }}" disabled>
-      </div>
-      {% endif %}
-      <div class="form-group">
-        <label for="status">Status:</label>
-        <input type="text" id="status" name="status" value="{{ user.get_status_display }}" disabled>
-      </div>
+
       <div class="form-group">
         <label for="role">Role:</label>
         <input type="text" id="role" name="role" value="{{ user.get_role }}" disabled>
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status:</label>
+        <input type="text" id="status" name="status" value="{{ user.status|default:"Active" }}" disabled>
       </div>
 
       <button type="submit" class="update-profile-btn">Update Profile</button>
     </form>
   </div>
 </div>
+
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
 
 {% endblock content %}

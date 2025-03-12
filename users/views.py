@@ -4,7 +4,7 @@ from .models import User, ClubLeader, Executive, Rector, ActivityCenterAdmin, Cl
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import CustomSignupForm
+from .forms import CustomSignupForm, ProfileUpdateForm
 
 from django.shortcuts import redirect
 from allauth.account.views import SignupView
@@ -18,21 +18,16 @@ def base_view(request):
 @login_required
 def profile_view(request):
     user = request.user  # Get the logged-in user
+    form = ProfileUpdateForm(instance=user)  # Pre-fill the form with user data
 
-    if request.method == "POST" and "profile_picture" in request.FILES:
-        uploaded_file = request.FILES["profile_picture"]
-        print(f"Uploaded file: {uploaded_file.name}")  # Debugging
+    if request.method == "POST":
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect("users:profile")  # Redirect to refresh the page
 
-        if user.profile_picture:  
-            user.profile_picture.delete(save=False)  # ✅ Delete old image to avoid clutter
-
-        user.profile_picture = uploaded_file
-        user.save()  # ✅ Save the new profile picture
-
-        print(f"New Profile Picture URL: {user.profile_picture.url}")  
-        return redirect(request.path)  
-
-    return render(request, "users/profile.html", {"user": user})
+    return render(request, "users/profile.html", {"user": user, "form": form})
 
 
 @login_required

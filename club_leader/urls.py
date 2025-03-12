@@ -29,8 +29,8 @@ urlpatterns = [
 
 
     path("event-request/", views.submit_event_request, name="submit_event_request"),
-    path("event-request/approve/<int:event_id>/", views.approve_event_request, name="approve_event_request"),
-    path("event-request/reject/<int:event_id>/", views.reject_event_request, name="reject_event_request"),
+    #path("event-request/approve/<int:event_id>/", views.approve_event_request, name="approve_event_request"),
+    #path("event-request/reject/<int:event_id>/", views.reject_event_request, name="reject_event_request"),
 
 
     path("event-request/reschedule/<int:event_id>/", views.request_reschedule, name="request_reschedule"),

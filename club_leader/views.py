@@ -48,11 +48,9 @@ def dashboard(request):
     
     return render(request, 'club_leader/dashboard.html', context)
 
-
 @login_required
 def review_feedback(request, feedback_id):
     #Marks a feedback entry as reviewed by the club leader.
-
     # Get the ClubLeader instance using `email`
     try:
         leader = ClubLeader.objects.get(email=request.user.email)
@@ -71,9 +69,6 @@ def review_feedback(request, feedback_id):
 
     messages.success(request, "Feedback marked as reviewed.")
     return redirect("club_leader:club_leader_dashboard")  
-
-
-
 
 @login_required
 def club_members(request):
@@ -141,8 +136,6 @@ def approve_termination_request(request, request_id):
 
     messages.success(request, "Membership termination request approved. The member has been removed from the club.")
     return redirect("club_leader:termination_requests") 
-
-
 
 @login_required
 def reject_termination_request(request, request_id):
@@ -218,7 +211,7 @@ def submit_event_request(request):
     return redirect('club_leader:calendar') 
 
 # Approve/Reject Event Request
-def approve_event_request(request, event_id):
+""" def approve_event_request(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     event.approval_status = 'approved'
     event.save()
@@ -230,8 +223,7 @@ def reject_event_request(request, event_id):
     event.approval_status = 'rejected'
     event.save()
     messages.error(request, "Event request rejected.")
-    return redirect('club_leader_dashboard')
-
+    return redirect('club_leader_dashboard') """
 
 #activity center rescheduling 
 def request_reschedule(request, event_id):
@@ -257,9 +249,7 @@ def approve_reschedule(request, reschedule_id):
     messages.success(request, "Event reschedule approved.")
     return redirect('pending_events')
 
-
-
-#@login_required
+@login_required
 def upload_document(request):
     """Allow club leaders to upload documents"""
     if request.user.get_role() != "Club Leader":
@@ -271,8 +261,8 @@ def upload_document(request):
         form = ClubDocumentForm(request.POST, request.FILES)
         if form.is_valid():
             document = form.save(commit=False)
-            document.club = leader.club  # Assign club
-            document.uploaded_by = request.user  # Assign uploader
+            document.club = leader.club  
+            document.uploaded_by = request.user  
             document.save()
             messages.success(request, "Document uploaded successfully!")
             return redirect('club_leader:list_documents')
@@ -281,13 +271,11 @@ def upload_document(request):
 
     return render(request, 'club_leader/upload_document.html', {'form': form})
 
-
-#@login_required
+@login_required
 def delete_document(request, pk):
     """Delete a document (Club Resource)"""
     document = get_object_or_404(ClubDocument, pk=pk)
 
-    # Ensure only the club leader can delete documents from their own club
     if request.user.get_role() != "Club Leader" or document.club != request.user.clubleader.club:
         raise PermissionDenied
 
@@ -295,8 +283,7 @@ def delete_document(request, pk):
     messages.success(request, "Document deleted successfully!")
     return redirect('club_leader:list_documents')
 
-
-#@login_required
+@login_required
 def list_documents(request):
     """List all documents (club resources) for the club leader and members"""
     if request.user.get_role() not in ["Club Leader", "Club Member"]:
@@ -308,6 +295,7 @@ def list_documents(request):
     return render(request, 'club_leader/list_documents.html', {'documents': documents})
 
 # Create an Announcement (Club Leaders Only)
+@login_required
 def create_announcement(request):
     if request.user.get_role() != "Club Leader":
         raise PermissionDenied
@@ -328,6 +316,7 @@ def create_announcement(request):
     return render(request, "club_leader/create_announcement.html", {"form": form})
 
 # List Announcements (For Club Members & Leaders)
+@login_required
 def list_announcements(request):
     """List all announcements for a specific club."""
     leader = get_object_or_404(ClubLeader, id=request.user.id)
@@ -336,6 +325,7 @@ def list_announcements(request):
     return render(request, "club_leader/list_announcements.html", {"announcements": announcements})
 
 # Delete an Announcement (Club Leaders Only)
+@login_required
 def delete_announcement(request, pk):
     announcement = get_object_or_404(Announcement, pk=pk)
 
@@ -347,6 +337,7 @@ def delete_announcement(request, pk):
     return redirect("club_leader:list_announcements")
 
 # Edit an Announcement (Club Leaders Only)
+@login_required
 def edit_announcement(request, pk):
     announcement = get_object_or_404(Announcement, pk=pk)
 
@@ -365,6 +356,7 @@ def edit_announcement(request, pk):
     return render(request, "club_leader/edit_announcement.html", {"form": form})
 
 # Toggle Announcement Visibility (Club Leaders Only)
+@login_required
 def toggle_visibility(request, pk):
     announcement = get_object_or_404(Announcement, pk=pk)
 

@@ -94,9 +94,7 @@
     {% if event.image %}
     <img src="{{ event.image.url }}" width="100">
     {% endif %}
-    <a href="{% url 'club_leader:approve_event_request' event.id %}">Approve</a> |
-    <a href="{% url 'club_leader:reject_event_request' event.id %}">Reject</a>
-  </li>
+    </li>
   {% endfor %}
 </ul>
 {% else %}

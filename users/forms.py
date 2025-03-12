@@ -20,3 +20,8 @@ class CustomSignupForm(SignupForm):
         user.name = self.cleaned_data["name"]
         user.save()
         return user
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['name', 'profile_picture']
