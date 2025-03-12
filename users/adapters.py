@@ -6,14 +6,12 @@ from django.shortcuts import redirect
 User = get_user_model()
 
 class MySocialAccountAdapter(DefaultSocialAccountAdapter):
-    """ Prevent Google from signing up new users, only allow logins """
+    """ Allow Google login only for existing users, prevent new signups """
 
     def is_open_for_signup(self, request, sociallogin):
-        """ Allow login only if the email already exists, prevent new signups """
-        email = sociallogin.account.extra_data.get("email", None)
-        if email and User.objects.filter(email=email).exists():
-            return False  # Skip signup if the user exists
-        return True  # Prevent signup if the user is new
+        """ Allow signup ONLY if the user already exists """
+        email = sociallogin.account.extra_data.get("email")
+        return User.objects.filter(email=email).exists()  # Allow login only for existing users
 
     def pre_social_login(self, request, sociallogin):
         """ Redirect users to login if they are not found in the database """
@@ -21,6 +19,6 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         user = User.objects.filter(email=email).first()
 
         if user:
-            sociallogin.connect(request, user)
+            sociallogin.user = user  # Attach existing user
         else:
-            raise ImmediateHttpResponse(redirect("/accounts/login/"))  # Redirect to login page
+            raise ImmediateHttpResponse(redirect("/accounts/login/?error=social_no_signup"))  # Redirect to login page

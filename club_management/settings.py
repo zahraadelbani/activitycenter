@@ -61,6 +61,20 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
+#email integration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Replace with your SMTP provider if different
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True 
+
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
+
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+
 
 # Set your custom user model
 AUTH_USER_MODEL = "users.User"
@@ -69,7 +83,7 @@ AUTH_USER_MODEL = "users.User"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_AUTO_LOGIN = False  # Prevents auto-login after signup
 SOCIALACCOUNT_ENABLED = True
 
@@ -104,7 +118,16 @@ SOCIALACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/dashboard/"
 SOCIALACCOUNT_ADAPTER = "users.adapters.MySocialAccountAdapter"
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+ACCOUNT_ADAPTER = "users.account_adapter.CustomAccountAdapter"
+
+# Default session expiration (24 hours)
+SESSION_COOKIE_AGE = 86400  # 24 hours in seconds
+
+# Ensure session persists for 24 hours unless "Remember Me" is checked
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Keeps session active until expiration
+
+# Do not reset expiration time on every request
+SESSION_SAVE_EVERY_REQUEST = False  # Ensures session expires exactly after 24 hours
 
 
 # Remove SSL/HTTPS configurations

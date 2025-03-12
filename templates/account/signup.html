@@ -1,5 +1,5 @@
 {% extends "account/base_entrance.html" %}
-{% load allauth i18n socialaccount static %}  <!-- Load the necessary tags -->
+{% load allauth i18n socialaccount static %}  <!-- Load necessary tags -->
 
 {% block extra_head %}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -10,93 +10,119 @@
 {% endblock head_title %}
 
 {% block content %}
-    <body class="h-screen flex flex-col items-center justify-center relative overflow-hidden bg-[url('{% static 'background.jpg' %}')] bg-cover bg-no-repeat bg-center">
-        <div class="relative bg-white p-8 rounded-xl shadow-2xl w-[90%] max-w-md z-10 bg-opacity-95">
+<body class="h-screen flex flex-col items-center justify-center relative overflow-hidden bg-[url('{% static 'background.jpg' %}')] bg-cover bg-no-repeat bg-center">
+    <div class="relative bg-white p-8 rounded-xl shadow-2xl w-[90%] max-w-md z-10 bg-opacity-95">
 
-            <!-- Sign Up Title -->
-            <h1 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">{% trans "Sign Up" %}</h1>
+        <!-- Sign Up Title -->
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">{% trans "Sign Up" %}</h1>
 
-            <!-- Login Link -->
-            <p class="text-center text-gray-600 mb-6">
-                {% blocktranslate %}Already have an account? Then please 
-                    <a href="{{ login_url }}" class="text-blue-500 font-semibold hover:underline">sign in</a> now.
-                {% endblocktranslate %}
-            </p>
+        <!-- Login Link -->
+        <p class="text-center text-gray-600 mb-6">
+            {% trans "Already have an account? Then please" %}
+            <a href="{% url 'account_login' %}" class="text-blue-500 font-semibold hover:underline">{% trans "sign in" %}</a>
+            {% trans "now." %}
+        </p>
+        
+        <!-- Sign Up Form -->
+        {% url 'account_signup' as action_url %}
+        <form method="post" action="{{ action_url }}" class="space-y-4">
+            {% csrf_token %}
 
-            <!-- Sign Up Form -->
-            {% url 'account_signup' as action_url %}
-            <form method="post" action="{{ action_url }}" class="space-y-4">
-                {% csrf_token %}
+            <!-- Student ID Input -->
+            <div>
+                <label for="id_student_id" class="block text-gray-700 font-medium">Student ID</label>
+                <input type="text" name="student_id" id="id_student_id" placeholder="Enter your student ID"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {% if form.student_id.errors %}
+                    <p class="text-red-500 text-sm">{{ form.student_id.errors|first }}</p>
+                {% endif %}
+            </div>
 
-                <!-- Full Name Input -->
-                <div>
-                    <label for="id_name" class="block text-gray-700 font-medium">{% trans "Full Name" %}</label>
-                    <input type="text" name="name" id="id_name" placeholder="{% trans 'Enter your full name' %}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+            <!-- Full Name Input -->
+            <div>
+                <label for="id_name" class="block text-gray-700 font-medium">{% trans "Full Name" %}</label>
+                <input type="text" name="name" id="id_name" placeholder="{% trans 'Enter your full name' %}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {% if form.name.errors %}
+                    <p class="text-red-500 text-sm">{{ form.name.errors|first }}</p>
+                {% endif %}
+            </div>
 
-                <!-- Email Input -->
-                <div>
-                    <label for="id_email" class="block text-gray-700 font-medium">{% trans "Email" %}</label>
-                    <input type="email" name="email" id="id_email" placeholder="{% trans 'Enter your email' %}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+            <!-- Email Input -->
+            <div>
+                <label for="id_email" class="block text-gray-700 font-medium">{% trans "Email" %}</label>
+                <input type="email" name="email" id="id_email" placeholder="{% trans 'Enter your email' %}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {% if form.email.errors %}
+                    <p class="text-red-500 text-sm">{{ form.email.errors|first }}</p>
+                {% endif %}
+            </div>
 
-                <!-- Password Input -->
-                <div>
-                    <label for="id_password1" class="block text-gray-700 font-medium">{% trans "Password" %}</label>
-                    <input type="password" name="password1" id="id_password1" placeholder="{% trans 'Create a password' %}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+            <!-- Password Input -->
+            <div>
+                <label for="id_password1" class="block text-gray-700 font-medium">{% trans "Password" %}</label>
+                <input type="password" name="password1" id="id_password1" placeholder="{% trans 'Create a password' %}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {% if form.password1.errors %}
+                    <p class="text-red-500 text-sm">{{ form.password1.errors|first }}</p>
+                {% endif %}
+            </div>
 
-                <!-- Confirm Password Input -->
-                <div>
-                    <label for="id_password2" class="block text-gray-700 font-medium">{% trans "Confirm Password" %}</label>
-                    <input type="password" name="password2" id="id_password2" placeholder="{% trans 'Confirm your password' %}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+            <!-- Confirm Password Input -->
+            <div>
+                <label for="id_password2" class="block text-gray-700 font-medium">{% trans "Confirm Password" %}</label>
+                <input type="password" name="password2" id="id_password2" placeholder="{% trans 'Confirm your password' %}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {% if form.password2.errors %}
+                    <p class="text-red-500 text-sm">{{ form.password2.errors|first }}</p>
+                {% endif %}
+            </div>
 
-                <!-- Sign Up Button -->
-                <button type="submit"
-                    class="w-full px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition duration-300">
-                    {% trans "Sign Up" %}
-                </button>
-                {% if form.errors %}
+            <!-- Sign Up Button -->
+            <button type="submit"
+                class="w-full px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition duration-300">
+                {% trans "Sign Up" %}
+            </button>
+
+            <!-- Display General Form Errors -->
+            {% if form.non_field_errors %}
                 <div class="bg-red-500 text-white p-3 rounded-md mb-4">
                     <ul>
-                        {% for field, errors in form.errors.items %}
-                            {% for error in errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div>
             {% endif %}
-            
-            </form>
 
-            <!-- Google Sign-In Button (Optional) -->
-            {% if SOCIALACCOUNT_ENABLED %}
-            <div class="mt-6">
-                <a href="{% provider_login_url 'google' %}" class="block">
-                    <button class="w-full px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition duration-300">
-                        {% trans "Sign up with Google" %}
-                    </button>
-                </a>
-            </div>
-            {% endif %}
+        </form>
 
-            {% if messages %}
-    <div class="fixed top-5 left-1/2 transform -translate-x-1/2 w-[90%] max-w-lg bg-red-600 text-white py-4 px-6 rounded-lg shadow-lg">
-        <ul>
-            {% for message in messages %}
-                <li class="text-center">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endif %}
-
-
+        <!-- Google Sign-In Button (Optional) -->
+        {% if SOCIALACCOUNT_ENABLED %}
+        <div class="mt-6">
+            <a href="{% provider_login_url 'google' %}" class="block">
+                <button class="w-full px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition duration-300">
+                    {% trans "Sign up with Google" %}
+                </button>
+            </a>
         </div>
-    </body>
+        {% endif %}
+
+        <!-- {% if messages %}
+        <div class="fixed top-5 left-1/2 transform -translate-x-1/2 w-[90%] max-w-lg bg-white shadow-lg rounded-lg p-4">
+            {% for message in messages %}
+                <div class="mb-2 p-3 text-center rounded-md text-white 
+                            {% if message.tags == 'success' %} bg-green-500 
+                            {% elif message.tags == 'info' %} bg-blue-500 
+                            {% elif message.tags == 'warning' %} bg-yellow-500 
+                            {% elif message.tags == 'error' %} bg-red-500 {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %} -->
+    
+
+    </div>
+</body>
 {% endblock content %}
