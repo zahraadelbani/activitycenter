@@ -1,142 +1,146 @@
-{% extends "dashboard.html" %} {% block content %}
+{% extends "dashboard.html" %}
+{% block content %}
 
 <!-- FullCalendar Styles & Scripts -->
-<link
-  href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css"
-  rel="stylesheet"
-/>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
 
-<div class="calendar-container">
-  <h1>ACTIVITY CENTER CALENDAR</h1>
-  <button class="add-event" onclick="openModal()">+ Add Event</button>
-  <div id="calendar"></div>
-</div>
 
-<!-- Upcoming Events Table -->
-<div class="container-events">
-  <h2>Upcoming Events</h2>
-  <div class="controls">
-    <input
-      type="text"
-      id="search"
-      placeholder="Search events..."
-      onkeyup="searchEvents()"
-    />
-    <button onclick="sortByApproval()">Sort by Approval</button>
-    <button onclick="sortByDate()">Sort by Date</button>
-  </div>
-  <table>
-    <thead>
-      <tr>
-        <th>Event Name</th>
-        <th>Date</th>
-        <th>Club</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="event-list">
-      {% for event in events %}
-      <tr>
-        <td>{{ event.title }}</td>
-        <td>{{ event.event_date|date:"F d, Y" }}</td>
-        <td>{{ event.club.name }}</td>
-        <td
-          class="{% if event.approval_status == 'approved' %}approved{% elif event.approval_status == 'pending' %}pending{% else %}rejected{% endif %}"
-        >
-          {{ event.approval_status|title }}
-        </td>
-        <td>
-          <a href="{% url 'club_leader:edit_event' event.id %}" class="edit-btn">Edit</a>
-        </td>
-        
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="4">No upcoming events.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
 
-<!-- Event Modal -->
-<div id="event-modal" class="modal">
-  <div class="modal-content">
-    <span class="close-event" onclick="closeModal()">&times;</span>
-    <h2>Add Event</h2>
-    <form
-      id="event-form"
-      method="post"
-      action="{% url 'club_leader:submit_event_request' %}"
-    >
-      {% csrf_token %}
-      <!-- <label for="event-date">Event Date:</label>
-      <input type="datetime-local" id="event-date" name="event_date" required />
-      -->
-      {{ form.as_p }}
-      <button type="submit">Save</button>
-    </form>
-  </div>
-</div>
-
-<!-- Styles for Modal & Table -->
 <style>
-  /* Calendar Container */
-  .calendar-container {
-    margin: 20px;
-    text-align: center;
+  .events-calendar {
+    display: grid;
+    grid-template-columns: 900px 450px;
+    gap: 20px;
   }
 
-  /* Button Styles */
-  .add-event {
-    display: block;
-    margin: 10px auto;
+  .add_event_btn{
     padding: 10px 20px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
+    border: 2px dashed var(--color-primary);
+    border-radius: 20px;
     cursor: pointer;
+    font-size: 14px;
+    background-color: var( --color-background);
+    color: var(--color-primary);
+    font-weight: bold;
+  }
+  .calendar-view {
+  height: 700px; 
+  overflow: hidden; 
+
+}
+
+.fc-daygrid-day-frame {
+  min-height: 80px; 
+}
+
+.fc-scroller {
+  overflow: hidden !important; 
+}
+  .calendar-view,
+  .events-section {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+
   }
 
-  .add-event:hover {
-    background-color: #0056b3;
+  .calendar-header,
+  .events-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
   }
 
-  /* Events Table */
-  .container-events {
-    margin: 20px;
+  
+  .fc-col-header-cell{
+    background: white;
+    height: 40px;
   }
+  .fc-scroller{
+    background: white;
+  }
+  .fc .fc-toolbar.fc-header-toolbar {
+    margin-bottom:0px;
+}
 
-  .container-events table {
+.fc .fc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fc-header-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+}
+
+.fc-toolbar-title {
+  margin: 0; 
+  font-size: 1.5em; 
+  font-weight: bold; 
+}
+
+.fc-toolbar-chunk {
+  display: flex;
+  gap: 10px; 
+}
+
+.fc .fc-button-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-dark);
+}
+
+.fc .fc-button {
+  background-color: var(--color-primary);
+}
+
+.container-events {
+    margin-top: 70px;
+    height: 600px;
+    overflow-y: auto;
+  }
+ 
+  /* Events Table Styles */
+  .events-table {
     width: 100%;
     border-collapse: collapse;
   }
 
-  .container-events th,
-  .container-events td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
+  .events-table th,
+  .events-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
   }
 
-  .container-events th {
-    background-color: #007bff;
-    color: white;
+  .events-table th {
+    background-color: #f8f9fa;
+    color: #333;
+  }
+
+  .status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
   }
 
   .approved {
     background-color: #d4edda;
     color: #155724;
   }
+
   .pending {
     background-color: #fff3cd;
     color: #856404;
   }
+
   .rejected {
     background-color: #f8d7da;
     color: #721c24;
@@ -146,39 +150,119 @@
   .modal {
     display: none;
     position: fixed;
-    z-index: 1050;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
+    z-index: 1000;
   }
 
   .modal-content {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1051;
-    position: relative;
-    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
     width: 100%;
-  }
-
-  /* Ensure modal appears above FullCalendar */
-  #calendar {
     position: relative;
-    z-index: 1;
   }
 
-  .modal {
-    z-index: 2000;
+  .close-event {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+  }
+
+  .close-event:hover {
+    color: #000;
+  }
+
+  .view-all {
+    text-align: center;
+    margin-top: 20px;
+    cursor: pointer;
+    color: var(--color-primary);
+  }
+
+  .upcoming-events{
+    margin-right: 30px;
   }
 </style>
 
-<!-- JavaScript for Calendar and Modal -->
+
+<div class="events-calendar">
+  <div class="calendar">
+    <div class="calendar-header">
+        <h1>ACTIVITY CENTER CALENDAR</h1>
+        <button class="add_event_btn" onclick="openModal()">+ Add Event</button>
+    </div>
+    <div class="calendar-view">
+      <div id="calendar"></div>
+    </div>
+  </div>
+
+
+  <div class="upcoming-events">
+    <div class="right-bottom">
+      <div class="right">
+        <!-- RECENT COMMENTS -->
+        <div class="sales-analytics">
+          <h2>Upcoming Events</h2>
+          {% for event in events %}
+          <div class="item offline">
+            <div class="icon">
+            </div>
+            <div class="right">
+              <div class="info">
+                <h3>{{ event.title }}</h3>
+                <small class="text-mute">{{ event.event_date|date:"F d, Y" }}</small>
+              </div>
+              <h5 class="{% if event.approval_status == 'approved' %}approved{% elif event.approval_status == 'pending' %}pending{% else %}rejected{% endif %}"> {{ event.approval_status|title }}</h5>
+              <a href="{% url 'club_leader:edit_event' event.id %}" class="edit-btn primary">Edit</a>
+            </div>
+          </div>
+          {% empty %} 
+          <div class="item offline">
+            <div class="icon">
+            </div>
+            <div class="right">
+              <div class="info">
+                <h3>No upcoming events.</h3>
+              </div>
+            </div>
+            {% endfor %}
+          <div class="view-all">
+              <h3>View All</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Event Modal -->
+  <div id="event-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-event" onclick="closeModal()">&times;</span>
+      <h2>Add Event</h2>
+      <form id="event-form" method="post" action="{% url 'club_leader:submit_event_request' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- JavaScript -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     var calendarEl = document.getElementById("calendar");
@@ -186,9 +270,9 @@
     var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "dayGridMonth",
       headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "",
+        left: "title", 
+    center: "", 
+    right: "prev,next today", 
       },
       selectable: true,
       editable: false,
@@ -219,6 +303,7 @@
   function openModal() {
     document.getElementById("event-modal").style.display = "flex";
   }
+
   function closeModal() {
     document.getElementById("event-modal").style.display = "none";
   }

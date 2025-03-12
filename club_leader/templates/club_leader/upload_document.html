@@ -4,9 +4,9 @@
 
 <!-- Custom CSS -->
 <style>
-    .profile-upload-container {
+    /* Club Document Upload Container */
+    .club-document-upload-container {
         max-width: 900px;
-        margin: 2rem auto;
         padding: 2rem;
         background-color: #ffffff;
         border-radius: 1rem;
@@ -14,11 +14,12 @@
         transition: box-shadow 0.3s ease-in-out;
     }
 
-    .profile-upload-container:hover {
+    .club-document-upload-container:hover {
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
 
-    .profile-upload-header {
+    /* Header */
+    .club-document-upload-header {
         font-size: 2rem;
         font-weight: 600;
         color: #333;
@@ -26,12 +27,14 @@
         margin-bottom: 2rem;
     }
 
-    .profile-upload-form {
+    /* Form Layout */
+    .club-document-upload-form {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
     }
 
+    /* Form Fields */
     .form-fields {
         display: flex;
         flex-direction: column;
@@ -44,42 +47,57 @@
         gap: 0.5rem;
     }
 
+    /* Label */
     .form-label {
         font-size: 1rem;
         color: #555;
     }
 
+    /* Input Styling */
     .input-wrapper input,
     .input-wrapper textarea {
         padding: 1rem;
         font-size: 1rem;
         border: 1px solid #ddd;
         border-radius: 0.5rem;
-        transition: border-color 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+        background-color: #f9f9f9;
+        width: 100%;
     }
 
     .input-wrapper input:focus,
     .input-wrapper textarea:focus {
-        border-color: #4CAF50;
+        border-color: #007bff; /* Blue for focus */
         outline: none;
+        background-color: #fff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
     }
 
+    .input-wrapper input::placeholder,
+    .input-wrapper textarea::placeholder {
+        color: #aaa;
+        font-style: italic;
+    }
+
+    /* Help Text */
     .help-text {
         font-size: 0.875rem;
         color: #666;
     }
 
+    /* Error Text */
     .error-text {
         font-size: 0.875rem;
-        color: #ff4d4d;
+        color: #ff4d4d; /* Red for errors */
     }
 
+    /* Submit Button */
     .submit-btn {
         padding: 1rem 2rem;
         font-size: 1.125rem;
         font-weight: 600;
         color: #ffffff;
-        background-color: #4CAF50;
+        background-color: #007bff; /* Primary color */
         border: none;
         border-radius: 0.75rem;
         cursor: pointer;
@@ -87,23 +105,22 @@
     }
 
     .submit-btn:hover {
-        background-color: #45a049;
+        background-color: #0056b3; /* Darker blue on hover */
     }
 
     .submit-btn:active {
         transform: scale(0.98);
     }
-
 </style>
 
-<div class="profile-upload-container">
-    <!-- Header -->
-    <h2 class="profile-upload-header">
+<!-- Main Content -->
+<div class="club-document-upload-container">
+    <h2 class="club-document-upload-header">
         Upload Club Document
     </h2>
 
     <!-- Upload Form -->
-    <form method="post" enctype="multipart/form-data" class="profile-upload-form">
+    <form method="post" enctype="multipart/form-data" class="club-document-upload-form">
         {% csrf_token %}
         <div class="form-fields">
             {% for field in form %}
@@ -130,4 +147,5 @@
         </button>
     </form>
 </div>
+
 {% endblock %}

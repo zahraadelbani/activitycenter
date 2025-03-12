@@ -2,163 +2,187 @@
 {% load static %}
 {% block content %}
 
+<!-- Styles -->
 <style>
-  /* Modern Table Styles */
-  .modern-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .modern-table th, .modern-table td {
-    padding: 12px 15px;
-    text-align: left;
-  }
-  
-  .modern-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+
+
+  .resource-title {
+    margin: 0 0 25px 0;
     color: #333;
+    font-size: 28px;
+    font-weight: 600;
   }
-  
-  .modern-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .modern-table tr:hover {
-    background-color: #f1f1f1;
-  }
- 
-  .controls{
+
+  .resource-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
   }
-  
 
-  /* Button Styles */
-  .upload-btn, .search-btn {
-    background-color: var(--color-primary); 
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
+  .resource-search {
+    display: flex;
+    align-items: center;
+  }
+
+  .resource-search-input {
+    padding: 12px 20px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+ 
+    width: 350px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  .resource-search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 8px var(--color-primary);
+  }
+
     
-  }
-  .search-btn{
-    width: 400px; 
-  }
-  .delete-btn
-  {
-    background-color: var(--color-warning); 
-    color: white;
-    padding: 10px 15px;
+  /* Button Styles */
+  .resource-btn {
+    padding: 12px 25px;
     border: none;
+   
     cursor: pointer;
-    border-radius: 5px;
-
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--color-primary) 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: white; 
   }
-  
-  .upload-btn:hover, .search-btn:hover {
+
+  .resource-btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+  }
+
+  .resource-btn-primary:hover {
     background-color: #0056b3;
   }
-  
-  .mui-btn {
-    padding: 10px 15px;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .mui-btn--raised {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+
+  /* Table Styles */
+  .resource-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
-  /* Search Bar */
-  .search-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-
-  .search-input {
-    padding: 8px 15px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 300px;
+  .resource-table th,
+  .resource-table td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid #f1f1f1;
   }
 
-  .search-input:focus {
-    border-color: #007bff;
+  .resource-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
   }
-  
+
+  .resource-table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  .resource-table tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .resource-table td a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .resource-icon {
+    font-size: 18px;
+    vertical-align: middle;
+  }
+
+  /* No Documents Message */
+  .resource-empty {
+    text-align: center;
+    color: #666;
+    padding: 30px;
+    font-size: 18px;
+  }
 </style>
 
-<div class="container-events">
-  <h2>Club Resources</h2>
+<!-- Main Content -->
+<div class="resource-container">
+  <div class="resource-content">
+    <h2 class="resource-title">Club Resources</h2>
 
-  
+    <!-- Controls Section -->
+    <div class="resource-controls">
+      <!-- Search Bar -->
+      <div class="resource-search">
+        <input type="text" class="resource-search-input" id="searchInput" placeholder="Search for documents..." />
+        <button class="resource-btn resource-btn-primary" onclick="searchDocuments()">Search</button>
+      </div>
 
-  <div class="controls">
-    <!-- Search Bar -->
-  <div class="search-bar">
-    <input type="text" class="search-input" id="searchInput" placeholder="Search for documents...">
-    <button class="search-btn" onclick="searchDocuments()">Search</button>
+      <!-- Upload Button -->
+      <a href="{% url 'club_leader:upload_document' %}">
+        <button class="resource-btn resource-btn-primary">
+          <span class="material-icons-sharp">upload</span>
+          Upload New Document
+        </button>
+      </a>
+    </div>
+
+    <!-- Documents Table -->
+    <table class="resource-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Date Uploaded</th>
+          <th>Download</th>
+          {% if user.get_role == "Club Leader" %}
+          <th>Delete</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody id="documentTable">
+        {% for doc in documents %}
+        <tr>
+          <td>{{ doc.title }}</td>
+          <td>{{ doc.uploaded_at|date:"M d, Y" }}</td>
+          <td>
+            <a href="{{ doc.file.url }}" download>
+              <button class="resource-btn resource-btn-primary">
+                <span class="material-icons-sharp">download</span>
+                Download
+              </button>
+            </a>
+          </td>
+          {% if user.get_role == "Club Leader" %}
+          <td>
+            <form method="post" action="{% url 'club_leader:delete_document' doc.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="resource-btn" style="background-color: var(--color-danger );" onclick="return confirm('Are you sure you want to delete this document?');">
+                <span class="material-icons-sharp">delete_sweep </span>
+                Delete
+              </button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="resource-empty">No documents available.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-    <a href="{% url 'club_leader:upload_document' %}">
-      <button class="upload-btn">Upload New Document</button>
-    </a>
-  </div>
-
-  <table class="modern-table">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Date Uploaded</th>
-        <th>Download</th>
-        {% if user.get_role == "Club Leader" %}
-        <th>Delete</th>
-        {% endif %}
-      </tr>
-    </thead>
-    <tbody id="documentTable">
-      {% for doc in documents %}
-      <tr>
-        <td>{{ doc.title }}</td>
-        <td>{{ doc.uploaded_at|date:"M d, Y" }}</td>
-        <td>
-          <a href="{{ doc.file.url }}" download>
-            <button class="upload-btn"><span class="material-icons-sharp">
-              file_download
-            </span></button>
-          </a>
-        </td>
-        {% if user.get_role == "Club Leader" %}
-        <td>
-          <form method="post" action="{% url 'club_leader:delete_document' doc.id %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this document?');">
-              <span class="material-icons-sharp">
-                delete_outline
-              </span>
-            </button>
-          </form>
-        </td>
-        {% endif %}
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="4" style="text-align:center;">No documents available.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
 </div>
 
+<!-- JavaScript -->
 <script>
   function searchDocuments() {
     let input = document.getElementById('searchInput').value.toLowerCase();
