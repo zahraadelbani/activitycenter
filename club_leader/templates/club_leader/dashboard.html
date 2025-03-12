@@ -80,48 +80,53 @@
           <div class="carousel">
             <div class="slide">
               <div class="recent-orders">
-                <h3>Pending Activity Requests</h3>
-                {% if activity_requests %}
-                <ul>
-                  {% for request in activity_requests %}
-                  <li>
-                    <strong>{{ request.title }}</strong> - {{ request.date }} <br>
-                    <strong>Participants:</strong> {{ request.participants }} <br>
-                    <strong>Needs:</strong> {{ request.needs }} <br>
-                    <strong>Total Cost:</strong> ${{ request.total_cost }} <br>
-                    <strong>Transportation Required:</strong> {{ request.transportation_request|yesno:"Yes,No" }} <br>
-                    {% if request.image %}
-                    <img src="{{ request.image.url }}" width="100">
-                    {% endif %}
-                    <a href="{% url 'approve_activity_request' request.id %}">Approve</a> |
-                    <a href="{% url 'reject_activity_request' request.id %}">Reject</a>
-                  </li>
-                  {% endfor %}
-                </ul>
-                {% else %}
-                <p>No pending activity requests.</p>
-                {% endif %}
+                <h3>Pending Event Requests</h3>
+{% if pending_events %}
+<ul>
+  {% for event in pending_events %}
+  <li>
+    <strong>{{ event.title }}</strong> - {{ event.event_date|date:"F d, Y" }} <br>
+    <strong>Club:</strong> {{ event.club.name }} <br>
+    <strong>Participants:</strong> {{ event.participants }} <br>
+    <strong>Needs:</strong> {{ event.needs }} <br>
+    <strong>Total Cost:</strong> TL{{ event.total_cost }} <br>
+    <strong>Transportation Required:</strong> {{ event.transportation_request|yesno:"Yes,No" }} <br>
+    {% if event.image %}
+    <img src="{{ event.image.url }}" width="100">
+    {% endif %}
+    <a href="{% url 'club_leader:approve_event_request' event.id %}">Approve</a> |
+    <a href="{% url 'club_leader:reject_event_request' event.id %}">Reject</a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No pending event requests.</p>
+{% endif %}
+
               </div>
             </div>
 
             <div class="slide">
               <div class="recent-orders">
                 <h3>Pending Membership Termination Requests</h3>
+                
                 {% if termination_requests %}
                 <ul>
                   {% for request in termination_requests %}
                   <li>
-                    {{ request.club_member.user.name }} - {{ request.club.name }}
-                    <a href="{% url 'approve_termination' request.id %}">Approve</a> |
-                    <a href="{% url 'reject_termination' request.id %}">Reject</a>
+                    <strong>Member:</strong> {{ request.club_member.user.name }}<br>
+                    <strong>Requested At:</strong> {{ request.created_at|date:"M d, Y" }}<br>
                   </li>
+                  <hr>
                   {% endfor %}
                 </ul>
+                
                 {% else %}
                 <p>No termination requests pending.</p>
                 {% endif %}
               </div>
             </div>
+            
 
             <div class="slide">
               <div class="recent-orders">
@@ -140,7 +145,7 @@
                 {% endif %}
               </div>
             </div>
-
+<!-- 
             <div class="slide">
               <div class="recent-orders">
                 <h3>Pending Feedback</h3>
@@ -157,7 +162,48 @@
                 <p>No new feedback.</p>
                 {% endif %}
               </div>
-            </div>
+            </div> -->
+            <!-- Complaints Section -->
+<div class="slide">
+  <div class="recent-orders">
+    <h3>Pending Complaints (Anonymous)</h3>
+    {% if complaints %}
+    <ul>
+      {% for complaint in complaints %}
+      <li>
+        <strong>Submitted On:</strong> {{ complaint.created_at|date:"Y-m-d H:i" }}<br>
+        <strong>Content:</strong> {{ complaint.content }}<br>
+        <a href="{% url 'club_leader:review_feedback' complaint.id %}" class="btn btn-success">Mark as Reviewed</a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No pending complaints.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Suggestions Section -->
+<div class="slide">
+  <div class="recent-orders">
+    <h3>Pending Suggestions</h3>
+    {% if suggestions %}
+    <ul>
+      {% for suggestion in suggestions %}
+      <li>
+        <strong>Submitted By:</strong> {{ suggestion.submitted_by.name }}<br>
+        <strong>Submitted On:</strong> {{ suggestion.created_at|date:"Y-m-d H:i" }}<br>
+        <strong>Content:</strong> {{ suggestion.content }}<br>
+        <a href="{% url 'club_leader:review_feedback' suggestion.id %}" class="btn btn-success">Mark as Reviewed</a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No pending suggestions.</p>
+    {% endif %}
+  </div>
+</div>
+
           </div>
           <button class="carousel-btn next" onclick="moveSlide(1)">&#10095;</button>
       </main>

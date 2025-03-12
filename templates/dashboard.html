@@ -40,7 +40,14 @@
             <span class="material-icons-sharp">person</span>
             <h3>Profile</h3>
           </a>
-         
+          <a href="{% url 'club_leader:club_members' %}">
+            <span class="material-icons-sharp">groups</span>
+            <h3>Club Members</h3>
+        </a>   
+        <a href="{% url 'club_leader:termination_requests' %}">
+          <span class="material-icons-sharp">hourglass_empty</span>
+          <h3>Termination Requests</h3>
+      </a>           
           <a href="{% url 'club_leader:calendar' %}">
             <span class="material-icons-sharp">event_available</span>
             <h3>Events</h3>

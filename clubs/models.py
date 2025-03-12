@@ -2,8 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
 
-
-
 class Club(models.Model):
     id = models.AutoField(primary_key=True)  # Add ID as primary key
     name = models.CharField(max_length=255)
@@ -21,7 +19,6 @@ class Club(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class Event(models.Model):
     STATUS_CHOICES = [
@@ -49,10 +46,18 @@ class Event(models.Model):
     rescheduled = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        # Check if the event already exists in the database
+        # If the event already exists and is being updated
         if self.pk:
-            # Reset approval status to 'pending' upon update
-            self.approval_status = 'pending'
+            # Fetch the original event status before saving
+            original_event = Event.objects.filter(pk=self.pk).first()
+            if original_event:
+                if original_event.approval_status != self.approval_status:
+                    print(f"Status changed from {original_event.approval_status} to {self.approval_status}")
+
+                # If it's being edited by the club leader, reset to pending
+                if original_event.approval_status == "approved" or original_event.approval_status == "rejected":
+                    self.approval_status = "pending"
+
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -67,11 +72,6 @@ class RescheduleRequest(models.Model):
     def __str__(self):
         return f"Reschedule Request for {self.event.title}"
 
-
-
-
-
-
 class Meeting(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='meetings')
     date_time = models.DateTimeField()
@@ -79,7 +79,6 @@ class Meeting(models.Model):
 
     def __str__(self):
         return f"Meeting with {self.club.name} on {self.date_time}"
-
 
 class Announcement(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='announcements')
@@ -90,7 +89,6 @@ class Announcement(models.Model):
 
     def __str__(self):
         return f"{self.title} ({'Visible' if self.visible else 'Hidden'})"
-
 
 class ClubDocument(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name="documents")

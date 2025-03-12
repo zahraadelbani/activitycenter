@@ -1,17 +1,17 @@
 from django.contrib import admin
 from django.utils import timezone
-from .models import ClubMember, MembershipTerminationRequest
+from .models import MembershipTerminationRequest
 
-
+""" 
 @admin.register(ClubMember)
 class ClubMemberAdmin(admin.ModelAdmin):
-    """Admin interface for managing club memberships."""
+    Admin interface for managing club memberships.
     list_display = ('user', 'club', 'joined_at')
     list_filter = ('club', 'joined_at')
     search_fields = ('user__name', 'club__name')
     ordering = ('-joined_at',)
     date_hierarchy = 'joined_at'
-
+ """
 
 @admin.register(MembershipTerminationRequest)
 class MembershipTerminationRequestAdmin(admin.ModelAdmin):
