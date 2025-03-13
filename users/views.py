@@ -18,16 +18,36 @@ def base_view(request):
 @login_required
 def profile_view(request):
     user = request.user  # Get the logged-in user
-    form = ProfileUpdateForm(instance=user)  # Pre-fill the form with user data
+    form = ProfileUpdateForm(instance=user)  # Pre-fill form with user data
 
     if request.method == "POST":
-        form = ProfileUpdateForm(request.POST, request.FILES, instance=user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profile updated successfully!")
-            return redirect("users:profile")  # Redirect to refresh the page
+        # If updating the profile picture
+        if "update_picture" in request.POST and "profile_picture" in request.FILES:
+            uploaded_file = request.FILES["profile_picture"]
+            print(f"Uploaded file: {uploaded_file.name}")  # Debugging
+
+            if user.profile_picture:
+                user.profile_picture.delete(save=False)  # Delete old image
+
+            user.profile_picture = uploaded_file
+            user.save()  # Save new profile picture
+
+            print(f"New Profile Picture URL: {user.profile_picture.url}")  # Debugging
+            messages.success(request, "Profile picture updated successfully!")
+            return redirect(request.path)
+
+        # If updating profile details (Name)
+        elif "update_profile" in request.POST:
+            form = ProfileUpdateForm(request.POST, instance=user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Profile updated successfully!")
+                return redirect(request.path)
+            else:
+                print("Form is NOT valid:", form.errors)  # Debugging
 
     return render(request, "users/profile.html", {"user": user, "form": form})
+
 
 
 @login_required

@@ -11,7 +11,7 @@
       <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="file" name="profile_picture">
-        <button type="submit">Update Picture</button>
+        <button type="submit" name="update_picture">Update Picture</button>
       </form>
     </div>
   </div>
@@ -23,7 +23,7 @@
 
       <div class="form-group">
         <label for="student_id">Student ID:</label>
-        <input type="text" id="student_id" name="student_id" value="{{ user.student_id|default:"Not Assigned" }}" disabled>
+        <input type="text" id="student_id" name="student_id" value="{{ user.student_id|default:'Not Assigned' }}" disabled>
       </div>
       
       <div class="form-group">
@@ -43,10 +43,10 @@
 
       <div class="form-group">
         <label for="status">Status:</label>
-        <input type="text" id="status" name="status" value="{{ user.status|default:"Active" }}" disabled>
+        <input type="text" id="status" name="status" value="{{ user.status|default:'Active' }}" disabled>
       </div>
 
-      <button type="submit" class="update-profile-btn">Update Profile</button>
+      <button type="submit" class="update-profile-btn" name="update_profile">Update Profile</button>
     </form>
   </div>
 </div>

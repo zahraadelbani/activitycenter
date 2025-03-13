@@ -33,4 +33,20 @@ class CustomSignupForm(SignupForm):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['name', 'profile_picture']
+        fields = ['name']
+
+    def save(self, commit=True):
+        """ Ensure old profile picture is deleted when updating """
+        user = super().save(commit=False)
+
+        if self.cleaned_data.get("profile_picture"):
+            # Delete old profile picture before saving a new one
+            if user.profile_picture:
+                user.profile_picture.delete(save=False)
+
+            user.profile_picture = self.cleaned_data["profile_picture"]
+
+        if commit:
+            user.save()
+        return user
+
