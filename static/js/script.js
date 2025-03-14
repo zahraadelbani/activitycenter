@@ -3,7 +3,6 @@ const menuBtn = document.querySelector("#menu-btn");
 const closeBtn = document.querySelector("#close-btn");
 const themeToggler = document.querySelector(".theme-toggler");
 
-
 //show sidebar
 menuBtn.addEventListener('click', () => {
   sideMenu.style.display = 'block';
@@ -47,6 +46,22 @@ document.addEventListener("DOMContentLoaded", function () {
       sidebarLinks.forEach((link) => link.classList.remove("active"));
       this.classList.add("active");
     });
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+  const dropdownToggle = document.querySelector(".dropdown-toggle");
+  const dropdownMenu = document.querySelector(".dropdown-menu");
+
+  dropdownToggle.addEventListener("click", function (event) {
+    event.preventDefault(); // Prevent default navigation
+    dropdownMenu.classList.toggle("show"); // Toggle dropdown visibility
+  });
+
+  // Close the dropdown if clicked outside
+  document.addEventListener("click", function (event) {
+    if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+      dropdownMenu.classList.remove("show");
+    }
   });
 });
 
