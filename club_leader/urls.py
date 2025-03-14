@@ -44,8 +44,8 @@ urlpatterns = [
     path("remove-member/<int:member_id>/", views.remove_member, name="remove_member"),
     path("termination-requests/", views.termination_requests, name="termination_requests"),
     path('review-feedback/<int:feedback_id>/', views.review_feedback, name='review_feedback'),
-
-
-
+    
+    
+    path('list_upcoming_events/', views.list_upcoming_events, name='list_upcoming_events'), 
 
 ]

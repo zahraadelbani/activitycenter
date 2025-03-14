@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen & Browser Dimensions</title>
+</head>
+<body>
+    <h2>Browser (Viewport) Dimensions</h2>
+    <p id="viewport"></p>
+
+    <h2>Screen Dimensions</h2>
+    <p id="screen"></p>
+
+    <script>
+        function showDimensions() {
+            document.getElementById("viewport").innerText = 
+                `Width: ${window.innerWidth}, Height: ${window.innerHeight}`;
+
+            document.getElementById("screen").innerText = 
+                `Screen Width: ${screen.width}, Screen Height: ${screen.height}`;
+        }
+
+        window.onload = showDimensions;
+        window.onresize = showDimensions;
+    </script>
+</body>
+</html>

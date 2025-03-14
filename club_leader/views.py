@@ -421,3 +421,17 @@ def edit_event(request, event_id):
         form = EventRequestForm(instance=event)
 
     return render(request, "club_leader/edit_event.html", {"form": form, "event": event})
+
+
+@login_required
+def list_upcoming_events(request):
+    """Renders the club leader's event calendar."""
+
+    if not ClubLeader.objects.filter(id=request.user.id).exists():
+        return redirect('club_leader:dashboard')  
+
+    leader = ClubLeader.objects.get(id=request.user.id)
+    events = Event.objects.filter(club=leader.club).order_by('event_date')  
+    form = EventRequestForm()  
+
+    return render(request, 'club_leader/list_upcoming_events.html', {'events': events, 'form': form})
