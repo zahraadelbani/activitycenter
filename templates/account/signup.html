@@ -1,6 +1,6 @@
 {% extends "account/base_entrance.html" %}
-{% load allauth i18n socialaccount static %}  <!-- Load necessary tags -->
-
+{% load allauth i18n socialaccount static %}
+{% load static %}
 {% block extra_head %}
     <script src="https://cdn.tailwindcss.com"></script>
 {% endblock %}
@@ -107,22 +107,6 @@
             </a>
         </div>
         {% endif %}
-
-        <!-- {% if messages %}
-        <div class="fixed top-5 left-1/2 transform -translate-x-1/2 w-[90%] max-w-lg bg-white shadow-lg rounded-lg p-4">
-            {% for message in messages %}
-                <div class="mb-2 p-3 text-center rounded-md text-white 
-                            {% if message.tags == 'success' %} bg-green-500 
-                            {% elif message.tags == 'info' %} bg-blue-500 
-                            {% elif message.tags == 'warning' %} bg-yellow-500 
-                            {% elif message.tags == 'error' %} bg-red-500 {% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %} -->
-    
-
     </div>
 </body>
 {% endblock content %}
