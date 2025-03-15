@@ -33,7 +33,7 @@ def signup_view(request):
         if form.is_valid():
             form.save(request)
             messages.success(request, "Sign-up successful! Please log in.")
-            return redirect("/accounts/login/") 
+            return redirect("account_login") 
     else:
         form = CustomSignupForm()
     
@@ -42,5 +42,5 @@ def signup_view(request):
 def custom_logout_view(request):
     """Logs out the user and redirects to login page."""
     logout(request)
-    return redirect('/accounts/login/')  
+    return redirect('account_login')  
 

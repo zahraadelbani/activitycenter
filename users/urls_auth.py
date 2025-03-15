@@ -5,7 +5,6 @@ from django.contrib.auth.views import LogoutView
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('login/', login_view, name='account_login'),
     path('signup/', signup_view, name='account_signup'),
     path('logout/', custom_logout_view, name='account_logout'),
 ]
