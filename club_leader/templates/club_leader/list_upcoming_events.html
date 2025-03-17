@@ -1,4 +1,7 @@
- <!-- Upcoming Events Table -->
+{% extends "dashboard.html" %}
+{% block content %}
+
+<!-- Upcoming Events Table -->
  <div class="container-events">
   <h2>Upcoming Events</h2>
   <div class="controls">
@@ -39,3 +42,39 @@
     </tbody>
   </table>
 </div>
+
+<script>
+
+  // Event Table Functions
+  function searchEvents() {
+    let input = document.getElementById("search").value.toLowerCase();
+    let rows = document.querySelectorAll("#event-list tr");
+    rows.forEach((row) => {
+      row.style.display = row.innerText.toLowerCase().includes(input)
+        ? ""
+        : "none";
+    });
+  }
+
+  function sortByDate() {
+    let tbody = document.getElementById("event-list");
+    let rows = Array.from(tbody.querySelectorAll("tr"));
+    rows.sort(
+      (a, b) => new Date(a.cells[1].innerText) - new Date(b.cells[1].innerText)
+    );
+    tbody.innerHTML = "";
+    rows.forEach((row) => tbody.appendChild(row));
+  }
+
+  function sortByApproval() {
+    let tbody = document.getElementById("event-list");
+    let rows = Array.from(tbody.querySelectorAll("tr"));
+    rows.sort((a, b) =>
+      a.cells[3].innerText.localeCompare(b.cells[3].innerText)
+    );
+    tbody.innerHTML = "";
+    rows.forEach((row) => tbody.appendChild(row));
+  }
+</script>
+
+{% endblock %}

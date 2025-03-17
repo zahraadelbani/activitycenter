@@ -4,35 +4,40 @@
 
 <!-- Styles -->
 <style>
-
-
-  .resource-title {
-    margin: 0 0 25px 0;
-    color: #333;
-    font-size: 28px;
-    font-weight: 600;
-  }
-
+ 
   .resource-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
+    margin-top: 20px;
   }
 
   .resource-search {
     display: flex;
-    align-items: center;
+  align-items: center;
+  border: 1px solid #ddd; /* Unified border */
+  border-radius: 50px; /* Rounded edges */
+  overflow: hidden; /* Prevents elements from spilling out */
+  width: fit-content;
   }
 
   .resource-search-input {
+    padding: 12px 15px;
+  font-size: 15px;
+  border: none; /* Remove default border */
+  outline: none;
+  width: 250px;
+  border-radius: 50px 0 0 50px; /* Round only left side */
+  }
+  .resource-search-btn {
     padding: 12px 20px;
-    font-size: 15px;
-    border: 1px solid #ddd;
- 
-    width: 350px;
-    outline: none;
-    transition: border-color 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 0 50px 50px 0; /* Round only right side */
   }
 
   .resource-search-input:focus {
@@ -45,7 +50,6 @@
   .resource-btn {
     padding: 12px 25px;
     border: none;
-   
     cursor: pointer;
     font-size: 15px;
     display: flex;
@@ -54,22 +58,34 @@
     transition: var(--color-primary) 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     color: white; 
+    border-radius: 50px;
   }
 
   .resource-btn-primary {
     background-color: var(--color-primary);
     color: white;
+   
   }
 
   .resource-btn-primary:hover {
     background-color: #0056b3;
   }
+  .resource-btn-danger {
+    background-color: var(--color-danger );;
+    color: white;
+   
+  }
+
+  .resource-btn-danger:hover {
+    background-color: #a00303;
+  }
+
 
   /* Table Styles */
   .resource-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 30px;
+    margin-top: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
@@ -81,9 +97,12 @@
   }
 
   .resource-table th {
-    background-color: #f8f9fa;
+    background-color: #f1f1f1;
     font-weight: 600;
     color: #333;
+  }
+  .resource-table tr{
+    background-color: #f8f9fa;
   }
 
   .resource-table tr:nth-child(even) {
@@ -91,7 +110,7 @@
   }
 
   .resource-table tr:hover {
-    background-color: #f1f1f1;
+    background-color: var(--color-background);
   }
 
   .resource-table td a {
@@ -122,9 +141,9 @@
     <div class="resource-controls">
       <!-- Search Bar -->
       <div class="resource-search">
-        <input type="text" class="resource-search-input" id="searchInput" placeholder="Search for documents..." />
-        <button class="resource-btn resource-btn-primary" onclick="searchDocuments()">Search</button>
-      </div>
+        <input type="text" class="resource-search-input" id="searchInput" placeholder="Search for documents..."  onkeyup="searchDocuments()" />
+        <button class="resource-search-btn resource-btn-primary">Search</button>
+      </div>  
 
       <!-- Upload Button -->
       <a href="{% url 'club_leader:upload_document' %}">
@@ -164,7 +183,7 @@
           <td>
             <form method="post" action="{% url 'club_leader:delete_document' doc.id %}" style="display:inline;">
               {% csrf_token %}
-              <button type="submit" class="resource-btn" style="background-color: var(--color-danger );" onclick="return confirm('Are you sure you want to delete this document?');">
+              <button type="submit" class="resource-btn resource-btn-danger"  onclick="return confirm('Are you sure you want to delete this document?');">
                 <span class="material-icons-sharp">delete_sweep </span>
                 Delete
               </button>
@@ -184,17 +203,14 @@
 
 <!-- JavaScript -->
 <script>
+ 
   function searchDocuments() {
-    let input = document.getElementById('searchInput').value.toLowerCase();
-    let rows = document.querySelectorAll('#documentTable tr');
-
-    rows.forEach(row => {
-      let title = row.querySelector('td').textContent.toLowerCase();
-      if (title.indexOf(input) === -1) {
-        row.style.display = 'none';
-      } else {
-        row.style.display = '';
-      }
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let rows = document.querySelectorAll("#documentTable tr");
+    rows.forEach((row) => {
+      row.style.display = row.innerText.toLowerCase().includes(input)
+        ? ""
+        : "none";
     });
   }
 </script>
