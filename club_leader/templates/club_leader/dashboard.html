@@ -1,6 +1,166 @@
 {% extends "dashboard.html" %}
 {% load static %}
 {% block content %}
+
+<style>
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .tab-button {
+    background: var(--color-primary);
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .tab-button.active {
+    background: #0056b3;
+  }
+
+  .tab-content {
+    display: none;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .card-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+
+  .card {
+    width: 21rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background: white;
+  }
+
+  .card-img-top {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+  }
+
+  .card-body {
+    padding: 15px;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+
+  .list-group {
+    padding: 0;
+  }
+
+  .list-group-item {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+  }
+
+  .card-link {
+    color: var(--color-primary);
+  }
+
+
+    /* Table Styles */
+  .dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .dashboard-table th,
+  .dashboard-table td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid #f1f1f1;
+  }
+
+  .dashboard-table th {
+    background-color: #f1f1f1;
+    font-weight: 600;
+    color: #333;
+  }
+  .dashboard-table tr{
+    background-color: #f8f9fa;
+  }
+
+  .dashboard-table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  .dashboard-table tr:hover {
+    background-color: var(--color-background);
+  }
+
+  .dashboard-table td a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .dashbord-icon {
+    font-size: 18px;
+    vertical-align: middle;
+  }
+
+  /* No Documents Message */
+  .dashbord-empty {
+    text-align: center;
+    color: #666;
+    padding: 30px;
+    font-size: 18px;
+  }
+
+
+  .dashboard-search {
+    display: flex;
+  align-items: center;
+  border: 1px solid #ddd; /* Unified border */
+  border-radius: 50px; /* Rounded edges */
+  overflow: hidden; /* Prevents elements from spilling out */
+  width: fit-content;
+  }
+
+  .dashboard-search-input {
+    padding: 12px 15px;
+  font-size: 15px;
+  border: none; /* Remove default border */
+  outline: none;
+  width: 250px;
+  border-radius: 50px 0 0 50px; /* Round only left side */
+  }
+  .dashboard-search-btn {
+    padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 0 50px 50px 0; /* Round only right side */
+  }
+
+  .dashboard-search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 8px var(--color-primary);
+  }
+
+
+</style>
 <div class="dashboard-content">
   <div class="dash-middle">
     <div class="middle-top">
@@ -19,12 +179,12 @@
               </div>
               <div class="progress">
                 <svg>
-                    <circle cx="38" cy="38" r="36"></circle>
+                  <circle cx="38" cy="38" r="36"></circle>
                 </svg>
                 <div class="number">
-                    <p>{{ members_percentage }}%</p>
+                  <p>{{ members_percentage }}%</p>
                 </div>
-            </div>            
+              </div>
             </div>
             <small class="text-muted">Last 24 Hours</small>
           </div>
@@ -72,138 +232,162 @@
     </div>
 
     <!-- ############### TABLE FOR REQUESTS ##############-->
-     
+
     <div class="middle-bottom">
       <main>
-        <div class="carousel-container ">
-          <button class="carousel-btn prev" onclick="moveSlide(-1)">&#10094;</button>
-          <div class="carousel">
-            <div class="slide">
-              <div class="recent-orders">
-                <h3>Pending Event Requests</h3>
-{% if pending_events %}
-<ul>
-  {% for event in pending_events %}
-  <li>
-    <strong>{{ event.title }}</strong> - {{ event.event_date|date:"F d, Y" }} <br>
-    <strong>Club:</strong> {{ event.club.name }} <br>
-    <strong>Participants:</strong> {{ event.participants }} <br>
-    <strong>Needs:</strong> {{ event.needs }} <br>
-    <strong>Total Cost:</strong> TL{{ event.total_cost }} <br>
-    <strong>Transportation Required:</strong> {{ event.transportation_request|yesno:"Yes,No" }} <br>
-    {% if event.image %}
-    <img src="{{ event.image.url }}" width="100">
-    {% endif %}
-    </li>
-  {% endfor %}
-</ul>
-{% else %}
-<p>No pending event requests.</p>
-{% endif %}
-
-              </div>
-            </div>
-
-            <div class="slide">
-              <div class="recent-orders">
-                <h3>Pending Membership Termination Requests</h3>
-                
-                {% if termination_requests %}
-                <ul>
-                  {% for request in termination_requests %}
-                  <li>
-                    <strong>Member:</strong> {{ request.club_member.user.name }}<br>
-                    <strong>Requested At:</strong> {{ request.created_at|date:"M d, Y" }}<br>
-                  </li>
-                  <hr>
-                  {% endfor %}
-                </ul>
-                
-                {% else %}
-                <p>No termination requests pending.</p>
-                {% endif %}
-              </div>
-            </div>
-            
-
-            <div class="slide">
-              <div class="recent-orders">
-                <h3>Pending Announcements</h3>
-                {% if announcements %}
-                <ul>
-                  {% for announcement in announcements %}
-<li>
-    <strong>{{ announcement.title }}</strong> - {{ announcement.content }}
-</li>
-{% endfor %}
-
-                </ul>
-                {% else %}
-                <p>No announcements pending.</p>
-                {% endif %}
-              </div>
-            </div>
-<!-- 
-            <div class="slide">
-              <div class="recent-orders">
-                <h3>Pending Feedback</h3>
-                {% if feedbacks %}
-                <ul>
-                  {% for feedback in feedbacks %}
-                  <li>
-                    {{ feedback.content }} - <strong>{{ feedback.category }}</strong>
-                    <a href="{% url 'review_feedback' feedback.id %}">Mark as Reviewed</a>
-                  </li>
-                  {% endfor %}
-                </ul>
-                {% else %}
-                <p>No new feedback.</p>
-                {% endif %}
-              </div>
-            </div> -->
-            <!-- Complaints Section -->
-<div class="slide">
-  <div class="recent-orders">
-    <h3>Pending Complaints (Anonymous)</h3>
-    {% if complaints %}
-    <ul>
-      {% for complaint in complaints %}
-      <li>
-        <strong>Submitted On:</strong> {{ complaint.created_at|date:"Y-m-d H:i" }}<br>
-        <strong>Content:</strong> {{ complaint.content }}<br>
-        <a href="{% url 'club_leader:review_feedback' complaint.id %}" class="btn btn-success">Mark as Reviewed</a>
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p>No pending complaints.</p>
-    {% endif %}
-  </div>
-</div>
-
-<!-- Suggestions Section -->
-<div class="slide">
-  <div class="recent-orders">
-    <h3>Pending Suggestions</h3>
-    {% if suggestions %}
-    <ul>
-      {% for suggestion in suggestions %}
-      <li>
-        <strong>Submitted By:</strong> {{ suggestion.submitted_by.name }}<br>
-        <strong>Submitted On:</strong> {{ suggestion.created_at|date:"Y-m-d H:i" }}<br>
-        <strong>Content:</strong> {{ suggestion.content }}<br>
-        <a href="{% url 'club_leader:review_feedback' suggestion.id %}" class="btn btn-success">Mark as Reviewed</a>
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p>No pending suggestions.</p>
-    {% endif %}
-  </div>
-</div>
-
+        <div class="tabs-container">
+          <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'pending-events')">Pending Events</button>
+            <button class="tab-button" onclick="openTab(event, 'termination-requests')">Termination Requests</button>
+            <button class="tab-button" onclick="openTab(event, 'announcements')">Pending Announcements</button>
+            <button class="tab-button" onclick="openTab(event, 'complaints')">Pending Complaints</button>
+            <button class="tab-button" onclick="openTab(event, 'suggestions')">Suggestions</button>
           </div>
-          <button class="carousel-btn next" onclick="moveSlide(1)">&#10095;</button>
+    
+          <div class="tab-content active" id="pending-events">
+            {% if pending_events %}
+              <div class="card-container">
+                {% for event in pending_events %}
+                <div class="card">
+                  {% if event.image %}
+                    <img class="card-img-top" src="{{ event.image.url }}" alt="Event Image">
+                  {% endif %}
+                  <div class="card-body">
+                    <h5 class="card-title">{{ event.title }}</h5>
+                    <p class="card-text">Date: {{ event.event_date|date:"F d, Y" }}</p>
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Participants:</strong> {{ event.participants }}</li>
+                    <li class="list-group-item"><strong>Total Cost:</strong> TL{{ event.total_cost }}</li>
+                  </ul>
+                  <div class="card-body">
+                    <a href="{% url 'club_leader:edit_event' event.id %}" class="card-link">View Details</a>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <p>No pending event requests.</p>
+            {% endif %}
+          </div>
+    
+         <!-- Termination Requests (Table) -->
+         <div class="tab-content" id="termination-requests">
+          {% if termination_requests %}
+          <div class="dashboard-search">
+            <input type="text" class="dashboard-search-input" id="searchTerminationRequests" placeholder="Search for documents..."  onkeyup="search('terminationRequestsTable')" />
+            <button class="dashboard-search-btn dashboard-btn-primary">Search</button>
+          </div>  
+    
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Member</th>
+                  <th>Requested At</th>
+                </tr>
+              </thead>
+              <tbody id="terminationRequestsTable">
+                {% for request in termination_requests %}
+                <tr>
+                  <td>{{ request.club_member.user.name }}</td>
+                  <td>{{ request.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p>No termination requests pending.</p>
+          {% endif %}
+        </div>
+
+        <!-- Announcements (Table) -->
+        <div class="tab-content" id="announcements">
+          {% if announcements %}
+          <div class="dashboard-search">
+            <input type="text" class="dashboard-search-input" id="searchAnnouncements" placeholder="Search for documents..." onkeyup="search('announcementsTable')" />
+            <button class="dashboard-search-btn dashboard-btn-primary">Search</button>
+          </div>  
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Content</th>
+                </tr>
+              </thead>
+              <tbody  id="announcementsTable">
+                {% for announcement in announcements %}
+                <tr>
+                  <td>{{ announcement.title }}</td>
+                  <td>{{ announcement.content }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p>No announcements pending.</p>
+          {% endif %}
+        </div>
+
+        <!-- Complaints (Table) -->
+        <div class="tab-content" id="complaints">
+          {% if complaints %}
+          <div class="dashboard-search">
+            <input type="text" class="dashboard-search-input" id="searchComplaints" placeholder="Search for documents..." onkeyup="search('complaintsTable')" />
+            <button class="dashboard-search-btn dashboard-btn-primary">Search</button>
+          </div>  
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Submitted On</th>
+                  <th>Content</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="complaintsTable">
+                {% for complaint in complaints %}
+                <tr>
+                  <td>{{ complaint.created_at|date:"Y-m-d H:i" }}</td>
+                  <td>{{ complaint.content }}</td>
+                  <td><a href="{% url 'club_leader:review_feedback' complaint.id %}" class="btn btn-success">Mark as Reviewed</a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p>No pending complaints.</p>
+          {% endif %}
+        </div>
+  
+        <!-- Suggestions (Table) -->
+        <div class="tab-content" id="suggestions">
+          {% if suggestions %}
+          <div class="dashboard-search">
+            <input type="text" class="dashboard-search-input" id="searchSuggestions" placeholder="Search for documents..." onkeyup="search('suggestionsTable')"/>
+            <button class="dashboard-search-btn dashboard-btn-primary">Search</button>
+          </div>  
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Submitted By</th>
+                  <th>Submitted On</th>
+                  <th>Content</th>
+                </tr>
+              </thead>
+              <tbody id="suggestionsTable">
+                {% for suggestion in suggestions %}
+                <tr>
+                  <td>{{ suggestion.submitted_by.name }}</td>
+                  <td>{{ suggestion.created_at|date:"Y-m-d H:i" }}</td>
+                  <td>{{ suggestion.content }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p>No pending suggestions.</p>
+          {% endif %}
+        </div>
+        </div>
       </main>
     </div>
   </div>
@@ -302,4 +486,20 @@
     </div>
   </div>
 </div>
+<script>
+ function search(tableId) {
+  console.log("Searching in table:", tableId);
+  let input = document.getElementById("search" + tableId).value.toLowerCase();
+  console.log("Search input:", input);
+  let rows = document.getElementById(tableId).querySelectorAll('tr');
+  console.log("Number of rows:", rows.length);
+
+  rows.forEach((row) => {
+    let rowText = row.innerText.toLowerCase();
+    console.log("Row text:", rowText);
+    row.style.display = rowText.includes(input) ? "" : "none";
+  });
+}
+
+</script>
 {% endblock %}

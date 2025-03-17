@@ -1,42 +1,32 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
 from .models import User, ClubLeader, Executive, Rector, ActivityCenterAdmin, ClubMember
-from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import CustomSignupForm, ProfileUpdateForm
+from .forms import  ProfileUpdateForm
 
-from django.shortcuts import redirect
-from allauth.account.views import SignupView
-
-class CustomSignupView(SignupView):
-    success_url = '/accounts/login/'
-    
 def base_view(request):
     return render(request, 'users/base.html')
 
 @login_required
 def profile_view(request):
-    user = request.user  # Get the logged-in user
-    form = ProfileUpdateForm(instance=user)  # Pre-fill form with user data
+    user = request.user 
+    form = ProfileUpdateForm(instance=user)  
 
     if request.method == "POST":
-        # If updating the profile picture
-        if "update_picture" in request.POST and "profile_picture" in request.FILES:
+        if "profile_picture" in request.FILES:
             uploaded_file = request.FILES["profile_picture"]
-            print(f"Uploaded file: {uploaded_file.name}")  # Debugging
+            print(f"Uploaded file: {uploaded_file.name}")  
 
             if user.profile_picture:
-                user.profile_picture.delete(save=False)  # Delete old image
-
+                user.profile_picture.delete(save=False)
             user.profile_picture = uploaded_file
-            user.save()  # Save new profile picture
+            user.save()
 
-            print(f"New Profile Picture URL: {user.profile_picture.url}")  # Debugging
+            print(f"New Profile Picture URL: {user.profile_picture.url}") 
             messages.success(request, "Profile picture updated successfully!")
             return redirect(request.path)
 
-        # If updating profile details (Name)
+        # If updating profile details (Name, etc.)
         elif "update_profile" in request.POST:
             form = ProfileUpdateForm(request.POST, instance=user)
             if form.is_valid():
@@ -44,46 +34,19 @@ def profile_view(request):
                 messages.success(request, "Profile updated successfully!")
                 return redirect(request.path)
             else:
-                print("Form is NOT valid:", form.errors)  # Debugging
+                print("Form is NOT valid:", form.errors)  
+                messages.error(request, "Failed to update profile. Please check the form.")
 
     return render(request, "users/profile.html", {"user": user, "form": form})
 
-
+""" users dashboard """
+#@login_required
+def userdashboard(request):
+    return render(request, "users/udashboard.html", {"user": request.user})
 
 @login_required
 def dashboard(request):
     return render(request, "dashboard.html", {"user": request.user})
-
-
-def login_view(request):
-    if request.method == "POST":
-        email = request.POST['email']
-        password = request.POST['password']
-
-        user = authenticate(request, email=email, password=password)  # Authenticate user
-
-        if user is not None:
-            login(request, user)  # Log the user in
-            messages.success(request, "Login successful!")
-            return redirect('dashboard')  # Redirect to a protected page after login
-        else:
-            messages.error(request, "Invalid email or password.")
-
-    return render(request, 'users/login.html')  # Make sure this path is correct!
-
-def signup_view(request):
-    if request.method == "POST":
-        form = CustomSignupForm(request.POST)
-        if form.is_valid():
-            form.save(request)  # Save the user but don't log them in
-            messages.success(request, "Sign-up successful! Please log in.")
-            return redirect("account_login")  # Redirect to the login page instead of dashboard
-    else:
-        form = CustomSignupForm()
-    
-    return render(request, "users/signup.html", {"form": form})
-
-
 
 # List Users
 def list_users(request):

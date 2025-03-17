@@ -8,7 +8,6 @@
   <title>Club Management System</title>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
   <link rel="stylesheet" href="https://cdn.tailwindcss.com">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
   {% block extra_head %}{% endblock extra_head %}
@@ -75,12 +74,22 @@
             <span class="material-icons-sharp">campaign</span>
             <h3>Announcements</h3>
           </a>
+          <!--users dashboard-->
+          <a href="{% url 'users:udashboard' %}">
+            <span class="material-icons-sharp">campaign</span>
+            <h3>User Dashboard</h3>
+          </a>
+          
+          
+
+          <a href="{% url 'account_logout' %}">
 
 
           <a href="{% url 'account_logout' %}"  class="logout-btn">
             <span class="material-icons-sharp">logout</span>
             <h3>Logout</h3>
-          </a>
+        </a>
+        
         </div>
       </aside>
     </div>
@@ -129,7 +138,10 @@
 
         {% endblock content %}
       </div>
+      
+
     </div>
+    
   </div>
   </div>
   <script src="{% static 'js/script.js' %}"></script> 

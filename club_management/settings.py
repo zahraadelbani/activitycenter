@@ -99,6 +99,8 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/login/'  
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False 
+
 
 
 

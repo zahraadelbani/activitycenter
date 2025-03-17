@@ -152,9 +152,9 @@
       <div class="upload-icon" onclick="document.getElementById('fileInput').click()">+</div>
     </div>
     <div class="profile-update-buttons">
-      <form method="POST" enctype="multipart/form-data">
+      <form method="POST" enctype="multipart/form-data" id="profilePictureForm">
         {% csrf_token %}
-        <input type="file" name="profile_picture" id="fileInput" onchange="this.form.submit()">
+        <input type="file" name="profile_picture" id="fileInput" onchange="document.getElementById('profilePictureForm').submit()">
       </form>
     </div>
   </div>
@@ -193,13 +193,5 @@
     </form>
   </div>
 </div>
-
-{% if messages %}
-  <ul class="messages">
-    {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
 
 {% endblock content %}

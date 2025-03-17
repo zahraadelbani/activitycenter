@@ -1,17 +1,17 @@
-from allauth.account.adapter import DefaultAccountAdapter  # ✅ Corrected import
+from allauth.account.adapter import DefaultAccountAdapter  
 from django.contrib.auth import get_backends, login
 
-class CustomAccountAdapter(DefaultAccountAdapter):  # ✅ Inherit from DefaultAccountAdapter
+class CustomAccountAdapter(DefaultAccountAdapter):  
     def login(self, request, user):
-        remember = request.POST.get('remember', None)  # Check if "Remember Me" is checked
-        
-        # Get the authentication backend
-        backend = get_backends()[0].__class__.__name__  # Get the first authentication backend
-        user.backend = f'django.contrib.auth.backends.{backend}'
+        remember = request.session.get('remember', False)  # Use session instead of request.POST
 
+        # Explicitly set the authentication backend for AllAuth
+        user.backend = 'allauth.account.auth_backends.AuthenticationBackend'  
+
+        # Set session expiry based on "Remember Me" checkbox
         if remember:
             request.session.set_expiry(1209600)  # 2 weeks
         else:
-            request.session.set_expiry(86400)  # Session expires on browser close
-        
-        login(request, user, backend=user.backend)  # Provide backend explicitly
+            request.session.set_expiry(86400)  # 1 day
+
+        login(request, user, backend=user.backend)  # Explicitly provide the backend
