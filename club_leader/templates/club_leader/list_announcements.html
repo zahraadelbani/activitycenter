@@ -1,4 +1,4 @@
-{% extends "dashboard.html" %}
+{% extends "navbar.html" %}
 {% load static %}
 {% block content %}
 
@@ -200,7 +200,7 @@
                 {% endif %}
             </p>
 
-            {% if user.get_role == "Club Leader" %}
+            {% if is_leader %}
             <div class="action-buttons">
                 <a href="{% url 'club_leader:edit_announcement' announcement.id %}" class="action-button action-button-edit">
                     <span class="material-icons-sharp">edit</span>

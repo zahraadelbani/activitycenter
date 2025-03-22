@@ -3,49 +3,37 @@ from django import forms
 from .models import User
 
 class CustomSignupForm(SignupForm):
-    """ Custom Signup Form that validates Student ID """
-
     name = forms.CharField(max_length=255, required=True, label="Full Name")
-    student_id = forms.CharField(max_length=8, required=True, label="Student ID")
+    student_id = forms.CharField(max_length=8, required=False, label="Student ID")
 
     def clean_student_id(self):
-        """ Validate that the student ID is exactly 8 digits and contains only numbers """
         student_id = self.cleaned_data.get("student_id")
-
-        # Ensure Student ID is exactly 8 characters long and contains only numbers
-        if not student_id.isdigit() or len(student_id) != 8:
-            raise forms.ValidationError("Invalid Student ID. It must be exactly 8 digits (numbers only).")
-
-        # Ensure Student ID is unique (no duplicate student IDs)
-        if User.objects.filter(student_id=student_id).exists():
-            raise forms.ValidationError("This Student ID is already registered.")
-
+        if student_id:
+            if not student_id.isdigit() or len(student_id) != 8:
+                raise forms.ValidationError("Invalid Student ID. It must be exactly 8 digits (numbers only).")
+            if User.objects.filter(student_id=student_id).exists():
+                raise forms.ValidationError("This Student ID is already registered.")
         return student_id
 
     def save(self, request):
-        """ Save user with validated Student ID """
         user = super().save(request)
         user.name = self.cleaned_data["name"]
-        user.student_id = self.cleaned_data["student_id"]
+        user.student_id = self.cleaned_data.get("student_id", None)
         user.save()
         return user
+
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['name']
+        fields = ['name', 'profile_picture']
 
     def save(self, commit=True):
-        """ Ensure old profile picture is deleted when updating """
         user = super().save(commit=False)
-
         if self.cleaned_data.get("profile_picture"):
-            # Delete old profile picture before saving a new one
             if user.profile_picture:
                 user.profile_picture.delete(save=False)
-
             user.profile_picture = self.cleaned_data["profile_picture"]
-
         if commit:
             user.save()
         return user

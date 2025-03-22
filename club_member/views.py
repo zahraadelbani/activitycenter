@@ -1,125 +1,87 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import ClubMember, MembershipTerminationRequest
-from clubs.models import Club, ClubDocument
-from clubs.models import Event
+from .models import MembershipTerminationRequest
+from clubs.models import Club, ClubDocument, Event
 from feedback.models import Feedback
-from users.models import User
+from users.models import User, Membership
 
-
-# @login_required
+@login_required
 def dashboard(request):
-    """Club Member Dashboard"""
-    if not request.user or request.user.is_anonymous:
-        request.user = User.objects.first()  # Assign the first user in the database
-
     user = request.user
-
-    # ✅ Get clubs the user has already joined
-    member_clubs = Club.objects.filter(club_members__user=user)
-
-    # ✅ Extract **only the club IDs** for filtering available clubs
+    member_clubs = Club.objects.filter(memberships__user=user, memberships__membership_type="member")
     joined_club_ids = member_clubs.values_list("id", flat=True)
-
-    # ✅ Get clubs the user **has NOT joined yet**
     available_clubs = Club.objects.exclude(id__in=joined_club_ids)
-
-    # ✅ Fetch upcoming events for joined clubs
     upcoming_events = Event.objects.filter(club__in=member_clubs).order_by("event_date")
-
-    # ✅ Fetch termination requests
     termination_requests = MembershipTerminationRequest.objects.filter(
-        club_member__user=user, status="pending"
+        membership__user=user, status="pending"
     )
 
     context = {
-        "member_clubs": member_clubs,  # Shows clubs user is a member of
+        "member_clubs": member_clubs,
         "upcoming_events": upcoming_events,
         "termination_requests": termination_requests,
-        "available_clubs": available_clubs,  # ✅ Now correctly filtered
+        "available_clubs": available_clubs,
     }
     return render(request, "club_member/dashboard.html", context)
 
-
-# @login_required
+@login_required
 def join_club(request):
-    """Join a club (check quota & limit of 3 clubs)"""
     user = request.user
-
-    # ✅ Get the clubs the user has already joined
-    enrolled_clubs_count = ClubMember.objects.filter(user=user).count()
+    enrolled_clubs_count = Membership.objects.filter(user=user, membership_type="member").count()
 
     if request.method == "POST":
         club_id = request.POST.get("club_id")
         club = get_object_or_404(Club, id=club_id)
 
-        # ✅ Ensure the user is not already a member of this club
-        if ClubMember.objects.filter(user=user, club=club).exists():
+        if Membership.objects.filter(user=user, club=club, membership_type="member").exists():
             messages.error(request, "You are already a member of this club.")
             return redirect("club_member:dashboard")
 
-        # ✅ Ensure the user is not already a member of 3 clubs
         if enrolled_clubs_count >= 3:
             messages.error(request, "You cannot join more than 3 clubs.")
             return redirect("club_member:dashboard")
 
-        # ✅ Ensure the club has space
-        if club.club_members.count() >= club.quota:
+        if club.memberships.filter(membership_type="member").count() >= club.quota:
             messages.error(request, "This club has reached its limit.")
             return redirect("club_member:dashboard")
 
-        # ✅ Create membership only if all checks pass
-        ClubMember.objects.create(user=user, club=club)
+        Membership.objects.create(user=user, club=club, membership_type="member")
         messages.success(request, f"You have successfully joined {club.name}.")
 
     return redirect("club_member:dashboard")
 
-
+@login_required
 def leave_club(request, club_id):
-    """Request to leave a club (needs approval)"""
-    if not request.user or request.user.is_anonymous:
-        request.user = User.objects.first()  # Assigns first user from database for testing
-        messages.info(request, "You were assigned a test user automatically.")
-
     user = request.user
-    club_member = get_object_or_404(ClubMember, user=user, club_id=club_id)
+    membership = get_object_or_404(Membership, user=user, club_id=club_id, membership_type="member")
 
-    existing_request = MembershipTerminationRequest.objects.filter(club_member=club_member, status="pending").exists()
-    
+    existing_request = MembershipTerminationRequest.objects.filter(membership=membership, status="pending").exists()
+
     if existing_request:
         messages.error(request, "You already have a pending request to leave this club.")
     else:
-        MembershipTerminationRequest.objects.create(club_member=club_member, club=club_member.club)
+        MembershipTerminationRequest.objects.create(membership=membership, club=membership.club)
         messages.success(request, "Your request to leave has been submitted.")
 
     return redirect("club_member:dashboard")
 
-
-# @login_required
+@login_required
 def view_documents(request, club_id):
-    """View and download club documents."""
     club = get_object_or_404(Club, id=club_id)
     documents = ClubDocument.objects.filter(club=club)
     return render(request, "club_member/documents.html", {"club": club, "documents": documents})
 
-# @login_required
+@login_required
 def view_events(request):
-    """
-    Displays a list of upcoming events for the clubs the user is a member of.
-    """
     user = request.user
-    member_clubs = Club.objects.filter(club_members__user=user)
+    member_clubs = Club.objects.filter(memberships__user=user, memberships__membership_type="member")
     events = Event.objects.filter(club__in=member_clubs).order_by("event_date")
-
     return render(request, "club_member/events.html", {"events": events})
 
-# @login_required
+@login_required
 def cancel_termination_request(request, request_id):
-    """
-    Allows a club member to cancel their pending termination request.
-    """
-    termination_request = get_object_or_404(MembershipTerminationRequest, id=request_id, club_member__user=request.user)
+    termination_request = get_object_or_404(MembershipTerminationRequest, id=request_id, membership__user=request.user)
 
     if termination_request.status == "pending":
         termination_request.delete()

@@ -1,4 +1,4 @@
-{% extends "dashboard.html" %}
+{% extends "navbar.html" %}
 {% load static %}
 {% block content %}
 
@@ -16,7 +16,7 @@
     <tbody>
       {% for request in requests %}
       <tr>
-        <td>{{ request.club_member.user.name }}</td>
+        <td>{{ request.membership.user.name }}</td>
         <td>{{ request.created_at|date:"M d, Y" }}</td>
         <td>
           <form action="{% url 'club_leader:approve_termination' request.id %}" method="POST" style="display:inline;">

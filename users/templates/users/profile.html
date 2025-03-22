@@ -1,4 +1,4 @@
-{% extends "dashboard.html" %}
+{% extends "navbar.html" %}
 {% load static %}
 {% block content %}
 
@@ -181,8 +181,26 @@
 
       <div class="form-group">
         <label for="role">Role:</label>
-        <input type="text" id="role" name="role" value="{{ user.get_role }}" disabled>
+        {% if user.get_role == "Activity Center Admin" %}
+          <input type="text" id="role" name="role" value="Activity Center Admin" disabled>
+        {% else %}
+          <div style="padding: 10px; border: 1px solid #ccc; border-radius: var(--border-radius-1); background: #f9f9f9;">
+            {% if leader_memberships %}
+              <strong>Leader of:</strong><br>
+              {% for m in leader_memberships %}
+                <p style="margin: 4px 0 4px 12px;">• {{ m.club.name }}</p>
+              {% endfor %}
+            {% endif %}
+            {% if member_memberships %}
+              <strong>Member of:</strong><br>
+              {% for m in member_memberships %}
+                <p style="margin: 4px 0 4px 12px;">• {{ m.club.name }}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+        {% endif %}
       </div>
+      
 
       <div class="form-group">
         <label for="status">Status:</label>

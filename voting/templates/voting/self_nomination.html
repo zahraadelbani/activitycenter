@@ -1,0 +1,15 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+<h1>🏆 Nominate Yourself for an Election Position</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit Nomination</button>
+</form>
+
+<p>⚠️ Your nomination will require admin approval before appearing in the election.</p>
+
+<a href="{% url 'voting:elections' %}">⬅️ Back to Elections</a>
+{% endblock %}

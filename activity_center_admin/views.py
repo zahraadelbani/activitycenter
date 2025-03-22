@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.decorators import login_required  # Temporarily removed
 # from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
@@ -13,15 +14,14 @@ from clubs.models import Announcement  # ✅ Correct import
 
 # --- Dashboard ---
 # @method_decorator([login_required, role_required('Activity Center Admin')], name='dispatch')
-class DashboardView(TemplateView):
-    template_name = 'activity_center_admin/dashboard.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['clubs'] = Club.objects.all()
-        context['pending_activities'] = Event.objects.filter(approval_status='pending')
-        context['pending_announcements'] = Announcement.objects.filter(status='pending')
-        return context
+@login_required
+def activity_admin_dashboard(request):
+    context = {
+        'clubs': Club.objects.all(),
+        'pending_activities': Event.objects.filter(approval_status='pending'),
+        'pending_announcements': Announcement.objects.filter(status='pending'),
+    }
+    return render(request, "activity_center_admin/dashboard.html", context)
 
 # --- Clubs CRUD ---
 # @method_decorator([login_required, role_required('Activity Center Admin')], name='dispatch')

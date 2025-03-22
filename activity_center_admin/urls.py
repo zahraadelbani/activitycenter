@@ -5,8 +5,8 @@ app_name = 'activity_center_admin'
 
 urlpatterns = [
     # Dashboard
-    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
-    
+    path("dashboard/", views.activity_admin_dashboard, name="dashboard"),
+
     # Clubs CRUD
     path('clubs/', views.ClubListView.as_view(), name='club_list'),
     path('clubs/create/', views.ClubCreateView.as_view(), name='club_create'),

@@ -1,4 +1,4 @@
-{% extends "dashboard.html" %}
+{% extends "navbar.html" %}
 {% load static %}
 {% block content %}
 
@@ -16,8 +16,8 @@
         <th>Member Name</th>
         <th>Email</th>
         <th>Joined Date</th>
-        {% if user.get_role == "Club Leader" %}
-        <th>Actions</th>
+        {% if is_leader %}
+                <th>Actions</th>
         {% endif %}
       </tr>
     </thead>
@@ -26,8 +26,8 @@
       <tr>
         <td>{{ member.user.name }}</td>
         <td>{{ member.user.email }}</td>
-        <td>{{ member.joined_at|date:"M d, Y" }}</td>
-        {% if user.get_role == "Club Leader" %}
+        <td>{{ member.created_at|date:"M d, Y" }}</td>
+        {% if is_leader %}
         <td>
           <form action="{% url 'club_leader:remove_member' member.id %}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to remove this member?');">
             {% csrf_token %}

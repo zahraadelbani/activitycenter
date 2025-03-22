@@ -1,28 +1,26 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="{{ csrf_token }}" />
   <title>Club Management System</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.tailwindcss.com">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.tailwindcss.com" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
   {% block extra_head %}{% endblock extra_head %}
 </head>
 
 <body>
-
-  <!-- Container -->
   <div class="container-css">
     <!-- SIDEBAR DIV -->
     <div class="sidebar-div">
       <aside>
         <div class="top">
           <div class="logo">
-            <img src="{% static 'emu.png'%}" alt="">
+            <img src="{% static 'emu.png' %}" alt="EMU Logo" />
             <h2>EMU <span class="primary">A.CENTER</span></h2>
           </div>
           <div class="close" id="close-btn">
@@ -31,13 +29,11 @@
         </div>
 
         <div class="sidebar">
+          {% if is_leader %}
+          <!-- Club Leader Sidebar -->
           <a href="{% url 'club_leader:dashboard' %}">
             <span class="material-icons-sharp">grid_view</span>
             <h3>Club Leader Dashboard</h3>
-          </a>
-          <a href="{% url 'users:profile' %}">
-            <span class="material-icons-sharp">person</span>
-            <h3>Profile</h3>
           </a>
           <a href="{% url 'club_leader:club_members' %}">
             <span class="material-icons-sharp">groups</span>
@@ -59,56 +55,60 @@
               <a href="{% url 'club_leader:list_upcoming_events' %}">Accepted Events</a>
             </div>
           </div>
-
           <a href="{% url 'club_leader:list_documents' %}">
             <span class="material-icons-sharp">folder_open</span>
             <h3>Documents</h3>
           </a>
           <a href="{% url 'polls:select_num_choices' %}">
             <span class="material-icons-sharp">how_to_reg</span>
-
             <h3>Messaging</h3>
           </a>
-
           <a href="{% url 'club_leader:list_announcements' %}">
             <span class="material-icons-sharp">campaign</span>
             <h3>Announcements</h3>
           </a>
-          <!--users dashboard-->
+          {% endif %}
+
+          {% if is_member %}
+          <!-- Club Member Sidebar -->
           <a href="{% url 'users:udashboard' %}">
-            <span class="material-icons-sharp">campaign</span>
+            <span class="material-icons-sharp">dashboard</span>
             <h3>User Dashboard</h3>
           </a>
-          
-          
+          <a href="{% url 'voting:self_nominate' %}" class="nominate-button">✍️ Nominate Yourself</a>
+          {% endif %}
 
-          <a href="{% url 'account_logout' %}">
+          {% if user.get_role == "activity_center_admin" %}
+          <!-- Activity Center Admin Sidebar -->
+          <a href="{% url 'activity_center_admin:dashboard' %}">
+            <span class="material-icons-sharp">admin_panel_settings</span>
+            <h3>Admin Panel</h3>
+          </a>
+          {% endif %}
 
-
-          <a href="{% url 'account_logout' %}"  class="logout-btn">
+          <!-- Always Visible -->
+          <a href="{% url 'users:profile' %}">
+            <span class="material-icons-sharp">person</span>
+            <h3>Profile</h3>
+          </a>
+          <a href="{% url 'account_logout' %}" class="logout-btn">
             <span class="material-icons-sharp">logout</span>
             <h3>Logout</h3>
-        </a>
-        
+          </a>
         </div>
       </aside>
     </div>
 
     <!-- MIDDLE DIV -->
     <div class="middle-div">
-
       <!-- NAVBAR DIV -->
       <div class="navbar-div">
-
         <div class="nav-dashboard-div">
           <div class="nav-dashboard-button">
             <button id="menu-btn">
               <span class="material-icons-sharp">menu</span>
             </button>
           </div>
-          <!-- <div class="nav-dashboard-title">
-            <h1>Dashboard</h1>
-          </div> -->
         </div>
 
         <div class="nav-left-div">
@@ -117,33 +117,25 @@
             <span class="material-icons-sharp">dark_mode</span>
           </div>
 
-
           <div class="profile">
             <div class="info">
-              <p>Welcome <b>{{ user.name }} !</b></p>
-              <!-- <h3>Welcome <b>Bamlak!</b></h3> -->
-              <small class="text-muted">Admin</small>
+              <p>Welcome <b>{{ user.name }}!</b></p>
+              <small class="text-muted">{{ user.get_role }}</small>
             </div>
             <div class="profile-photo">
-              <!-- <img src="{% static 'emu.png'%}" alt=""> -->
-              <img src="{{ user.profile_picture.url }}" alt="Profile Picture">
-              <!-- BAMLOUKA YOU NEED TO FIX THE SIZING BECAUSE WHEN I UNCOMMENTED IT IT WAS A SCROLLBAR -->
+              <img src="{{ user.profile_picture.url|default_if_none:'/static/profile_pictures/default.jpg' }}" alt="Profile Picture" />
             </div>
           </div>
         </div>
       </div>
+
       <!-- CONTENT DIV -->
       <div class="content-div">
-        {% block content %}
-
-        {% endblock content %}
+        {% block content %}{% endblock content %}
       </div>
-      
-
     </div>
-    
   </div>
-  </div>
-  <script src="{% static 'js/script.js' %}"></script> 
+
+  <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

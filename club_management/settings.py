@@ -21,6 +21,9 @@ ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.sites',  # Required for Django AllAuth
+    'daphne', 
+    'channels',
+    'voting',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,10 +49,25 @@ INSTALLED_APPS = [
     'analytics',
     'activity_center_admin',
     'club_leader',
-    'rector',
+    #'rector',
     'club_member',
     #'rest_framework',
 ]
+
+# Set up ASGI application
+ASGI_APPLICATION = "club_management.asgi.application"
+WSGI_APPLICATION = 'club_management.wsgi.application'
+
+
+# Redis for WebSocket communication
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -93,15 +111,23 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-SITE_ID = int(os.getenv("SITE_ID", 6))  
+SITE_ID = int(os.getenv("SITE_ID", 10))  
 
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/login/'  
-LOGIN_REDIRECT_URL = 'dashboard'
+#LOGIN_REDIRECT_URL = 'dashboard'
+#LOGIN_REDIRECT_URL = 'navbar'
+
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False 
 
+# Redirect after login
+LOGIN_REDIRECT_URL = '/redirect-after-login/'  # Temporary redirect for handling role-based redirection
 
+# Redirect after social login (Google, etc.)
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+ACCOUNT_SIGNUP_REDIRECT_URL = '/redirect-after-login/'  # Ensures Google users are redirected properly
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/redirect-after-login/'
 
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -162,6 +188,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'users.context_processors.membership_roles',
             ],
         },
     },
@@ -176,7 +203,6 @@ TEMPLATES = [
 # Directory where Django collects all static files (useful in production)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-WSGI_APPLICATION = 'club_management.wsgi.application'
 
 # Database Configuration
 DATABASES = {
@@ -211,6 +237,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SECRET_ENCRYPTION_KEY="FON3BAOVsXCjzwhiBXUeVL7ms7qV8xqC_14QX5aO1DE="
 
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',
