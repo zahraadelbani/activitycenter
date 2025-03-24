@@ -67,15 +67,18 @@
             <span class="material-icons-sharp">campaign</span>
             <h3>Announcements</h3>
           </a>
+          <a href="{% url 'club_leader:manage_requests' %}">
+            <span class="material-icons-sharp">campaign</span>
+            <h3>manage requests</h3>
+          </a>
           {% endif %}
 
           {% if is_member %}
           <!-- Club Member Sidebar -->
-          <a href="{% url 'users:udashboard' %}">
-            <span class="material-icons-sharp">dashboard</span>
-            <h3>User Dashboard</h3>
-          </a>
+          <a href="{% url 'club_member:dashboard' %}" class="nominate-button">Club Member Dashboard</a>
+
           <a href="{% url 'voting:self_nominate' %}" class="nominate-button">✍️ Nominate Yourself</a>
+
           {% endif %}
 
           {% if user.get_role == "activity_center_admin" %}
@@ -85,6 +88,13 @@
             <h3>Admin Panel</h3>
           </a>
           {% endif %}
+          {% if not is_leader and not is_member %}
+          <a href="{% url 'users:udashboard' %}">
+            <span class="material-icons-sharp">dashboard</span>
+            <h3>User Dashboard</h3>
+          </a>
+        {% endif %}
+        
 
           <!-- Always Visible -->
           <a href="{% url 'users:profile' %}">

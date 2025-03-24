@@ -30,6 +30,11 @@ class Club(models.Model):
     def is_user_leader(self, user):
         """Check if a given user is the leader of the club."""
         return self.memberships.filter(user=user, membership_type="leader").exists()
+    
+    def has_quota(self):
+        """Check if the club still has room for more members."""
+        return self.get_member_count() < self.quota
+
 
 
 class Event(models.Model):

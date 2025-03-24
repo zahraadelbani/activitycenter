@@ -19,6 +19,7 @@ urlpatterns = [
     path('polls/', include('polls.urls')),
     path('navbar/', navbar, name='navbar'),
     path('', include('voting.urls')), 
+    path("clubs/", include("clubs.urls")),
 ]
 
 if settings.DEBUG:

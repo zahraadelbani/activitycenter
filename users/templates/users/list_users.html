@@ -8,9 +8,35 @@
   <title>User List</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .scroll-container {
+      max-height: 60vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .scroll-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .scroll-container::-webkit-scrollbar-thumb {
+      background-color: #888;
+      border-radius: 6px;
+    }
+
+    .scroll-container::-webkit-scrollbar-track {
+      background-color: #f0f0f0;
+    }
+    .logout-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+  </style>
 </head>
 
-<body class="h-screen flex flex-col items-center justify-center bg-[#1b2a41] relative overflow-hidden">
+<body class="min-h-screen bg-[#1b2a41] relative overflow-hidden">
 
   <!-- Background Shapes -->
   <div class="absolute w-[80%] h-[50%] bg-gradient-radial from-[#57678e] to-[#2c487c] top-[-10%] left-[-10%] rounded-full opacity-90"></div>
@@ -19,24 +45,55 @@
   <div class="absolute w-[90%] h-[60%] bg-gradient-to-t from-[#1b2a41] to-black bottom-[-10%] left-[-10%] rounded-full opacity-80"></div>
 
   <!-- User List Container -->
-  <div class="relative bg-white p-6 rounded-2xl shadow-lg w-[90%] max-w-5xl z-10 bg-opacity-95">
+  <div class="relative bg-white p-6 mt-16 rounded-2xl shadow-lg w-[90%] max-w-6xl z-10 bg-opacity-95 mx-auto">
     <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">User List</h1>
 
     <a href="{% url 'users:create_user' %}" 
       class="inline-block px-4 py-2 bg-orange-500 text-white font-semibold rounded-lg mb-4 hover:bg-orange-600 transition duration-200">
       + Create New User
     </a>
+    <a href="{% url 'account_logout' %}" class="logout-btn inline-block px-4 py-2 bg-orange-500 text-white font-semibold rounded-lg mb-4 hover:bg-orange-600 transition duration-200">
+      <span class="material-icons-sharp">logout</span>
+    </a>
+    <div class="scroll-container border rounded-lg shadow-inner">
+      <!-- Filters -->
+<form method="GET" class="mb-4 flex flex-wrap gap-4 items-center justify-between">
+  <div class="flex flex-wrap gap-4">
+    <div>
+      <label class="text-sm font-medium text-gray-700">Role:</label>
+      <select name="role" onchange="this.form.submit()" class="mt-1 px-3 py-2 border rounded-lg">
+        <option value="">All</option>
+        {% for value, label in roles %}
+          <option value="{{ value }}" {% if selected_role == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
 
-    <div class="overflow-x-auto">
-      <table class="w-full border-collapse rounded-lg overflow-hidden shadow-lg">
-        <thead class="bg-[#2c487c] text-white">
+    <div>
+      <label class="text-sm font-medium text-gray-700">Status:</label>
+      <select name="status" onchange="this.form.submit()" class="mt-1 px-3 py-2 border rounded-lg">
+        <option value="">All</option>
+        {% for value, label in statuses %}
+          <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  {% if selected_role or selected_status %}
+    <a href="{% url 'users:list_users' %}" class="text-sm text-blue-600 hover:underline">Reset Filters</a>
+  {% endif %}
+</form>
+      <table class="w-full border-collapse overflow-hidden">
+        <thead class="bg-[#2c487c] text-white sticky top-0 z-10">
           <tr>
-            <th class="p-3">Id</th>
-            <th class="p-3">Student Id</th>
+            <th class="p-3">ID</th>
+            <th class="p-3">Student ID</th>
             <th class="p-3">Name</th>
             <th class="p-3">Email</th>
             <th class="p-3">Status</th>
             <th class="p-3">Role</th>
+            <th class="p-3">Memberships</th>
             <th class="p-3">Actions</th>
           </tr>
         </thead>
@@ -47,8 +104,21 @@
             <td class="p-3">{{ user.student_id }}</td>
             <td class="p-3">{{ user.name }}</td>
             <td class="p-3">{{ user.email }}</td>
-            <td class="p-3">{{ user.status }}</td>
-            <td class="p-3">{{ user.get_role }}</td>
+            <td class="p-3">
+              {% if user.is_active == "active" %}
+                <span class="text-green-600 font-medium">Active</span>
+              {% else %}
+                <span class="text-red-500 font-medium">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="p-3">{{ user.role }}</td>
+            <td class="p-3 text-sm">
+              {% for membership in user.memberships.all %}
+                <div>{{ membership.club.name }} ({{ membership.membership_type|title }})</div>
+              {% empty %}
+                <span class="text-gray-400 italic">None</span>
+              {% endfor %}
+            </td>
             <td class="p-3">
               <div class="flex flex-col sm:flex-row gap-3">
                 <a href="{% url 'users:update_user' user.id %}" 
@@ -69,5 +139,4 @@
   </div>
 
 </body>
-
 </html>

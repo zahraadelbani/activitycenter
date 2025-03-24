@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.core.exceptions import ValidationError
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, password=None, **extra_fields):
@@ -79,3 +80,27 @@ class Membership(models.Model):
 
     def __str__(self):
         return f"{self.user.name} - {self.club.name} ({self.membership_type})"
+
+    def clean(self):
+        user_memberships = self.user.memberships.exclude(id=self.id)
+
+        # Count all existing memberships (regardless of type)
+        total_memberships = user_memberships.count()
+
+        # Count existing leader memberships
+        leader_memberships = user_memberships.filter(membership_type="leader").count()
+
+        # Include this new membership in the counts
+        future_total = total_memberships + 1
+        future_leader = leader_memberships + (1 if self.membership_type == "leader" else 0)
+
+        if future_total > 3:
+            raise ValidationError("A user cannot have more than 3 total memberships (including pending ones).")
+
+        if future_leader > 1:
+            raise ValidationError("A user cannot be a leader of more than one club.")
+
+
+    def save(self, *args, **kwargs):
+        self.clean()  # validate before saving
+        super().save(*args, **kwargs)

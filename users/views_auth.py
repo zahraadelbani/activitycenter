@@ -52,14 +52,12 @@ def custom_logout_view(request):
     logout(request)
     return redirect('account_login')  
 
-
-from django.shortcuts import redirect
-from users.models import Membership
-
 @login_required
 def redirect_after_login(request):
     user = request.user
-    print("User Role on Login:", user.get_role)
+
+    if user.is_superuser:
+        return redirect("users:list_users")  # 🔒 Superuser only
 
     if user.get_role() == "activity_center_admin":
         return redirect("activity_center_admin:dashboard")
@@ -68,11 +66,14 @@ def redirect_after_login(request):
         return redirect("club_leader:dashboard")
 
     elif Membership.objects.filter(user=user, membership_type="member").exists():
+        return redirect("club_member:dashboard")
+
+    elif user.get_role() == "user":
         return redirect("users:udashboard")
 
-    else:
-        # fallback if no membership at all
-        messages.error(request, "You are not assigned to any club.")
-        return redirect("users:profile")
+    messages.error(request, "You are not assigned to any club.")
+    return redirect("users:profile")
+
+
 
 
