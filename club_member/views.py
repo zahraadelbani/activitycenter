@@ -11,11 +11,9 @@ def dashboard(request):
     user = request.user
     member_clubs = Club.objects.filter(memberships__user=user, memberships__membership_type="member")
     joined_club_ids = member_clubs.values_list("id", flat=True)
-    available_clubs = Club.objects.exclude(id__in=joined_club_ids)
+    available_clubs = [club for club in Club.objects.exclude(id__in=joined_club_ids) if club.has_quota() and Membership.objects.filter(user=user).count() < 3]
     upcoming_events = Event.objects.filter(club__in=member_clubs).order_by("event_date")
-    termination_requests = MembershipTerminationRequest.objects.filter(
-        membership__user=user, status="pending"
-    )
+    termination_requests = MembershipTerminationRequest.objects.filter(membership__user=user, status="pending")
 
     context = {
         "member_clubs": member_clubs,
@@ -28,22 +26,22 @@ def dashboard(request):
 @login_required
 def join_club(request):
     user = request.user
-    enrolled_clubs_count = Membership.objects.filter(user=user, membership_type="member").count()
+    total_memberships = Membership.objects.filter(user=user).count()
 
     if request.method == "POST":
         club_id = request.POST.get("club_id")
         club = get_object_or_404(Club, id=club_id)
 
-        if Membership.objects.filter(user=user, club=club, membership_type="member").exists():
-            messages.error(request, "You are already a member of this club.")
+        if Membership.objects.filter(user=user, club=club).exists():
+            messages.error(request, "You already have a membership (of any type) with this club.")
             return redirect("club_member:dashboard")
 
-        if enrolled_clubs_count >= 3:
-            messages.error(request, "You cannot join more than 3 clubs.")
+        if total_memberships >= 3:
+            messages.error(request, "You cannot have more than 3 total memberships (including pending ones).")
             return redirect("club_member:dashboard")
 
-        if club.memberships.filter(membership_type="member").count() >= club.quota:
-            messages.error(request, "This club has reached its limit.")
+        if not club.has_quota():
+            messages.error(request, "This club has reached its member quota.")
             return redirect("club_member:dashboard")
 
         Membership.objects.create(user=user, club=club, membership_type="member")

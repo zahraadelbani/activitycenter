@@ -1,0 +1,56 @@
+
+{% extends "navbar.html" %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="max-w-2xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-3xl font-bold mb-6 text-blue-700">📝 Submit Feedback</h2>
+
+    {% if error %}
+        <div class="bg-red-100 text-red-800 p-3 rounded mb-4">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if clubs %}
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        <!-- Club Selector -->
+        <div>
+            <label for="club_id" class="block text-sm font-semibold mb-1 text-gray-700">Select Club</label>
+            <select name="club_id" id="club_id" required class="w-full p-2 border border-gray-300 rounded">
+                {% for club in clubs %}
+                    <option value="{{ club.id }}">{{ club.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Category -->
+        <div>
+            <label for="category" class="block text-sm font-semibold mb-1 text-gray-700">Category</label>
+            <select name="category" id="category" required class="w-full p-2 border border-gray-300 rounded">
+                <option value="">-- Choose --</option>
+                <option value="complaint">Complaint (Anonymous)</option>
+                <option value="suggestion">Suggestion (Name will be shown)</option>
+            </select>
+        </div>
+
+        <!-- Feedback Content -->
+        <div>
+            <label for="content" class="block text-sm font-semibold mb-1 text-gray-700">Your Message</label>
+            <textarea name="content" id="content" rows="5" required class="w-full p-3 border border-gray-300 rounded"></textarea>
+        </div>
+
+        <div class="flex justify-end">
+            <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition">
+                Submit
+            </button>
+        </div>
+    </form>
+    {% else %}
+        <p class="text-gray-500">You are not currently a member of any club to submit feedback.</p>
+    {% endif %}
+</div>
+{% endblock %}

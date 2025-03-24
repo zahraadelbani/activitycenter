@@ -36,7 +36,6 @@ class Club(models.Model):
         return self.get_member_count() < self.quota
 
 
-
 class Event(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
