@@ -34,7 +34,7 @@ def submit_feedback(request):
             category=category
         )
 
-        return redirect("club_member:dashboard")  # ✅ Update to proper redirect name
+        return redirect("club_member:dashboard") 
 
     return render(request, "feedback/submit_feedback.html", {
         "clubs": user_clubs
