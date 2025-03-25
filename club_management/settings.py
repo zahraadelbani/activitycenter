@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     #'rector',
     'club_member',
     #'rest_framework',
+    'reminders'
 ]
 
 # Set up ASGI application
@@ -112,7 +113,7 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-SITE_ID = int(os.getenv("SITE_ID", 10))  
+SITE_ID = int(os.getenv("SITE_ID", 11))  
 
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/login/'  

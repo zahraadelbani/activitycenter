@@ -10,6 +10,12 @@ urlpatterns = [
     path("join/", views.join_club, name="join_club"),
     path("leave/<int:club_id>/", views.leave_club, name="leave_club"),
     path("events/", views.view_events, name="events"),
+    path("calendar/", views.event_calendar_member, name="event_calendar"),
+    path("get-events/", views.get_events_member, name="get_events_member"),
+    path("remind/<int:event_id>/", views.remind_me, name="remind_me"),
+    path("member-announcements/", views.member_announcements, name="member_announcements"),
+
+
     # path("attend-event/<int:event_id>/", views.attend_event, name="attend_event"),
     #path("vote/<int:club_id>/", views.vote_leader, name="vote_leader"),
     path("feedback/", submit_feedback, name="submit_feedback"),

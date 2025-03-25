@@ -1,0 +1,38 @@
+{% extends "navbar.html" %}
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="container mx-auto px-4 py-6">
+    <h2 class="text-2xl font-bold mb-6 text-center">Club Announcements</h2>
+
+    <!-- Filter by Club -->
+    <form method="get" class="mb-6 flex justify-center">
+        <label for="club" class="mr-2 font-semibold">Filter by Club:</label>
+        <select name="club" id="club" onchange="this.form.submit()" class="border border-gray-300 rounded px-3 py-1">
+            <option value="">All Clubs</option>
+            {% for club in user_clubs %}
+                <option value="{{ club.id }}" {% if request.GET.club|default:'' == club.id|stringformat:"s" %}selected{% endif %}>
+                    {{ club.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if announcements %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for announcement in announcements %}
+                <div class="bg-white shadow-lg rounded-lg p-5 border-l-4 border-blue-500">
+                    <h3 class="text-lg font-semibold text-gray-800">{{ announcement.title }}</h3>
+                    <p class="text-gray-600 mt-2">{{ announcement.content }}</p>
+                    <div class="mt-4 text-sm text-gray-500">
+                        <span>📢 Club: <strong>{{ announcement.club.name }}</strong></span><br>
+                        <span>🕒 {{ announcement.created_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-gray-500">No announcements available.</p>
+    {% endif %}
+</div>
+{% endblock %}
