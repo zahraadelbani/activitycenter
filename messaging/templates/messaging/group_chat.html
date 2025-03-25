@@ -1,0 +1,154 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+<div class="container">
+  <h2>Group Chat - {{ club.name }}</h2>
+
+  <!-- Chat Messages -->
+  <div id="chat-box"
+       style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+    {% for message in messages %}
+      {% if message.sender.id == request.user.id %}
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+          <div style="text-align: right; max-width: 70%;">
+            <p style="margin: 0;">
+              <strong>{{ message.sender.name }}</strong>
+              <small style="color: #999;">{{ message.timestamp|date:"H:i" }}</small>
+            </p>
+            <div style="background-color: #DCF8C6; padding: 8px; border-radius: 10px; display: inline-block;">
+              {{ message.content }}
+            </div>
+          </div>
+          <img src="{{ message.sender.profile_picture.url|default:'/static/img/default-avatar.png'  }}" 
+          alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; margin-left: 10px;">
+        </div>
+      {% else %}
+        <div style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
+          <img src="{{ message.sender.profile_picture.url }}" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">
+          <div style="text-align: left; max-width: 70%;">
+            <p style="margin: 0;">
+              <strong>{{ message.sender.name }}</strong>
+              <small style="color: #999;">{{ message.timestamp|date:"H:i" }}</small>
+            </p>
+            <div style="background-color: #f1f0f0; padding: 8px; border-radius: 10px; display: inline-block;">
+              {{ message.content }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% empty %}
+      <p>No messages yet. Start the conversation!</p>
+    {% endfor %}
+  </div>
+
+  <!-- Chat Input -->
+  <div style="display: flex; gap: 10px; margin-bottom: 40px;">
+    <input type="text" id="chat-message-input" placeholder="Type a message..." style="flex: 1; padding: 8px;">
+    <button id="chat-message-submit" style="padding: 8px 16px;">Send</button>
+  </div>
+
+  <h3>Active Polls</h3>
+  <ul>
+    {% for poll, has_voted, selected_choice_id in polls_with_vote_status %}
+      <li style="margin-bottom: 20px;">
+        <strong>{{ poll.question }}</strong>
+        <form method="post" style="margin-top: 5px;">
+          {% csrf_token %}
+          {% for choice in poll.choices.all %}
+            <label style="display: block; margin-left: 10px;">
+              <input type="radio" name="choice_id" value="{{ choice.id }}"
+                {% if has_voted %} disabled {% endif %}
+                {% if choice.id == selected_choice_id %} checked {% endif %}>
+              {{ choice.text }}
+            </label>
+          {% endfor %}
+          <input type="hidden" name="poll_id" value="{{ poll.id }}">
+          {% if not has_voted %}
+            <button type="submit" name="vote_poll">Vote</button>
+          {% else %}
+            <p style="color: green;"><em>You have already voted.</em></p>
+          {% endif %}
+        </form>
+      </li>
+    {% empty %}
+      <li>No active polls for this club.</li>
+    {% endfor %}
+  </ul>
+  
+
+  <!-- Create Poll (Leader Only) -->
+  {% if membership.membership_type == "leader" %}
+    <h3 style="margin-top: 40px;">Create a New Poll</h3>
+    <form method="post">
+      {% csrf_token %}
+      <input type="text" name="question" placeholder="Poll question" required><br><br>
+      <input type="text" name="choices[]" placeholder="Choice 1" required><br>
+      <input type="text" name="choices[]" placeholder="Choice 2" required><br>
+      <input type="text" name="choices[]" placeholder="Choice 3"><br>
+      <input type="text" name="choices[]" placeholder="Choice 4"><br><br>
+      <button type="submit" name="create_poll">Create Poll</button>
+    </form>
+  {% endif %}
+</div>
+
+<script>
+  const roomSlug = "{{ room.slug }}";
+  const currentUserId = parseInt("{{ request.user.id|default:'0' }}");
+
+  const chatSocket = new WebSocket(
+    'ws://' + window.location.host + '/ws/chat/' + roomSlug + '/'
+  );
+
+  chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const chatBox = document.getElementById('chat-box');
+    const isSelf = parseInt(data.sender_id) === currentUserId;
+    const alignment = isSelf ? "flex-end" : "flex-start";
+    const profileImage = data.profile_picture || '/media/profile_pictures/default.jpg';
+    const bgColor = isSelf ? "#DCF8C6" : "#f1f0f0";
+    const profileSide = isSelf ? "margin-left: 10px;" : "margin-right: 10px;";
+    const profileOrder = isSelf ? "order: 2;" : "order: 0;";
+    const bubbleOrder = isSelf ? "order: 1;" : "order: 1;";
+
+    const newMessage = `
+      <div style="display: flex; justify-content: ${alignment}; margin-bottom: 10px;">
+        <img src="${data.profile_picture}" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; ${profileSide} ${profileOrder}">
+        <div style="text-align: ${isSelf ? "right" : "left"}; max-width: 70%; ${bubbleOrder}">
+          <p style="margin: 0;">
+            <strong>${data.sender}</strong>
+            <small style="color:#999;">${data.timestamp}</small>
+          </p>
+          <div style="background-color: ${bgColor}; padding: 8px; border-radius: 10px; display: inline-block;">
+            ${data.message}
+          </div>
+        </div>
+      </div>
+    `;
+    chatBox.innerHTML += newMessage;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  };
+
+  document.getElementById('chat-message-submit').onclick = function() {
+    const inputField = document.getElementById('chat-message-input');
+    const message = inputField.value.trim();
+    if (message) {
+      chatSocket.send(JSON.stringify({ 'message': message }));
+      inputField.value = '';
+    }
+  };
+
+  document.getElementById('chat-message-input').addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+      document.getElementById('chat-message-submit').click();
+    }
+  });
+
+  window.onload = function () {
+    const chatBox = document.getElementById('chat-box');
+    if (chatBox) {
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  };
+</script>
+
+{% endblock %}

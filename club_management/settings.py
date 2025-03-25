@@ -71,6 +71,7 @@ CHANNEL_LAYERS = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -229,6 +230,8 @@ USE_TZ = True
 # MEDIA & STATIC FILES
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]  # ✅ Corrected
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 MEDIA_URL = '/media/'
 #MEDIA_ROOT = BASE_DIR / "media"  # ✅ Corrected
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -1,0 +1,109 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+<div class="container">
+  <h2>Chat with {{ other_user.name }}</h2>
+
+  <div id="chat-box"
+       style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+    {% for msg in messages %}
+      {% if msg.sender.id == request.user.id %}
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+          <div style="text-align: right; max-width: 70%;">
+            <p style="margin: 0;">
+              <strong>{{ msg.sender.name }}</strong>
+              <small style="color: #999;">{{ msg.timestamp|date:"H:i" }}</small>
+            </p>
+            <div style="background-color: #DCF8C6; padding: 8px; border-radius: 10px; display: inline-block;">
+              {{ msg.content }}
+            </div>
+          </div>
+          <img src="{{ msg.sender.profile_picture.url|default:'/static/img/default-avatar.png' }}" 
+               alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; margin-left: 10px;">
+        </div>
+      {% else %}
+        <div style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
+          <img src="{{ msg.sender.profile_picture.url }}" alt="Profile"
+               style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">
+          <div style="text-align: left; max-width: 70%;">
+            <p style="margin: 0;">
+              <strong>{{ msg.sender.name }}</strong>
+              <small style="color: #999;">{{ msg.timestamp|date:"H:i" }}</small>
+            </p>
+            <div style="background-color: #f1f0f0; padding: 8px; border-radius: 10px; display: inline-block;">
+              {{ msg.content }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% empty %}
+      <p>No messages yet. Start the conversation!</p>
+    {% endfor %}
+  </div>
+
+  <div style="display: flex; gap: 10px;">
+    <input type="text" id="dm-message-input" placeholder="Type a message..." style="flex: 1; padding: 8px;">
+    <button id="dm-message-submit" style="padding: 8px 16px;">Send</button>
+  </div>
+</div>
+
+<input type="hidden" id="receiver-id" value="{{ other_user.id }}">
+
+<script>
+    const receiverId = "{{ other_user.id }}";
+    const currentUserId = parseInt("{{ request.user.id }}");
+  
+    const chatSocket = new WebSocket(
+      'ws://' + window.location.host + '/ws/dm/' + receiverId + '/'
+    );
+  
+    chatSocket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      const chatBox = document.getElementById("chat-box");
+  
+      const isSelf = data.sender_id === currentUserId;
+      const alignment = isSelf ? "flex-end" : "flex-start";
+      const bgColor = isSelf ? "#DCF8C6" : "#f1f0f0";
+  
+      const newMessage = `
+        <div style="display: flex; justify-content: ${alignment}; margin-bottom: 10px;">
+          ${!isSelf ? `<img src="${data.profile_picture}" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">` : ""}
+          <div style="max-width: 70%; text-align: ${isSelf ? 'right' : 'left'};">
+            <p style="margin: 0;">
+              <strong>${data.sender}</strong>
+              <small style="color: #999;">${data.timestamp}</small>
+            </p>
+            <div style="background-color: ${bgColor}; padding: 8px; border-radius: 10px; display: inline-block;">
+              ${data.message}
+            </div>
+          </div>
+          ${isSelf ? `<img src="${data.profile_picture}" style="width: 32px; height: 32px; border-radius: 50%; margin-left: 10px;">` : ""}
+        </div>
+      `;
+  
+      chatBox.innerHTML += newMessage;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    };
+  
+    document.getElementById("dm-message-submit").onclick = function () {
+      const inputField = document.getElementById("dm-message-input");
+      const message = inputField.value.trim();
+      if (message) {
+        chatSocket.send(JSON.stringify({ message }));
+        inputField.value = "";
+      }
+    };
+  
+    document.getElementById("dm-message-input").addEventListener("keyup", function (event) {
+      if (event.key === "Enter") {
+        document.getElementById("dm-message-submit").click();
+      }
+    });
+  
+    window.onload = () => {
+      const chatBox = document.getElementById("chat-box");
+      chatBox.scrollTop = chatBox.scrollHeight;
+    };
+  </script>
+
+{% endblock %}

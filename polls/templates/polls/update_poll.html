@@ -1,3 +1,5 @@
+{% extends "navbar.html" %}
+{% block content %}
 <h2>Update Poll: {{ poll.question }}</h2>
 
 <form method="post">
@@ -17,3 +19,4 @@
 </form>
 
 <a href="{% url 'polls:poll_list' %}">Back to Polls</a>
+{% endblock %}

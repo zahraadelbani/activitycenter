@@ -70,7 +70,7 @@ class Membership(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="memberships")
-    club = models.ForeignKey('clubs.Club', on_delete=models.CASCADE, related_name="memberships")
+    club = models.ForeignKey('clubs.Club', on_delete=models.CASCADE, related_name="memberships", null=True)
     membership_type = models.CharField(max_length=10, choices=MEMBERSHIP_TYPE_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
 

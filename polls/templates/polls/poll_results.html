@@ -1,7 +1,14 @@
+{% extends "navbar.html" %}
+{% block content %}
 <h2>Results for: {{ poll.question }}</h2>
+
 <ul>
-    {% for choice in poll.choices.all %}
-        <li>{{ choice.text }} - {{ choice.votes }} votes</li>
-    {% endfor %}
+  {% for choice in poll.choices.all %}
+    <li>{{ choice.text }} – {{ choice.vote_count }} vote{{ choice.vote_count|pluralize }}</li>
+  {% empty %}
+    <li>No choices found for this poll.</li>
+  {% endfor %}
 </ul>
+
 <a href="{% url 'polls:poll_list' %}" class="btn btn-secondary">Back to Polls</a>
+{% endblock %}

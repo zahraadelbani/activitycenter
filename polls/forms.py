@@ -1,18 +1,22 @@
+# Refactored polls/forms.py
 from django import forms
 from .models import Poll, Choice
 
 class PollForm(forms.ModelForm):
     class Meta:
         model = Poll
-        fields = ['question', 'is_active']
+        fields = ["question"]
+
 
 class ChoiceForm(forms.ModelForm):
-    text = forms.CharField(required=False)  # ✅ Make this field optional
-
     class Meta:
         model = Choice
-        fields = ['text']
+        fields = ["text"]
 
 class ChoiceCountForm(forms.Form):
-    CHOICES_COUNT = [(i, f"{i} choices") for i in range(2, 11)]  # Dropdown for 2-10 choices
-    num_choices = forms.ChoiceField(choices=CHOICES_COUNT, label="Number of Choices")
+    num_choices = forms.IntegerField(
+        label="Number of Choices",
+        min_value=2,
+        max_value=10,
+        help_text="Enter how many choices this poll should have (between 2 and 10)."
+    )

@@ -1,0 +1,48 @@
+{% extends "navbar.html" %}
+{% load custom_filters %}
+
+{% block content %}
+
+<div class="container">
+  <h2>Club Chat Rooms</h2>
+  <ul style="list-style-type: none; padding-left: 0;">
+    {% for room in chat_rooms %}
+      <li style="margin-bottom: 10px;">
+        <a href="{% url 'messaging:group_chat' room.slug %}">
+          {{ room.club.name }}
+        </a>
+      </li>
+    {% empty %}
+      <li>No club chat rooms available.</li>
+    {% endfor %}
+  </ul>
+
+  <hr style="margin: 40px 0;">
+
+<h2>Direct Messages</h2>
+<ul style="list-style-type: none; padding-left: 0;">
+  {% for user in dm_users %}
+    <li style="margin-bottom: 12px; display: flex; align-items: center;">
+      <img src="{{ user.profile_picture.url|default:'/static/img/default-avatar.png' }}" 
+           alt="Avatar" style="width: 36px; height: 36px; border-radius: 50%; margin-right: 10px;">
+
+      <div>
+        <a href="{% url 'messaging:direct_chat_room' user.id %}" style="font-weight: bold;">
+          {{ user.name }}
+        </a>
+        <div style="font-size: 0.9em; color: #777;">
+          {% with user_club_map|get_item:user.id as clubs %}
+            {% if clubs %}
+              <span class="badge bg-secondary">{{ clubs }}</span>
+            {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+    </li>
+  {% empty %}
+    <li>No members available for direct messages.</li>
+  {% endfor %}
+</ul>
+</div>
+
+{% endblock %}

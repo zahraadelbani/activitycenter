@@ -1,15 +1,22 @@
+{% extends "navbar.html" %}
+{% block content %}
 <h2>Polls</h2>
-<a href="{% url 'polls:select_num_choices' %}">Create Poll</a>
+
+{% if user.memberships.filter(membership_type='leader').exists %}
+  <a href="{% url 'polls:select_num_choices' %}">+ Create Poll</a>
+{% endif %}
 
 <ul>
-    {% for poll in polls %}
-        <li>
-            <a href="{% url 'polls:vote' poll.id %}">{{ poll.question }}</a>
-
-            
-            <a href="{% url 'polls:update_poll' poll.id %}">Edit</a>  <!-- ✅ Edit Poll Button -->
-        </li>
-    {% endfor %}
+  {% for poll in polls %}
+    <li>
+      <a href="{% url 'polls:view_poll' poll.id %}">{{ poll.question }}</a>
+      ({{ poll.club.name }})
+      {% if user == poll.created_by %}
+        | <a href="{% url 'polls:update_poll' poll.id %}">Edit</a>
+      {% endif %}
+    </li>
+  {% empty %}
+    <li>No polls available.</li>
+  {% endfor %}
 </ul>
-
-
+{% endblock %}

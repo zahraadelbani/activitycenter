@@ -1,15 +1,26 @@
 from django.contrib import admin
-from .models import Poll, Choice
+from .models import Poll, Choice, PollVote
 
-class ChoiceInline(admin.TabularInline):  # Allows adding choices inside the poll admin page
+class ChoiceInline(admin.TabularInline):
     model = Choice
-    extra = 2  # Number of empty choices to display
+    extra = 1
 
+@admin.register(Poll)
 class PollAdmin(admin.ModelAdmin):
-    list_display = ('question', 'created_at', 'is_active')  # Customize admin list display
-    search_fields = ('question',)  # Enable search functionality
-    list_filter = ('created_at', 'is_active')  # Enable filtering
-    inlines = [ChoiceInline]  # Display choices inside Poll admin page
+    list_display = ("question", "club", "created_by", "created_at", "is_active")
+    list_filter = ("is_active", "created_at", "club")
+    search_fields = ("question", "club__name", "created_by__name")
+    inlines = [ChoiceInline]
 
-admin.site.register(Poll, PollAdmin)
-admin.site.register(Choice)  # Register Choice separately
+
+@admin.register(Choice)
+class ChoiceAdmin(admin.ModelAdmin):
+    list_display = ("text", "poll", "vote_count")
+    search_fields = ("text", "poll__question")
+
+
+@admin.register(PollVote)
+class VoteAdmin(admin.ModelAdmin):
+    list_display = ("user", "poll", "choice", "voted_at")
+    list_filter = ("voted_at",)
+    search_fields = ("user__name", "poll__question", "choice__text")

@@ -1,23 +1,37 @@
 from django.db import models
-
+from django.conf import settings
 from clubs.models import Club
-from users.models import User
 
 class Poll(models.Model):
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name="polls")
     question = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='polls', default=1)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE,default=1)
-
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.question
+        return f"{self.question} ({self.club.name})"
+
 
 class Choice(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='choices')
+    poll = models.ForeignKey("Poll", on_delete=models.CASCADE, related_name="choices")
     text = models.CharField(max_length=255)
-    votes = models.IntegerField(default=0)
+    vote_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return self.text
+        return f"{self.text} (Poll: {self.poll.question})"
+
+
+class PollVote(models.Model):
+    poll = models.ForeignKey("Poll", on_delete=models.CASCADE, related_name="poll_votes")
+    choice = models.ForeignKey("Choice", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="poll_votes")
+    voted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("poll", "user")
+        verbose_name = "poll Vote"
+        verbose_name_plural = "poll Votes"
+
+    def __str__(self):
+        return f"{getattr(self.user, 'name', 'Unknown User')} voted for '{self.choice.text}'"
