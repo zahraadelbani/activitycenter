@@ -1,145 +1,136 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create User</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="h-screen bg-[#1b2a41] flex items-center justify-center relative overflow-hidden"
+  >
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-[#2c487c] to-[#1b2a41] opacity-50 z-0"
+    ></div>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create User</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <style>
-    /* Main Background */
-    body {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #1b2a41;
-      overflow: hidden;
-      position: relative;
-    }
+    <div
+      class="form-container relative bg-white p-8 rounded-2xl shadow-xl z-10 w-[90%] max-w-md"
+    >
+      <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+        Create User
+      </h1>
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
 
-    /* Abstract Background Shapes */
-    .shape {
-      position: absolute;
-      opacity: 0.9;
-    }
+        <div>
+          <label class="block font-medium">Name:</label>
+          <input
+            type="text"
+            name="name"
+            required
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-    .shape1 {
-      width: 80%;
-      height: 50%;
-      background: radial-gradient(circle, #57678e 20%, #2c487c 70%);
-      top: -10%;
-      left: -10%;
-      clip-path: ellipse(60% 40% at 50% 50%);
-    }
+        <div>
+          <label class="block font-medium">Student ID:</label>
+          <input
+            type="text"
+            name="student_id"
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-    .shape2 {
-      width: 100%;
-      height: 55%;
-      background: radial-gradient(circle, #2c487c 30%, #1b2a41 70%);
-      bottom: 0;
-      left: 0;
-      clip-path: ellipse(70% 50% at 50% 100%);
-      opacity: 0.8;
-    }
+        <div>
+          <label class="block font-medium">Email:</label>
+          <input
+            type="email"
+            name="email"
+            required
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-    .shape3 {
-      width: 120%;
-      height: 40%;
-      background: linear-gradient(to bottom, #f4a940, #e48e34);
-      top: 0;
-      right: -10%;
-      clip-path: ellipse(50% 40% at 50% 0%);
-    }
+        <div>
+          <label class="block font-medium">Password:</label>
+          <input
+            type="password"
+            name="password"
+            required
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-    .shape4 {
-      width: 90%;
-      height: 60%;
-      background: linear-gradient(to top, #1b2a41, rgba(0, 0, 0, 0.5));
-      bottom: -10%;
-      left: -10%;
-      clip-path: ellipse(60% 50% at 50% 90%);
-    }
+        <!-- Role -->
+        <div>
+          <label class="block font-medium">Role:</label>
+          <select
+            name="role"
+            id="role-select"
+            onchange="toggleMembershipFields()"
+            required
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="user">User</option>
+            <option value="club_member">Club Member</option>
+            <option value="club_leader">Club Leader</option>
+            <option value="activity_center_admin">Activity Center Admin</option>
+          </select>
+        </div>
 
-    /* Form Card (Static, Clean, and Professional) */
-    .form-container {
-      position: relative;
-      background: white;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-      width: 24rem;
-      z-index: 2;
-    }
+        <!-- Club & Membership Assignment (Initially visible) -->
+        <div id="membership-fields">
+          <div>
+            <label class="block font-medium">Assign to Club (optional):</label>
+            <select
+              name="club_id"
+              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">-- Select a Club --</option>
+              {% for club in clubs %}
+              <option value="{{ club.id }}">{{ club.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-    /* Enhancing Inputs & Buttons */
-    input, select {
-      transition: all 0.3s ease-in-out;
-    }
+          <div>
+            <label class="block font-medium">Membership Type:</label>
+            <select
+              name="membership_type"
+              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="pending">Pending</option>
+              <option value="member">Member</option>
+              <option value="leader">Leader</option>
+            </select>
+          </div>
+        </div>
 
-    input:focus, select:focus {
-      transform: scale(1.02);
-    }
+        <!-- Initialize toggle on page load -->
+        <script>
+          document.addEventListener("DOMContentLoaded", toggleMembershipFields);
+        </script>
 
-    button {
-      transition: all 0.3s ease-in-out;
-    }
-
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0px 4px 10px rgba(255, 165, 0, 0.4);
-    }
-    .bg-customOrange {
-        --tw-text-opacity: 1;
-        background-color: #e48e34;
+        <button
+          type="submit"
+          class="w-full bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
+        >
+          Create
+        </button>
+      </form>
+    </div>
+  </body>
+  <!-- Place this inside <head> -->
+  <script>
+    function toggleMembershipFields() {
+      const roleSelect = document.getElementById("role-select");
+      const membershipFields = document.getElementById("membership-fields");
+      if (roleSelect.value === "activity_center_admin") {
+        membershipFields.style.display = "none";
+      } else {
+        membershipFields.style.display = "block";
       }
-  </style>
-  
-</head>
-
-<body>
-  <!-- Background Shapes -->
-  <div class="shape shape1"></div>
-  <div class="shape shape2"></div>
-  <div class="shape shape3"></div>
-  <div class="shape shape4"></div>
-
-  <!-- Form Card (Static, Clean, and Professional) -->
-  <div class="form-container">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Create User</h1>
-    <form method="post" class="space-y-4">
-      {% csrf_token %}
-      
-      <div>
-        <label class="block font-medium">Name:</label>
-        <input type="text" name="name" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
-      
-      <div>
-        <label class="block font-medium">Email:</label>
-        <input type="email" name="email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
-      
-      <div>
-        <label class="block font-medium">Password:</label>
-        <input type="password" name="password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
-      
-      <div>
-        <label class="block font-medium">Role:</label>
-        <select name="role" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="ClubLeader">Club Leader</option>
-          <option value="Executive">Executive</option>
-          <option value="ActivityCenterAdmin">Activity Center Admin</option>
-          <option value="ClubMember">Club Member</option>
-        </select>
-      </div>
-      
-      <button type="submit" class="w-full bg-customOrange text-white px-4 py-2 rounded-lg hover:bg-orange-600">Create</button>
-    </form>
-  </div>
-</body>
-
+    }
+  </script>
 </html>

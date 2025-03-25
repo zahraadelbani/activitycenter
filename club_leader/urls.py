@@ -31,5 +31,8 @@ urlpatterns = [
     path("termination-requests/", views.termination_requests, name="termination_requests"),
     path('review-feedback/<int:feedback_id>/', views.review_feedback, name='review_feedback'),
     path('list_upcoming_events/', views.list_upcoming_events, name='list_upcoming_events'), 
+    path("manage-requests/", views.manage_membership_requests, name="manage_requests"),
+    path("update-request/<int:membership_id>/<str:action>/", views.update_membership_status, name="update_membership_status"),
+
 
 ]

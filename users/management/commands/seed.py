@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.utils.timezone import make_aware
+from django.core.exceptions import ValidationError
 from faker import Faker
 import random
 from users.models import User, Membership
@@ -40,14 +41,25 @@ class Command(BaseCommand):
             )
             users.append(user)
 
-        # Assign each user as a leader of one club and a member of two other clubs
+        # Assign memberships (1 leader + 2 members max)
         for i, user in enumerate(users):
             leader_club = clubs[i % len(clubs)]
-            Membership.objects.create(user=user, club=leader_club, membership_type="leader")
+            try:
+                Membership.objects.create(user=user, club=leader_club, membership_type="leader")
+            except ValidationError as e:
+                self.stdout.write(self.style.WARNING(f"Skipping leader membership for {user.email}: {e}"))
 
-            member_clubs = random.sample([c for c in clubs if c != leader_club], 2)
+            # Try assigning up to 2 member clubs, avoiding duplicates
+            member_clubs = random.sample([c for c in clubs if c != leader_club], 4)
+            member_count = 0
             for club in member_clubs:
-                Membership.objects.create(user=user, club=club, membership_type="member")
+                if member_count >= 2:
+                    break
+                try:
+                    Membership.objects.create(user=user, club=club, membership_type="member")
+                    member_count += 1
+                except ValidationError as e:
+                    self.stdout.write(self.style.WARNING(f"Skipping member membership for {user.email} in {club.name}: {e}"))
 
         # Create Events
         for club in clubs:

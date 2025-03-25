@@ -18,7 +18,8 @@ urlpatterns = [
     path('club-member/', include('club_member.urls')),
     path('polls/', include('polls.urls')),
     path('navbar/', navbar, name='navbar'),
-    path('', include('voting.urls')),
+    path('', include('voting.urls')), 
+    path("clubs/", include("clubs.urls")),
     path("messaging/", include("messaging.urls", namespace="messaging")), 
 ]
 

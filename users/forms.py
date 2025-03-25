@@ -30,11 +30,16 @@ class ProfileUpdateForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        if self.cleaned_data.get("profile_picture"):
-            if user.profile_picture:
+        new_picture = self.cleaned_data.get("profile_picture")
+
+        # Only delete and replace if a new picture was uploaded
+        if new_picture and new_picture != user.profile_picture:
+            if user.profile_picture and hasattr(user.profile_picture, 'path'):
                 user.profile_picture.delete(save=False)
-            user.profile_picture = self.cleaned_data["profile_picture"]
+            user.profile_picture = new_picture
+
         if commit:
             user.save()
         return user
+
 

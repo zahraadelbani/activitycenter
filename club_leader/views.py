@@ -301,3 +301,31 @@ def list_upcoming_events(request):
     form = EventRequestForm()
     return render(request, 'club_leader/list_upcoming_events.html', {'events': events, 'form': form})
 
+@login_required
+def manage_membership_requests(request):
+    memberships = Membership.objects.filter(
+        club__memberships__user=request.user,
+        club__memberships__membership_type='leader',
+        membership_type='pending'
+    ).select_related("club", "user")
+
+    return render(request, "club_leader/manage_requests.html", {
+        "requests": memberships
+    })
+
+@login_required
+def update_membership_status(request, membership_id, action):
+    membership = get_object_or_404(Membership, id=membership_id)
+
+    if not membership.club.is_user_leader(request.user):
+        return HttpResponseForbidden()
+
+    if action == "approve":
+        membership.membership_type = "member"
+        messages.success(request, f"{membership.user.name} has been accepted.")
+    elif action == "reject":
+        membership.delete()
+        messages.info(request, f"{membership.user.name}'s request was rejected.")
+    
+    membership.save()
+    return redirect("club_leader:manage_requests")

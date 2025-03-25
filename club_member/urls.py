@@ -1,4 +1,6 @@
 from django.urls import path
+
+from feedback.views import submit_feedback
 from . import views
 
 app_name = "club_member"
@@ -10,7 +12,7 @@ urlpatterns = [
     path("events/", views.view_events, name="events"),
     # path("attend-event/<int:event_id>/", views.attend_event, name="attend_event"),
     #path("vote/<int:club_id>/", views.vote_leader, name="vote_leader"),
-    # path("feedback/", views.submit_feedback, name="submit_feedback"),
+    path("feedback/", submit_feedback, name="submit_feedback"),
     path("documents/", views.view_documents, name="documents"),
     # path("messages/", views.messages, name="messages"),
     # path("club-chat/<int:club_id>/", views.club_chat, name="club_chat"),
