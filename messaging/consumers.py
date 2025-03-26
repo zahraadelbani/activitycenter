@@ -2,7 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from messaging.models import ChatRoom, Message, DirectChatRoom, DirectMessage
-from polls.models import PollVote, Choice
+from polls.models import Poll, PollVote, Choice
 from users.models import Membership
 from django.contrib.auth import get_user_model
 
@@ -98,6 +98,48 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         }
                     )
 
+            # --- Handle real-time poll creation ---
+            if "new_poll_question" in data and "new_poll_choices" in data:
+                question = data["new_poll_question"]
+                choices = data["new_poll_choices"]
+                club = self.room.club
+
+                is_leader = await sync_to_async(Membership.objects.filter(
+                    user=self.user,
+                    club=club,
+                    membership_type="leader"
+                ).exists)()
+
+                if not is_leader:
+                    return  # Only leaders can create polls
+
+                new_poll = await sync_to_async(Poll.objects.create)(
+                    club=club,
+                    question=question,
+                    created_by=self.user,
+                    is_active=True
+                )
+
+                choice_objs = []
+                for text in choices:
+                    if text.strip():
+                        choice = await sync_to_async(Choice.objects.create)(poll=new_poll, text=text.strip())
+                        choice_objs.append({
+                            "id": choice.id,
+                            "text": choice.text,
+                            "vote_count": 0
+                        })
+
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "new_poll_broadcast",
+                        "poll_id": new_poll.id,
+                        "question": new_poll.question,
+                        "choices": choice_objs,
+                    }
+                )
+
         except Exception as e:
             print("Error in receive():", e)
 
@@ -118,6 +160,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "choices": event["choices"],
             "user_id": event["user_id"],
             "user_choice_id": event["user_choice_id"]
+        }))
+
+    async def new_poll_broadcast(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "new_poll",
+            "poll_id": event["poll_id"],
+            "question": event["question"],
+            "choices": event["choices"]
         }))
 
 

@@ -4,7 +4,7 @@ from clubs.models import Club
 
 class Poll(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name="polls")
-    question = models.CharField(max_length=255)
+    question = models.TextField()
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)

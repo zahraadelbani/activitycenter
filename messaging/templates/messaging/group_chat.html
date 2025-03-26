@@ -19,12 +19,13 @@
               {{ message.content }}
             </div>
           </div>
-          <img src="{{ message.sender.profile_picture.url|default:'/static/img/default-avatar.png'  }}" 
-          alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; margin-left: 10px;">
+          <img src="{{ message.sender.profile_picture.url|default:'/static/img/default-avatar.png' }}" 
+               alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; margin-left: 10px;">
         </div>
       {% else %}
         <div style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
-          <img src="{{ message.sender.profile_picture.url }}" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">
+          <img src="{{ message.sender.profile_picture.url|default:'/static/img/default-avatar.png' }}" 
+               alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">
           <div style="text-align: left; max-width: 70%;">
             <p style="margin: 0;">
               <strong>{{ message.sender.name }}</strong>
@@ -48,45 +49,53 @@
   </div>
 
   <h3>Active Polls</h3>
-  <ul>
+  <ul id="polls-container">
     {% for poll, has_voted, selected_choice_id in polls_with_vote_status %}
-      <li style="margin-bottom: 20px;">
+      <li style="margin-bottom: 20px;" data-poll-id="{{ poll.id }}">
         <strong>{{ poll.question }}</strong>
-        <form method="post" style="margin-top: 5px;">
-          {% csrf_token %}
+        <p class="total-votes" style="font-size: 0.9em; color: #777; margin: 4px 0 8px;"> 
+          Total Votes: {{ poll.poll_votes.count }}
+        </p>
+        
+        <div style="margin-top: 5px;">
           {% for choice in poll.choices.all %}
-            <label style="display: block; margin-left: 10px;">
-              <input type="radio" name="choice_id" value="{{ choice.id }}"
-                {% if has_voted %} disabled {% endif %}
-                {% if choice.id == selected_choice_id %} checked {% endif %}>
-              {{ choice.text }}
-            </label>
+            <div style="margin: 5px 0;">
+              <button class="vote-btn"
+                      data-choice-id="{{ choice.id }}"
+                      data-poll-id="{{ poll.id }}"
+                      {% if has_voted %} disabled {% endif %}
+                      {% if has_voted and choice.id == selected_choice_id %} style="background-color: lightgreen;" {% endif %}>
+                {{ choice.text }}
+              </button>
+              <div style="background: #e0e0e0; border-radius: 4px; width: 100%; margin-top: 4px;">
+                <div data-bar-id="{{ choice.id }}" style="height: 10px; background: #4caf50; width: 0%; border-radius: 4px;"></div>
+              </div>
+              <span data-count-id="{{ choice.id }}">{{ choice.vote_count }}</span>
+            </div>
           {% endfor %}
-          <input type="hidden" name="poll_id" value="{{ poll.id }}">
-          {% if not has_voted %}
-            <button type="submit" name="vote_poll">Vote</button>
-          {% else %}
-            <p style="color: green;"><em>You have already voted.</em></p>
-          {% endif %}
-        </form>
+        </div>
+        
+        {% if has_voted %}
+        <p class="already-voted" style="color: green;"><em>You have already voted.</em></p>
+      {% else %}
+        <p class="vote-hint" style="color: gray;"><em>Click a choice to vote</em></p>
+      {% endif %}
+      
       </li>
     {% empty %}
       <li>No active polls for this club.</li>
     {% endfor %}
   </ul>
-  
 
-  <!-- Create Poll (Leader Only) -->
   {% if membership.membership_type == "leader" %}
     <h3 style="margin-top: 40px;">Create a New Poll</h3>
-    <form method="post">
-      {% csrf_token %}
-      <input type="text" name="question" placeholder="Poll question" required><br><br>
-      <input type="text" name="choices[]" placeholder="Choice 1" required><br>
-      <input type="text" name="choices[]" placeholder="Choice 2" required><br>
-      <input type="text" name="choices[]" placeholder="Choice 3"><br>
-      <input type="text" name="choices[]" placeholder="Choice 4"><br><br>
-      <button type="submit" name="create_poll">Create Poll</button>
+    <form id="create-poll-form">
+      <input type="text" id="poll-question" placeholder="Poll question" required><br><br>
+      <input type="text" class="poll-choice" placeholder="Choice 1" required><br>
+      <input type="text" class="poll-choice" placeholder="Choice 2" required><br>
+      <input type="text" class="poll-choice" placeholder="Choice 3"><br>
+      <input type="text" class="poll-choice" placeholder="Choice 4"><br><br>
+      <button type="submit">Create Poll</button>
     </form>
   {% endif %}
 </div>
@@ -94,41 +103,9 @@
 <script>
   const roomSlug = "{{ room.slug }}";
   const currentUserId = parseInt("{{ request.user.id|default:'0' }}");
+  const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomSlug + '/');
 
-  const chatSocket = new WebSocket(
-    'ws://' + window.location.host + '/ws/chat/' + roomSlug + '/'
-  );
-
-  chatSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    const chatBox = document.getElementById('chat-box');
-    const isSelf = parseInt(data.sender_id) === currentUserId;
-    const alignment = isSelf ? "flex-end" : "flex-start";
-    const profileImage = data.profile_picture || '/media/profile_pictures/default.jpg';
-    const bgColor = isSelf ? "#DCF8C6" : "#f1f0f0";
-    const profileSide = isSelf ? "margin-left: 10px;" : "margin-right: 10px;";
-    const profileOrder = isSelf ? "order: 2;" : "order: 0;";
-    const bubbleOrder = isSelf ? "order: 1;" : "order: 1;";
-
-    const newMessage = `
-      <div style="display: flex; justify-content: ${alignment}; margin-bottom: 10px;">
-        <img src="${data.profile_picture}" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; ${profileSide} ${profileOrder}">
-        <div style="text-align: ${isSelf ? "right" : "left"}; max-width: 70%; ${bubbleOrder}">
-          <p style="margin: 0;">
-            <strong>${data.sender}</strong>
-            <small style="color:#999;">${data.timestamp}</small>
-          </p>
-          <div style="background-color: ${bgColor}; padding: 8px; border-radius: 10px; display: inline-block;">
-            ${data.message}
-          </div>
-        </div>
-      </div>
-    `;
-    chatBox.innerHTML += newMessage;
-    chatBox.scrollTop = chatBox.scrollHeight;
-  };
-
-  document.getElementById('chat-message-submit').onclick = function() {
+  document.getElementById('chat-message-submit').onclick = function () {
     const inputField = document.getElementById('chat-message-input');
     const message = inputField.value.trim();
     if (message) {
@@ -137,18 +114,141 @@
     }
   };
 
-  document.getElementById('chat-message-input').addEventListener('keyup', function(event) {
+  document.getElementById('chat-message-input').addEventListener('keyup', function (event) {
     if (event.key === 'Enter') {
       document.getElementById('chat-message-submit').click();
     }
   });
 
-  window.onload = function () {
-    const chatBox = document.getElementById('chat-box');
-    if (chatBox) {
+  function bindVoteButtons() {
+    document.querySelectorAll('.vote-btn').forEach(btn => {
+      btn.onclick = function () {
+        chatSocket.send(JSON.stringify({
+          vote_poll_id: this.dataset.pollId,
+          vote_choice_id: this.dataset.choiceId
+        }));
+      };
+    });
+  }
+
+  bindVoteButtons();
+
+  chatSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+
+    if (data.type === "chat") {
+      const chatBox = document.getElementById('chat-box');
+      const isSelf = parseInt(data.sender_id) === currentUserId;
+      const profileImage = data.profile_picture || '/media/profile_pictures/default.jpg';
+      const bgColor = isSelf ? "#DCF8C6" : "#f1f0f0";
+      const alignment = isSelf ? "flex-end" : "flex-start";
+
+      const newMessage = `
+        <div style="display: flex; justify-content: ${alignment}; margin-bottom: 10px;">
+          <img src="${profileImage}" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; margin-${isSelf ? 'left' : 'right'}: 10px;">
+          <div style="text-align: ${isSelf ? "right" : "left"}; max-width: 70%;">
+            <p style="margin: 0;"><strong>${data.sender}</strong>
+              <small style="color:#999;">${data.timestamp}</small>
+            </p>
+            <div style="background-color: ${bgColor}; padding: 8px; border-radius: 10px; display: inline-block;">
+              ${data.message}
+            </div>
+          </div>
+        </div>`;
+
+      chatBox.innerHTML += newMessage;
       chatBox.scrollTop = chatBox.scrollHeight;
     }
+
+    if (data.type === "poll_update") {
+  const pollElement = document.querySelector(`[data-poll-id="${data.poll_id}"]`);
+  if (!pollElement) return;
+
+  const totalVotes = data.choices.reduce((sum, c) => sum + c.vote_count, 0);
+  pollElement.querySelector(".total-votes").textContent = `Total Votes: ${totalVotes}`;
+
+  // Update bars and counts
+  data.choices.forEach(choice => {
+    const countSpan = pollElement.querySelector(`[data-count-id="${choice.id}"]`);
+    const bar = pollElement.querySelector(`[data-bar-id="${choice.id}"]`);
+    const btn = pollElement.querySelector(`[data-choice-id="${choice.id}"]`);
+
+    if (countSpan) countSpan.textContent = choice.vote_count;
+    if (bar) {
+      const pct = totalVotes > 0 ? ((choice.vote_count / totalVotes) * 100).toFixed(2) : 0;
+      bar.style.width = `${pct}%`;
+    }
+
+    // Only disable voting and highlight for the user who voted
+    if (parseInt(data.user_id) === currentUserId && btn) {
+      btn.disabled = true;
+      if (data.user_choice_id === choice.id) {
+        btn.style.backgroundColor = "lightgreen";
+      }
+    }
+  });
+
+  // Remove vote hint and add "voted" message only for the voter
+  if (parseInt(data.user_id) === currentUserId) {
+    const hint = pollElement.querySelector(".vote-hint");
+    if (hint) hint.remove();
+
+    const p = document.createElement('p');
+    p.className = 'voted-msg';
+    p.style.color = 'green';
+    p.innerHTML = "<em>You have already voted.</em>";
+    pollElement.appendChild(p);
+  }
+}
+
+
+    if (data.type === "new_poll") {
+      const pollList = document.getElementById("polls-container");
+      const pollId = data.poll_id;
+      const pollHTML = `
+        <li style="margin-bottom: 20px;" data-poll-id="${pollId}">
+          <strong>${data.question}</strong>
+          <p class="total-votes" style="font-size: 0.9em; color: #777; margin: 4px 0 8px;">Total Votes: 0</p>
+          <div style="margin-top: 5px;">
+            ${data.choices.map(choice => `
+              <div style="margin-left: 10px;">
+                <button class="vote-btn" data-choice-id="${choice.id}" data-poll-id="${pollId}">
+                  ${choice.text}
+                </button>
+                <div style="background: #e0e0e0; border-radius: 4px; width: 100%; margin-top: 4px;">
+                  <div data-bar-id="${choice.id}" style="height: 10px; background: #4caf50; width: 0%; border-radius: 4px;"></div>
+                </div>
+                <span data-count-id="${choice.id}">0</span>
+              </div>`).join('')}
+          </div>
+          <p class="vote-hint" style="color: gray;"><em>Click a choice to vote</em></p>
+        </li>`;
+      pollList.insertAdjacentHTML('afterbegin', pollHTML);
+      bindVoteButtons();
+    }
+  };
+
+  document.getElementById('create-poll-form')?.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const question = document.getElementById('poll-question').value.trim();
+    const choices = Array.from(document.querySelectorAll('.poll-choice'))
+      .map(input => input.value.trim())
+      .filter(choice => choice.length > 0);
+
+    if (question && choices.length >= 2) {
+      chatSocket.send(JSON.stringify({
+        new_poll_question: question,
+        new_poll_choices: choices
+      }));
+      this.reset();
+    } else {
+      alert("Please enter a poll question and at least two choices.");
+    }
+  });
+
+  window.onload = () => {
+    const chatBox = document.getElementById('chat-box');
+    chatBox.scrollTop = chatBox.scrollHeight;
   };
 </script>
-
 {% endblock %}
