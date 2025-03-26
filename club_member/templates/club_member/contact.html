@@ -1,0 +1,36 @@
+{% extends "navbar.html" %}
+{% load static %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">📬 Contact Your Club Leaders</h1>
+
+    {% if leaders %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for item in leaders %}
+                <div class="bg-white shadow-lg rounded-2xl p-6 border border-gray-200 hover:shadow-xl transition duration-300">
+                    <h2 class="text-xl font-semibold text-indigo-700 mb-1">{{ item.club.name }}</h2>
+                    <p class="text-gray-600 mb-2">
+                        👤 <span class="font-medium">Leader:</span> {{ item.leader.name }}
+                    </p>
+                    <p class="text-gray-600 mb-4">
+                        📧 <span class="font-medium">Email:</span>
+                        <a href="mailto:{{ item.leader.email }}" class="text-indigo-600 hover:underline">
+                            {{ item.leader.email }}
+                        </a>
+                    </p>
+                    <button class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition duration-200">
+                        💬 Send Direct Message
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center text-gray-500 text-lg">
+            You are not a member of any clubs yet.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

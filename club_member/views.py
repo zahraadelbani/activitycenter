@@ -245,3 +245,33 @@ def member_announcements(request):
         "announcements": announcements,
         "user_clubs": user_clubs
     })
+
+from django.shortcuts import render, redirect
+from clubs.models import Club
+from users.models import Membership
+
+def contact(request):
+    if not request.user.is_authenticated:
+        return redirect('account_login')  # or your preferred login URL
+
+    # Get all clubs where the user is a member
+    member_clubs = Club.objects.filter(
+        memberships__user=request.user,
+        memberships__membership_type='member'
+    ).distinct()
+
+    # For each of these clubs, get the leader
+    leaders = []
+    for club in member_clubs:
+        leader_membership = club.memberships.filter(membership_type='leader').first()
+        if leader_membership:
+            leaders.append({
+                'club': club,
+                'leader': leader_membership.user,
+            })
+
+    return render(request, 'club_member/contact.html', {'leaders': leaders})
+
+@login_required
+def faq_user_member(request):
+    return render(request, 'club_member/faq_user_member.html')

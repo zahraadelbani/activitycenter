@@ -14,6 +14,8 @@ urlpatterns = [
     path("get-events/", views.get_events_member, name="get_events_member"),
     path("remind/<int:event_id>/", views.remind_me, name="remind_me"),
     path("member-announcements/", views.member_announcements, name="member_announcements"),
+    path('contact/', views.contact, name='contact'),
+
 
 
     # path("attend-event/<int:event_id>/", views.attend_event, name="attend_event"),
@@ -31,4 +33,6 @@ urlpatterns = [
     # path("suggestions/", views.suggestions, name="suggestions"),
     
     path("cancel-termination-request/<int:request_id>/", views.cancel_termination_request, name="cancel_termination_request"),
+    path('faq/', views.faq_user_member, name='faq_user_member'),
+
 ]

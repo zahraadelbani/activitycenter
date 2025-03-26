@@ -329,3 +329,11 @@ def update_membership_status(request, membership_id, action):
     
     membership.save()
     return redirect("club_leader:manage_requests")
+
+@login_required
+def faq_leader(request):
+    # Check if the user is a leader in any club
+    if not Membership.objects.filter(user=request.user, membership_type='leader').exists():
+        return HttpResponseForbidden("You are not authorized to view this page.")
+    
+    return render(request, 'Club_leader/faq_leader.html')

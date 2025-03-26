@@ -1,0 +1,20 @@
+{% extends "navbar.html" %}
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">❓ Frequently Asked Questions</h1>
+    
+    <div class="space-y-6 max-w-2xl mx-auto">
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">How do I join a club?</h2>
+            <p class="text-gray-600 mt-1">Visit the dashboard, find clubs you're interested in, and click "Apply". Once approved, you’ll gain member access.</p>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">Can I join more than one club?</h2>
+            <p class="text-gray-600 mt-1">Yes! You can join up to 3 clubs, but only be a leader of one.</p>
+        </div>
+        <!-- Add more questions as needed -->
+    </div>
+</div>
+{% endblock %}
