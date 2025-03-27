@@ -63,27 +63,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Dropdown Menu
 document.addEventListener("DOMContentLoaded", function () {
-  const dropdownToggle = document.querySelector(".dropdown-toggle");
-  const dropdownIcon = document.querySelector(".dropdown-icon");
-  const dropdown = document.querySelector(".dropdown");
+  const dropdowns = document.querySelectorAll(".dropdown");
 
-  dropdownToggle.addEventListener("click", function (e) {
-    // Check if the dropdown icon was clicked
-    if (e.target.classList.contains("dropdown-icon")) {
-      e.preventDefault(); // Prevent default link behavior
-      dropdown.classList.toggle("active"); // Toggle dropdown visibility
-    }
-    // If the link itself is clicked, it will navigate to the calendar page
-  });
+  dropdowns.forEach(dropdown => {
+    const dropdownToggle = dropdown.querySelector(".dropdown-toggle");
+    const dropdownMenu = dropdown.querySelector(".dropdown-menu");
+    const dropdownLinks = dropdown.querySelectorAll(".dropdown-menu a");
 
-  // Close dropdown when clicking outside
-  document.addEventListener("click", function (e) {
-    if (!dropdown.contains(e.target)) {
-      dropdown.classList.remove("active");
+    // Check local storage for dropdown state
+    const storageKey = `dropdownOpen-${dropdown.querySelector("h3").textContent.trim()}`;
+    const isDropdownOpen = localStorage.getItem(storageKey) === "true";
+    if (isDropdownOpen) {
+      dropdownMenu.style.display = "block";
     }
+
+    // Toggle dropdown visibility
+    dropdownToggle.addEventListener("click", function (e) {
+      e.preventDefault();
+      const isVisible = dropdownMenu.style.display === "block";
+      dropdownMenu.style.display = isVisible ? "none" : "block";
+      localStorage.setItem(storageKey, !isVisible);
+    });
+
+   // Replace the dropdownLinks forEach with this:
+dropdownLinks.forEach(link => {
+  link.addEventListener("click", function (e) {
+    // Special case for dashboard links
+    if (link.href.includes('dashboard')) {
+      // Let the default behavior happen
+      return true;
+    }
+    // For all other links
+    e.stopPropagation();
   });
 });
 
+    // Close dropdown when clicking outside
+    document.addEventListener("click", function (e) {
+      // Check if clicked element is not part of any dropdown
+      const isInsideAnyDropdown = Array.from(dropdowns).some(drop => drop.contains(e.target));
+      if (!isInsideAnyDropdown) {
+        dropdowns.forEach(drop => {
+          drop.querySelector(".dropdown-menu").style.display = "none";
+          const key = `dropdownOpen-${drop.querySelector("h3").textContent.trim()}`;
+          localStorage.setItem(key, false);
+        });
+      }
+    });
+  });
+});
 // TABS
 
 function openTab(event, tabName) {
@@ -106,4 +134,24 @@ function openTab(event, tabName) {
 // Show the first tab by default
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementsByClassName("tab-button")[0].click();
+});
+
+
+// Increase Sidebar with scroll 
+document.addEventListener("DOMContentLoaded", function () {
+  let sidebar = document.querySelector(".sidebar-div");
+  let initialHeight = sidebar.offsetHeight; // Get actual initial height
+  let maxHeight = window.innerHeight; // Use full viewport height
+  let scrollFactor = 3; // Adjust to control speed
+
+  window.addEventListener("scroll", function () {
+      let scrollY = window.scrollY;
+      let newHeight = initialHeight + (scrollY / scrollFactor);
+
+      if (newHeight > maxHeight) {
+          newHeight = maxHeight;
+      }
+
+      sidebar.style.height = newHeight + "px";
+  });
 });

@@ -64,7 +64,7 @@ body
 {
   background: var(--color-background);
   width: 100vw;
-  height: 850px;
+  height: 1100px;
   font-family: poppins, sans-serif;
   font-size: 0.88rem;
   user-select: none; 
@@ -103,13 +103,13 @@ body
 
 /* Scrollbar track */
 ::-webkit-scrollbar-track {
-  background: #FAFAFA; /* Light pastel gray */
+
   border-radius: 10px;
 }
 
 /* Scrollbar track when scrollbar is active */
 ::-webkit-scrollbar-track-piece {
-  background: #E3F2FD; /* Soft blue tint for a cohesive look */
+
 }
 
 
@@ -387,7 +387,7 @@ tr:hover {
 aside
 {
   height: 100vh;
-
+  margin-top: 60px;
 }
 
 aside .top{
@@ -423,7 +423,7 @@ aside .sidebar{
   background: var(--color-white);
   display: flex;
   flex-direction: column; 
-  height: 700px;
+  height: 1000px;
   position: relative;
   top: 2.6rem;
 }
@@ -445,11 +445,7 @@ aside .sidebar a span {
   transition: all 300ms ease;
 }
 
-aside .sidebar .logout-btn{
-  position: absolute;
-  bottom: 2rem; 
-  width: 100%;
-}
+
 
 aside .sidebar a.active {
   background: var(--color-light);
@@ -529,6 +525,7 @@ aside .sidebar a:hover span{
   color: var(--color-dark);
   transition: background-color 0.3s ease;
 }
+
 
 .dropdown-menu a:hover {
   background-color: rgba(0, 0, 0, 0.1); /* Light hover effect */
@@ -934,10 +931,7 @@ main .recent-orders a {
   aside .sidebar a{
     width: 5.6rem;
   }
-  aside .sidebar a:last-child{
-    position: relative;
-    margin-top: 1.8rem;
-  }
+  
   
   main .insights{
     grid-template-columns: 1fr;
@@ -1020,10 +1014,7 @@ main .recent-orders a {
     height: 3.4rem;
   }
 
-  aside .sidebar a:last-child{
-    position: absolute;
-    bottom: 5rem;
-  }
+ 
 
   aside .close{
     display: inline-block;

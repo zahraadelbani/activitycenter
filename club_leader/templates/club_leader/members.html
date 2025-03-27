@@ -1,61 +1,258 @@
 {% extends "navbar.html" %}
 {% load static %}
 {% block content %}
+<!-- Styles -->
+<style>
+  .resource-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .resource-content{
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .resource-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-top: 20px;
+  }
 
-<div class="container-events">
-  <h2>{{ club.name }} Members</h2>
+  .resource-search {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    /* Unified border */
+    border-radius: 50px;
+    /* Rounded edges */
+    overflow: hidden;
+    /* Prevents elements from spilling out */
+    width: fit-content;
+  }
 
-  <!-- Search Bar -->
-  <div class="controls">
-    <input type="text" id="searchInput" placeholder="Search by name or email..." class="search-bar">
+  .resource-search-input {
+    padding: 12px 15px;
+    font-size: 15px;
+    border: none;
+    /* Remove default border */
+    outline: none;
+    width: 250px;
+    border-radius: 50px 0 0 50px;
+    /* Round only left side */
+  }
+
+  .resource-search-btn {
+    padding: 12px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    background-color: var(--color-primary);
+    color: white;
+    border-radius: 0 50px 50px 0;
+    /* Round only right side */
+  }
+
+  .resource-search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 8px var(--color-primary);
+  }
+
+
+  /* Button Styles */
+  .resource-btn {
+    padding: 12px 25px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--color-primary) 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: white;
+    border-radius: 50px;
+  }
+
+  .resource-btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+
+  }
+
+  .resource-btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  .resource-btn-danger {
+    background-color: var(--color-danger);
+    ;
+    color: white;
+
+  }
+
+  .resource-btn-danger:hover {
+    background-color: #a00303;
+  }
+
+
+  /* Table Styles */
+  .resource-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  }
+
+  .resource-table th,
+  .resource-table td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid #f1f1f1;
+  }
+
+  .resource-table th {
+    background-color: #f1f1f1;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .resource-table tr {
+    background-color: #f8f9fa;
+  }
+
+  .resource-table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  .resource-table tr:hover {
+    background-color: var(--color-background);
+  }
+
+  .resource-table td a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .resource-icon {
+    font-size: 18px;
+    vertical-align: middle;
+  }
+
+  /* No Documents Message */
+  .resource-empty {
+    text-align: center;
+    color: #666;
+    padding: 30px;
+    font-size: 18px;
+  }
+</style>
+<div class="resource-container">
+  <div class="resource-content">
+    <h2>{{ club.name }} Members</h2>
+
+    <!-- Search Bar -->
+    <div class="resource-controls">
+      <div class="resource-search">
+        <input type="text" id="searchInput" placeholder="Search by name or email..." class="resource-search-input">
+      </div>
+    </div>
+
+    <table id="membersTable" class="resource-table">
+      <thead>
+        <tr>
+          <th>Member Name</th>
+          <th>Email</th>
+          <th>Joined Date</th>
+          {% if user.get_role == "Club Leader" %}
+          <th>Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for member in members %}
+        <tr>
+          <td>{{ member.user.name }}</td>
+          <td>{{ member.user.email }}</td>
+          <td>{{ member.joined_at|date:"M d, Y" }}</td>
+          {% if user.get_role == "Club Leader" %}
+          <td>
+            <form action="{% url 'club_leader:remove_member' member.id %}" method="POST" style="display:inline;"
+              onsubmit="return confirm('Are you sure you want to remove this member?');">
+              {% csrf_token %}
+              <button type="submit" class="resource-btn resource-btn-danger">Remove</button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="resource-empty">No members found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 
-  <table id="membersTable">
-    <thead>
-      <tr>
-        <th>Member Name</th>
-        <th>Email</th>
-        <th>Joined Date</th>
-        {% if is_leader %}
-                <th>Actions</th>
-        {% endif %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for member in members %}
-      <tr>
-        <td>{{ member.user.name }}</td>
-        <td>{{ member.user.email }}</td>
-        <td>{{ member.created_at|date:"M d, Y" }}</td>
-        {% if is_leader %}
-        <td>
-          <form action="{% url 'club_leader:remove_member' member.id %}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to remove this member?');">
-            {% csrf_token %}
-            <button type="submit" class="delete-btn">❌ Remove</button>
-          </form>
-        </td>
-        {% endif %}
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="4" style="text-align:center;">No members found.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="resource-content">
+    <h2>Membership Termination Requests</h2>
+
+    <!-- Search Bar -->
+    <div class="resource-controls">
+      <div class="resource-search">
+        <input type="text" id="searchInput" placeholder="Search by name..." class="resource-search-input">
+      </div>
+    </div>
+
+    <table id="requestsTable" class="resource-table">
+      <thead>
+        <tr>
+          <th>Member Name</th>
+          <th>Requested At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for request in requests %}
+        <tr>
+          <td>{{ request.membership.user.name }}</td>
+          <td>{{ request.created_at|date:"M d, Y" }}</td>
+          <td>
+            <form action="{% url 'club_leader:approve_termination' request.id %}" method="POST" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="resource-btn resource-btn-primary">✅ Approve</button>
+            </form>
+            <form action="{% url 'club_leader:reject_termination' request.id %}" method="POST" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="resource-btn resource-btn-danger">❌ Reject</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="3" class="resource-empty">No pending requests.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script>
-    document.getElementById("searchInput").addEventListener("keyup", function() {
-        let filter = this.value.toLowerCase();
-        let rows = document.querySelectorAll("#membersTable tbody tr");
+  document.getElementById("searchInput").addEventListener("keyup", function () {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#membersTable tbody tr");
 
-        rows.forEach(row => {
-            let name = row.cells[0].innerText.toLowerCase();
-            let email = row.cells[1].innerText.toLowerCase();
-            row.style.display = (name.includes(filter) || email.includes(filter)) ? "" : "none";
-        });
+    rows.forEach(row => {
+      let name = row.cells[0].innerText.toLowerCase();
+      let email = row.cells[1].innerText.toLowerCase();
+      row.style.display = (name.includes(filter) || email.includes(filter)) ? "" : "none";
     });
+  });
 </script>
 
 {% endblock %}

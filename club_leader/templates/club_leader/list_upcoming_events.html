@@ -1,46 +1,173 @@
 {% extends "navbar.html" %}
 {% block content %}
+<!-- Styles -->
+<style>
+ 
+ 
+  .resource-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+  }
 
+  .resource-search {
+    display: flex;
+  align-items: center;
+  border: 1px solid #ddd; /* Unified border */
+  border-radius: 50px; /* Rounded edges */
+  overflow: hidden; /* Prevents elements from spilling out */
+  width: fit-content;
+  }
+
+  .resource-search-input {
+    padding: 12px 15px;
+  font-size: 15px;
+  border: none; /* Remove default border */
+  outline: none;
+  width: 250px;
+  border-radius: 50px 0 0 50px; /* Round only left side */
+  }
+
+
+  .resource-search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 8px var(--color-primary);
+  }
+
+    
+  /* Button Styles */
+  .resource-btn {
+    padding: 12px 25px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--color-primary) 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: white; 
+    border-radius: 50px;
+  }
+
+  .resource-btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+   
+  }
+
+  .resource-btn-primary:hover {
+    background-color: #0056b3;
+  }
+  .resource-btn-danger {
+    background-color: var(--color-danger );;
+    color: white;
+   
+  }
+
+  .resource-btn-danger:hover {
+    background-color: #a00303;
+  }
+
+
+  /* Table Styles */
+  .resource-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+  }
+
+  .resource-table th,
+  .resource-table td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid #f1f1f1;
+  }
+
+  .resource-table th {
+    background-color: #f1f1f1;
+    font-weight: 600;
+    color: #333;
+  }
+  .resource-table tr{
+    background-color: #f8f9fa;
+  }
+
+  .resource-table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  .resource-table tr:hover {
+    background-color: var(--color-background);
+  }
+
+  .resource-table td a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .resource-icon {
+    font-size: 18px;
+    vertical-align: middle;
+  }
+
+  /* No Documents Message */
+  .resource-empty {
+    text-align: center;
+    color: #666;
+    padding: 30px;
+    font-size: 18px;
+  }
+</style>
 <!-- Upcoming Events Table -->
- <div class="container-events">
-  <h2>Upcoming Events</h2>
-  <div class="controls">
-    <input type="text" id="search" placeholder="Search events..." onkeyup="searchEvents()" />
-    <button onclick="sortByApproval()">Sort by Approval</button>
-    <button onclick="sortByDate()">Sort by Date</button>
-  </div>
-  <table>
-    <thead>
-      <tr>
-        <th>Event Name</th>
-        <th>Date</th>
-        <th>Club</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="event-list">
-      {% for event in events %}
-      <tr>
-        <td>{{ event.title }}</td>
-        <td>{{ event.event_date|date:"F d, Y" }}</td>
-        <td>{{ event.club.name }}</td>
-        <td
-          class="{% if event.approval_status == 'approved' %}approved{% elif event.approval_status == 'pending' %}pending{% else %}rejected{% endif %}">
-          {{ event.approval_status|title }}
-        </td>
-        <td>
-          <a href="{% url 'club_leader:edit_event' event.id %}" class="edit-btn primary">Edit</a>
-        </td>
+<div class="resource-container">
+  <div class="resource-content">
+    <h2>Upcoming Events</h2>
+    <div class="resource-controls">
+       <!-- Search Bar -->
+       <div class="resource-search">
+        <input type="text" class="resource-search-input" id="searchInput" placeholder="Search for documents..."  onkeyup="searchDocuments()" />
+      </div>  
+      <button class="resource-btn resource-btn-primary" onclick="sortByApproval()">Sort by Approval</button>
+      <button class="resource-btn resource-btn-primary" onclick="sortByDate()">Sort by Date</button>
+    </div>
+    <table class="resource-table">
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Date</th>
+          <th>Club</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="event-list">
+        {% for event in events %}
+        <tr>
+          <td>{{ event.title }}</td>
+          <td>{{ event.event_date|date:"F d, Y" }}</td>
+          <td>{{ event.club.name }}</td>
+          <td
+            class="{% if event.approval_status == 'approved' %}approved{% elif event.approval_status == 'pending' %}pending{% else %}rejected{% endif %}">
+            {{ event.approval_status|title }}
+          </td>
+          <td>
+            <a href="{% url 'club_leader:edit_event' event.id %}" class="edit-btn primary">Edit</a>
+          </td>
 
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="4">No upcoming events.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4">No upcoming events.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script>
