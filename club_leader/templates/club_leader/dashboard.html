@@ -1,6 +1,4 @@
-{% extends "navbar.html" %}
-{% load static %}
-{% block content %}
+{% extends "navbar.html" %} {% load static %} {% block content %}
 
 <style>
   .tabs {
@@ -43,7 +41,7 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background: white;
   }
 
@@ -75,8 +73,7 @@
     color: var(--color-primary);
   }
 
-
-    /* Table Styles */
+  /* Table Styles */
   .dashboard-table {
     width: 100%;
     border-collapse: collapse;
@@ -96,7 +93,7 @@
     font-weight: 600;
     color: #333;
   }
-  .dashboard-table tr{
+  .dashboard-table tr {
     background-color: #f8f9fa;
   }
 
@@ -126,45 +123,41 @@
     font-size: 18px;
   }
 
-
   .dashboard-search {
     display: flex;
-  align-items: center;
-  border: 1px solid #ddd; /* Unified border */
-  border-radius: 50px; /* Rounded edges */
-  overflow: hidden; /* Prevents elements from spilling out */
-  width: fit-content;
+    align-items: center;
+    border: 1px solid #ddd; /* Unified border */
+    border-radius: 50px; /* Rounded edges */
+    overflow: hidden; /* Prevents elements from spilling out */
+    width: fit-content;
   }
 
   .dashboard-search-input {
     padding: 12px 15px;
-  font-size: 15px;
-  border: none; /* Remove default border */
-  outline: none;
-  width: 250px;
-  border-radius: 50px 0 0 50px; /* Round only left side */
+    font-size: 15px;
+    border: none; /* Remove default border */
+    outline: none;
+    width: 250px;
+    border-radius: 50px 0 0 50px; /* Round only left side */
   }
   .dashboard-search-btn {
     padding: 12px 20px;
-  border: none;
-  cursor: pointer;
-  font-size: 15px;
-  background-color: var(--color-primary);
-  color: white;
-  border-radius: 0 50px 50px 0; /* Round only right side */
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    background-color: var(--color-primary);
+    color: white;
+    border-radius: 0 50px 50px 0; /* Round only right side */
   }
 
   .dashboard-search-input:focus {
     border-color: var(--color-primary);
     box-shadow: 0 0 8px var(--color-primary);
   }
-
-
 </style>
 <div class="dashboard-content">
   <div class="dash-middle">
     <div class="middle-top">
-
       <!-- MIDDLE_TOP ANALYTICS -->
       <h1>{{ club.name }}</h1>
 
@@ -189,7 +182,6 @@
             <small class="text-muted">Last 24 Hours</small>
           </div>
 
-
           <div class="events">
             <span class="material-icons-sharp">event_available</span>
             <div class="mid">
@@ -202,7 +194,7 @@
                   <circle cx="38" cy="38" r="36"></circle>
                 </svg>
                 <div class="number">
-                  <p> {{ analytics.total_events }}%</p>
+                  <p>{{ analytics.total_events }}%</p>
                 </div>
               </div>
             </div>
@@ -214,7 +206,7 @@
             <div class="mid">
               <div class="left">
                 <h3>Total Polls</h3>
-                <h1> {{ analytics.total_polls }}</h1>
+                <h1>{{ analytics.total_polls }}</h1>
               </div>
               <div class="progress">
                 <svg>
@@ -233,7 +225,7 @@
 
     <!-- ############### TABLE FOR REQUESTS ##############-->
 
-    <div class="middle-bottom">
+    <!-- <div class="middle-bottom">
       <main>
         <div class="tabs-container">
           <div class="tabs">
@@ -271,7 +263,7 @@
             {% endif %}
           </div>
     
-         <!-- Termination Requests (Table) -->
+         '''Termination Requests (Table)'''
          <div class="tab-content" id="termination-requests">
           {% if termination_requests %}
           <div class="dashboard-search">
@@ -300,7 +292,7 @@
           {% endif %}
         </div>
 
-        <!-- Announcements (Table) -->
+        Announcements (Table) 
         <div class="tab-content" id="announcements">
           {% if announcements %}
           <div class="dashboard-search">
@@ -328,7 +320,7 @@
           {% endif %}
         </div>
 
-        <!-- Complaints (Table) -->
+        Complaints (Table)
         <div class="tab-content" id="complaints">
           {% if complaints %}
           <div class="dashboard-search">
@@ -358,7 +350,7 @@
           {% endif %}
         </div>
   
-        <!-- Suggestions (Table) -->
+        Suggestions (Table)
         <div class="tab-content" id="suggestions">
           {% if suggestions %}
           <div class="dashboard-search">
@@ -390,116 +382,186 @@
         </div>
       </main>
     </div>
-  </div>
+  </div> -->
 
-  <!-- ##############  RIGHT ANALYTICS ##################-->
-  <div class="dash-right">
-    <div class="right-top">
-      <div class="right">
-        <!-- RECENT UPDATES -->
-        <div class="recent-updates">
-          <h2>Recent Updates</h2>
-          <div class="updates">
-            <div class="update">
-              <div class="profile-photo">
-                <img src="{% static 'emu.png'%}" alt="">
+    <!-- ##############  RIGHT ANALYTICS ##################-->
+    <div class="dash-right">
+      <div class="right-top">
+        <div class="right">
+          <!-- RECENT UPDATES -->
+          <div class="recent-updates">
+            <h2>Recent Updates</h2>
+            <div class="updates">
+              <div class="update">
+                <div class="profile-photo">
+                  <img src="{% static 'emu.png'%}" alt="" />
+                </div>
+                <div class="message">
+                  <p><b>Bamlak</b> terminated a member called Khalid</p>
+                  <small class="text-muted">2 hours ago</small>
+                </div>
               </div>
-              <div class="message">
-                <p><b>Bamlak</b> terminated a member called Khalid</p>
-                <small class="text-muted">2 hours ago</small>
+              <div class="update">
+                <div class="profile-photo">
+                  <img src="{% static 'emu.png'%}" alt="" />
+                </div>
+                <div class="message">
+                  <p><b>Rayan</b> found the perfect lip liner</p>
+                  <small class="text-muted">2 hours ago</small>
+                </div>
               </div>
-            </div>
-            <div class="update">
-              <div class="profile-photo">
-                <img src="{% static 'emu.png'%}" alt="">
-              </div>
-              <div class="message">
-                <p><b>Rayan</b> found the perfect lip liner</p>
-                <small class="text-muted">2 hours ago</small>
-              </div>
-            </div>
-            <div class="update">
-              <div class="profile-photo">
-                <img src="{% static 'emu.png'%}" alt="">
-              </div>
-              <div class="message">
-                <p><b>Zahraa</b> created a cooking event</p>
-                <small class="text-muted">2 hours ago</small>
+              <div class="update">
+                <div class="profile-photo">
+                  <img src="{% static 'emu.png'%}" alt="" />
+                </div>
+                <div class="message">
+                  <p><b>Zahraa</b> created a cooking event</p>
+                  <small class="text-muted">2 hours ago</small>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <div class="right-bottom">
+        <div class="right">
+          <!-- RECENT COMMENTS -->
+          <div class="bg-white rounded shadow p-4">
+            <h2 class="section-title">Pending Feedback</h2>
 
-    </div>
-    <div class="right-bottom">
-      <div class="right">
-        <!-- RECENT COMMENTS -->
-        <div class="sales-analytics">
-          <h2>Student Analytics</h2>
-          <div class="item online">
-            <div class="icon">
-              <span class="material-icons-sharp">shopping_cart</span>
+            <!-- Tab Buttons -->
+            <div class="tabs mb-3">
+              <button
+                type="button"
+                onclick="switchFeedbackTab('complaints')"
+                id="complaintsBtn"
+                class="tab-button active"
+              >
+                Complaints
+              </button>
+              <button
+                type="button"
+                onclick="switchFeedbackTab('suggestions')"
+                id="suggestionsBtn"
+                class="tab-button"
+              >
+                Suggestions
+              </button>
             </div>
-            <div class="right">
-              <div class="info">
-                <h3>Memberships</h3>
-                <small class="text-mute">Last 24 Hours</small>
-              </div>
-              <h5 class="success">+39%</h5>
-              <h3>3847</h3>
-            </div>
-          </div>
 
-          <div class="item offline">
-            <div class="icon"><span class="material-icons-sharp">local_mall</span></div>
-            <div class="right">
-              <div class="info">
-                <h3>Events</h3>
-                <small class="text-mute">Last 24 Hours</small>
+            <!-- Complaints and Suggestions Tabs Below -->
+            <div id="complaintsTab" class="tab-content active">
+              {% if complaints_page %}
+              <ul class="feedback-list">
+                {% for complaint in complaints_page %}
+                <li class="feedback-item">
+                  <p>{{ complaint.content|truncatechars:100 }}</p>
+                  <small>{{ complaint.created_at|date:"Y-m-d H:i" }}</small>
+                  <div class="actions">
+                    <form
+                      method="post"
+                      action="{% url 'club_leader:review_feedback' complaint.id %}"
+                    >
+                      {% csrf_token %}
+                      <button type="submit" class="mark-reviewed-btn">
+                        Mark as Reviewed
+                      </button>
+                    </form>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+              <div class="pagination mt-3">
+                {% if complaints_page.has_previous %}
+                  <a href="?complaints_page={{ complaints_page.previous_page_number }}" class="text-blue-600">← Previous</a>
+                {% endif %}
+          
+                <span>Page {{ complaints_page.number }} of {{ complaints_page.paginator.num_pages }}</span>
+          
+                {% if complaints_page.has_next %}
+                  <a href="?complaints_page={{ complaints_page.next_page_number }}" class="text-blue-600">Next →</a>
+                {% endif %}
               </div>
-              <h5 class="danger">-9%</h5>
-              <h3>110</h3>
+              {% else %}
+              <p>No pending complaints.</p>
+              {% endif %}
             </div>
-          </div>
-          <div class="item customers">
-            <div class="icon">
-              <span class="material-icons-sharp">person</span>
-            </div>
-            <div class="right">
-              <div class="info">
-                <h3>NEW Members</h3>
-                <small class="text-mute">Last 24 Hours</small>
+
+            <div id="suggestionsTab" class="tab-content">
+              {% if suggestions_page %}
+              <ul class="feedback-list">
+                {% for suggestion in suggestions_page %}
+                <li class="feedback-item">
+                  <p>{{ suggestion.content|truncatechars:100 }}</p>
+                  <small>
+                    {{ suggestion.created_at|date:"Y-m-d H:i" }}
+                    {% if suggestion.submitted_by %}
+                      by {{ suggestion.submitted_by.name }}
+                    {% else %}
+                      by Anonymous
+                    {% endif %}
+                  </small>
+                  
+                </li>
+                {% endfor %}
+              </ul>
+              <div class="pagination mt-3">
+                {% if suggestions_page.has_previous %}
+                  <a href="?suggestions_page={{ suggestions_page.previous_page_number }}">← Previous</a>
+                {% endif %}
+                <span>Page {{ suggestions_page.number }} of {{ suggestions_page.paginator.num_pages }}</span>
+                {% if suggestions_page.has_next %}
+                  <a href="?suggestions_page={{ suggestions_page.next_page_number }}">Next →</a>
+                {% endif %}
               </div>
-              <h5 class="success">+25%</h5>
-              <h3>839</h3>
-            </div>
-          </div>
-          <div class="item add-product">
-            <div>
-              <span class="material-icons-sharp">add</span>
-              <h3>Add Product</h3>
+              
+              {% else %}
+              <p>No pending suggestions.</p>
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-<script>
- function search(tableId) {
-  console.log("Searching in table:", tableId);
-  let input = document.getElementById("search" + tableId).value.toLowerCase();
-  console.log("Search input:", input);
-  let rows = document.getElementById(tableId).querySelectorAll('tr');
-  console.log("Number of rows:", rows.length);
+  <script>
+    function search(tableId) {
+      console.log("Searching in table:", tableId);
+      let input = document
+        .getElementById("search" + tableId)
+        .value.toLowerCase();
+      console.log("Search input:", input);
+      let rows = document.getElementById(tableId).querySelectorAll("tr");
+      console.log("Number of rows:", rows.length);
 
-  rows.forEach((row) => {
-    let rowText = row.innerText.toLowerCase();
-    console.log("Row text:", rowText);
-    row.style.display = rowText.includes(input) ? "" : "none";
-  });
-}
+      rows.forEach((row) => {
+        let rowText = row.innerText.toLowerCase();
+        console.log("Row text:", rowText);
+        row.style.display = rowText.includes(input) ? "" : "none";
+      });
+    }
 
-</script>
-{% endblock %}
+    function switchFeedbackTab(tab) {
+      const complaintsTab = document.getElementById("complaintsTab");
+      const suggestionsTab = document.getElementById("suggestionsTab");
+      const complaintsBtn = document.getElementById("complaintsBtn");
+      const suggestionsBtn = document.getElementById("suggestionsBtn");
+
+      if (tab === "complaints") {
+        complaintsTab.classList.add("active");
+        suggestionsTab.classList.remove("active");
+        complaintsBtn.classList.add("active");
+        suggestionsBtn.classList.remove("active");
+      } else {
+        suggestionsTab.classList.add("active");
+        complaintsTab.classList.remove("active");
+        suggestionsBtn.classList.add("active");
+        complaintsBtn.classList.remove("active");
+      }
+
+      // Optional: scroll to the top of the card when switching tabs
+      const card = document.querySelector(".right-bottom .bg-white");
+      if (card) card.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  </script>
+  {% endblock %}

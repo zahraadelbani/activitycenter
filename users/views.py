@@ -173,13 +173,26 @@ def update_user(request, user_id):
         user.role = request.POST['role']
         user.save()
 
-        # Update each membership
+        # Track any validation errors
+        validation_error_occurred = False
+
         for membership in memberships:
             field_name = f"membership_type_{membership.id}"
             new_type = request.POST.get(field_name)
             if new_type and new_type != membership.membership_type:
                 membership.membership_type = new_type
-                membership.save()
+                try:
+                    membership.save()
+                except ValidationError as e:
+                    messages.error(request, e.messages[0])
+                    validation_error_occurred = True
+
+        if validation_error_occurred:
+            # Reload the form with messages
+            return render(request, 'users/update_user.html', {
+                'user': user,
+                'memberships': memberships,
+            })
 
         messages.success(request, "User and memberships updated successfully.")
         return redirect('users:list_users')
@@ -188,6 +201,7 @@ def update_user(request, user_id):
         'user': user,
         'memberships': memberships,
     })
+
 
 # Delete User
 @login_required

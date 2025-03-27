@@ -19,7 +19,9 @@ def login_view(request):
 
             print(f"User {user.email} logged in with role: {user.get_role()}")
 
-            # ✅ Membership-based role redirect
+            if user.is_superuser:
+                return redirect("users:list_users")
+
             if user.get_role() == "activity_center_admin":
                 return redirect("activity_center_admin:dashboard")
 
@@ -39,12 +41,9 @@ def login_view(request):
             messages.error(request, "Invalid email or password.")
 
     return render(request, 'account/login.html', {
-    "SOCIALACCOUNT_ENABLED": True,
-    "signup_url": reverse("account_signup"),  
-})
-
-
-
+        "SOCIALACCOUNT_ENABLED": True,
+        "signup_url": reverse("account_signup"),  
+    })
 
 def signup_view(request):
     if request.method == "POST":
@@ -69,7 +68,7 @@ def redirect_after_login(request):
     user = request.user
 
     if user.is_superuser:
-        return redirect("users:list_users")  # 🔒 Superuser only
+        return redirect("users:list_users")
 
     if user.get_role() == "activity_center_admin":
         return redirect("activity_center_admin:dashboard")

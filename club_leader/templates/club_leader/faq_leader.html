@@ -2,19 +2,67 @@
 {% block content %}
 <script src="https://cdn.tailwindcss.com"></script>
 
-<div class="container mx-auto px-4 py-8">
+<div class="min-h-screen container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">📘 Leader FAQ</h1>
 
     <div class="space-y-6 max-w-2xl mx-auto">
+        {% comment %} Each FAQ item {% endcomment %}
         <div class="bg-white p-5 rounded-xl shadow">
             <h2 class="text-lg font-semibold text-indigo-700">How do I manage club members?</h2>
             <p class="text-gray-600 mt-1">Navigate to the club dashboard and go to the “Membership Requests” section to approve or reject new members.</p>
         </div>
+
         <div class="bg-white p-5 rounded-xl shadow">
             <h2 class="text-lg font-semibold text-indigo-700">Can I schedule events?</h2>
             <p class="text-gray-600 mt-1">Yes, go to the Events section and fill out the form. Events need approval from the Activity Center Admin.</p>
         </div>
-        <!-- Add more leader-specific questions -->
+
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">How do I respond to club membership applications?</h2>
+            <p class="text-gray-600 mt-1">In the Membership Requests tab of your club dashboard, you can view pending applications and choose to accept or reject them. The applicant will be notified of your decision.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">How do I create a poll in the group chat?</h2>
+            <p class="text-gray-600 mt-1">Inside your club's group chat, scroll below the message box to create a poll. Polls will appear in real-time and members can vote directly from the chat.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">Can I message club members directly?</h2>
+            <p class="text-gray-600 mt-1">Yes, use the one-to-one messaging feature under the Chat Rooms dropdown. You can only message members of the same club.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">How do I upload club-related documents?</h2>
+            <p class="text-gray-600 mt-1">Go to the Club Documents section on your dashboard. There you can upload and manage documents relevant to your club activities.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">How can I view feedback or complaints from members?</h2>
+            <p class="text-gray-600 mt-1">You can access the Feedback section from your dashboard to view suggestions and anonymous complaints submitted by club members.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">How do I reschedule an event?</h2>
+            <p class="text-gray-600 mt-1">If you need to reschedule a previously approved event, go to the event details page and submit a reschedule request. It must be approved by the Activity Center Admin.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">Can I see who voted in a club election?</h2>
+            <p class="text-gray-600 mt-1">No, votes are encrypted and anonymous. You can only see vote counts after admin verification once voting ends.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">How do I nominate myself or someone else for elections?</h2>
+            <p class="text-gray-600 mt-1">Visit the Elections page and choose a position to nominate yourself for. All nominations are subject to admin approval.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow">
+            <h2 class="text-lg font-semibold text-indigo-700">Can I change the language of the dashboard?</h2>
+            <p class="text-gray-600 mt-1">Yes, use the language selector on the top right of the page to switch between supported languages. Your selection will persist across pages.</p>
+        </div>
     </div>
 </div>
+
 {% endblock %}
+

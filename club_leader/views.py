@@ -11,7 +11,8 @@ from club_member.models import MembershipTerminationRequest
 from clubs.models import Announcement, ClubDocument, Event, RescheduleRequest, Club
 from feedback.models import Feedback
 from analytics.models import ClubAnalytics
-# Dashboard
+from django.core.paginator import Paginator
+
 @login_required
 def club_leader_dashboard(request):
     club = get_leader_club(request.user)
@@ -20,18 +21,25 @@ def club_leader_dashboard(request):
 
     documents = ClubDocument.objects.filter(club=club)
     termination_requests = MembershipTerminationRequest.objects.filter(club=club, status="pending")
-    complaints = Feedback.objects.filter(club=club, category="complaint", status="pending")
-    suggestions = Feedback.objects.filter(club=club, category="suggestion", status="pending")
+    complaints = Feedback.objects.filter(club=club, category="complaint", status="pending").order_by('-created_at')
+    suggestions = Feedback.objects.filter(club=club, category="suggestion", status="pending").order_by('-created_at')
     pending_events = Event.objects.filter(club=club, approval_status="pending")
     announcements = Announcement.objects.filter(club=club)
     analytics, _ = ClubAnalytics.objects.get_or_create(club=club)
     analytics.update_stats()
 
+    # Pagination logic
+    complaint_paginator = Paginator(complaints, 3)  # 3 per page
+    suggestion_paginator = Paginator(suggestions, 3)
+
+    complaints_page = complaint_paginator.get_page(request.GET.get("complaints_page"))
+    suggestions_page = suggestion_paginator.get_page(request.GET.get("suggestions_page"))
+
     context = {
         "termination_requests": termination_requests,
         "announcements": announcements,
-        "complaints": complaints,
-        "suggestions": suggestions,
+        "complaints_page": complaints_page,
+        "suggestions_page": suggestions_page,
         "analytics": analytics,
         "members_percentage": analytics.members_percentage(),
         "documents": documents,
