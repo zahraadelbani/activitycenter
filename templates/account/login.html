@@ -2,79 +2,114 @@
 {% load i18n %}
 {% load allauth account static %}
 {% load socialaccount %}
- 
+
 {% block extra_head %}
-    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 {% endblock %}
- 
- 
- 
+
 {% block head_title %}
-    {% trans "Sign In" %}
+  {% trans "Sign In" %}
 {% endblock head_title %}
- 
+
 {% block content %}
-<body class="h-screen flex flex-col items-center justify-center relative overflow-hidden bg-[url('{% static 'background.jpg' %}')] bg-cover bg-no-repeat bg-center">
-    <div class="relative bg-white p-8 rounded-xl shadow-2xl w-[90%] max-w-md z-10 bg-opacity-95">
-       
-        <!-- Sign In Title -->
-        <h1 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">{% trans "Sign In" %}</h1>
-       
-        <!-- Sign Up Link -->
-        <p class="text-center text-gray-600 mb-6">
-            {% blocktranslate %}If you have not created an account yet, then please
-                <a href="{{ signup_url }}" class="text-blue-500 font-semibold hover:underline">sign up</a> first.
-            {% endblocktranslate %}
-        </p>
- 
-        <!-- Login Form -->
-        {% url 'account_login' as login_url %}
-        <form method="post" action="{% url 'account_login' %}" class="space-y-4">
-            {% csrf_token %}
+<div class="h-screen flex flex-col items-center justify-center relative overflow-hidden bg-[url('{% static 'background.jpg' %}')] bg-cover bg-no-repeat bg-center">
+  <div class="relative bg-white p-8 rounded-xl shadow-2xl w-[90%] max-w-md z-10 bg-opacity-95">
 
-            <div>
-                <label for="id_login" class="block text-gray-700 font-medium">Email</label>
-                <input type="email" name="login" id="id_login" placeholder="Enter your email"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
-            </div>
+    <!-- Sign In Title -->
+    <h1 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">
+      {% trans "Sign In" %}
+    </h1>
 
-            <div>
-                <label for="id_password" class="block text-gray-700 font-medium">Password</label>
-                <input type="password" name="password" id="id_password" placeholder="Enter your password"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
-            </div>
+    <!-- Sign Up Link -->
+    <p class="text-center text-gray-600 mb-6">
+      {% blocktranslate %}If you have not created an account yet, then please
+      <a href="{{ signup_url }}" class="text-blue-500 font-semibold hover:underline">sign up</a> first.
+      {% endblocktranslate %}
+    </p>
 
-            <div class="flex items-center justify-between">
-                <div>
-                    <input type="checkbox" name="remember" id="id_remember" class="h-4 w-4 text-blue-500">
-                    <label for="id_remember" class="ml-2 text-gray-700">Remember Me</label>
-                </div>
-                <a href="{% url 'account_reset_password' %}" class="text-sm text-blue-500 hover:underline">Forgot password?</a>
-            </div>
+    <!-- Non-field Errors -->
+    {% if form.non_field_errors %}
+  <div
+    id="form-error"
+    class="alert-message transition-all transform translate-x-full opacity-0 mb-4 p-4 rounded-lg text-white shadow-lg bg-red-500"
+  >
+    {% for error in form.non_field_errors %}
+      {{ error }}
+    {% endfor %}
+  </div>
 
-            <button type="submit" class="w-full px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600">
-                {% trans "Sign In" %}
-            </button>
-        </form>
-        {% if request.GET.error == "social_no_signup" %}
-    <p class="text-red-600 font-semibold">Google sign-in is only allowed for existing accounts. Please sign up manually.</p>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const errBox = document.getElementById("form-error");
+      if (errBox) {
+        setTimeout(() => {
+          errBox.classList.remove("translate-x-full", "opacity-0");
+          errBox.classList.add("translate-x-0", "opacity-100");
+
+          setTimeout(() => {
+            errBox.classList.add("opacity-0", "translate-x-full");
+            setTimeout(() => errBox.remove(), 500);
+          }, 3000); // Show for 3 seconds
+        }, 100);
+      }
+    });
+  </script>
 {% endif %}
 
- 
-        <!-- Google Sign-In Button -->
-        {% if SOCIALACCOUNT_ENABLED %}
-        <div class="mt-6">
-            <a href="{% provider_login_url 'google' %}" class="block">
-                <button class="w-full px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition duration-300">
-                    {% trans "Sign in with Google" %}
-                </button>
-            </a>
+
+    <!-- Login Form -->
+    {% url 'account_login' as login_url %}
+    <form method="post" action="{{ login_url }}" class="space-y-4">
+      {% csrf_token %}
+
+      <div>
+        <label for="id_login" class="block text-gray-700 font-medium">Email</label>
+        <input type="email" name="login" id="id_login" placeholder="Enter your email"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+      </div>
+
+      <div>
+        <label for="id_password" class="block text-gray-700 font-medium">Password</label>
+        <input type="password" name="password" id="id_password" placeholder="Enter your password"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <div>
+          <input type="checkbox" name="remember" id="id_remember" class="h-4 w-4 text-blue-500">
+          <label for="id_remember" class="ml-2 text-gray-700">Remember Me</label>
         </div>
-        {% endif %}
-    </div>
-</body>
+        <a href="{% url 'account_reset_password' %}" class="text-sm text-blue-500 hover:underline">Forgot password?</a>
+      </div>
+
+      <button type="submit"
+        class="w-full px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600">
+        {% trans "Sign In" %}
+      </button>
+    </form>
+
+    <!-- Google sign-in error -->
+    {% if request.GET.error == "social_no_signup" %}
+      <p class="text-red-600 font-semibold mt-4">
+        Google sign-in is only allowed for existing accounts. Please sign up manually.
+      </p>
+    {% endif %}
+
+    <!-- Google Sign-In Button -->
+    {% if SOCIALACCOUNT_ENABLED %}
+      <div class="mt-6">
+        <a href="{% provider_login_url 'google' %}" class="block">
+          <button
+            class="w-full px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition duration-300">
+            {% trans "Sign in with Google" %}
+          </button>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
 {% endblock content %}
- 
+
 {% block extra_body %}
-    {{ block.super }}
+  {{ block.super }}
 {% endblock %}

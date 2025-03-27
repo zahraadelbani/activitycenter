@@ -19,19 +19,31 @@ def login_view(request):
 
             print(f"User {user.email} logged in with role: {user.get_role()}")
 
-            role_redirects = {
-                "club_leader": "club_leader:dashboard",
-                "club_member": "club_member:dashboard",
-                "activity_center_admin": "activity_center_admin:dashboard",
-            }
-            
-            redirect_url = role_redirects.get(user.get_role(), "navbar")  # Default fallback
-            return redirect(redirect_url)
+            # ✅ Membership-based role redirect
+            if user.get_role() == "activity_center_admin":
+                return redirect("activity_center_admin:dashboard")
+
+            elif Membership.objects.filter(user=user, membership_type="leader").exists():
+                return redirect("club_leader:dashboard")
+
+            elif Membership.objects.filter(user=user, membership_type="member").exists():
+                return redirect("club_member:dashboard")
+
+            elif user.get_role() == "user":
+                return redirect("users:udashboard")
+
+            messages.error(request, "You are not assigned to any club.")
+            return redirect("users:profile")
 
         else:
             messages.error(request, "Invalid email or password.")
 
-    return render(request, 'account/login.html')
+    return render(request, 'account/login.html', {
+    "SOCIALACCOUNT_ENABLED": True,
+    "signup_url": reverse("account_signup"),  
+})
+
+
 
 
 def signup_view(request):

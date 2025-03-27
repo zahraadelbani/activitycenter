@@ -7,52 +7,15 @@
     <meta name="csrf-token" content="{{ csrf_token }}" />
     <title>Club Management System</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.tailwindcss.com" />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet" />
     {% block extra_head %}{% endblock extra_head %}
-    <style>
-      /* Add necessary styles to prevent navbar overflow */
-      .navbar-div {
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-
-      .nav-dashboard-div,
-      .nav-left-div {
-        display: flex;
-        align-items: center;
-      }
-
-      .nav-left-div {
-        gap: 10px; /* Adjust the gap between items */
-      }
-
-      /* Ensure the navbar is responsive on smaller screens */
-      @media (max-width: 768px) {
-        .navbar-div {
-          flex-direction: column; /* Stack navbar items vertically */
-          align-items: center; /* Center items */
-        }
-
-        .nav-left-div,
-        .nav-dashboard-div {
-          width: 100%;
-          justify-content: center;
-        }
-      }
-    </style>
+    
   </head>
 
   <body>
     <div class="container-css">
-      <!-- SIDEBAR DIV -->
       <div class="sidebar-div">
         <aside>
           <div class="top">
@@ -67,101 +30,57 @@
 
           <div class="sidebar">
             {% if is_leader %}
-            <!-- Club Leader Sidebar -->
-            <a href="{% url 'club_leader:dashboard' %}">
-              <span class="material-icons-sharp">grid_view</span>
-              <h3>Club Leader Dashboard</h3>
-            </a>
-            <a href="{% url 'club_leader:club_members' %}">
-              <span class="material-icons-sharp">groups</span>
-              <h3>Club Members</h3>
-            </a>
-            <a href="{% url 'club_leader:termination_requests' %}">
-              <span class="material-icons-sharp">hourglass_empty</span>
-              <h3>Termination Requests</h3>
-            </a>
-            <div class="dropdown">
-              <a href="{% url 'club_leader:calendar' %}" class="dropdown-toggle">
-                <span class="material-icons-sharp">event_available</span>
-                <h3>Event Management</h3>
-                <span class="material-icons-sharp dropdown-icon">arrow_drop_down</span>
-              </a>
-              <div class="dropdown-menu">
-                <a href="{% url 'club_leader:list_upcoming_events' %}">Pending Events</a>
-                <a href="{% url 'club_leader:list_upcoming_events' %}">Rejected Events</a>
-                <a href="{% url 'club_leader:list_upcoming_events' %}">Accepted Events</a>
+              <a href="{% url 'club_leader:dashboard' %}"><span class="material-icons-sharp">grid_view</span><h3>Club Leader Dashboard</h3></a>
+              <a href="{% url 'club_leader:club_members' %}"><span class="material-icons-sharp">groups</span><h3>Club Members</h3></a>
+              <a href="{% url 'club_leader:termination_requests' %}"><span class="material-icons-sharp">hourglass_empty</span><h3>Termination Requests</h3></a>
+              <div class="dropdown">
+                <a href="{% url 'club_leader:calendar' %}" class="dropdown-toggle">
+                  <span class="material-icons-sharp">event_available</span><h3>Event Management</h3><span class="material-icons-sharp dropdown-icon">arrow_drop_down</span>
+                </a>
+                <div class="dropdown-menu">
+                  <a href="{% url 'club_leader:list_upcoming_events' %}">Pending Events</a>
+                  <a href="{% url 'club_leader:list_upcoming_events' %}">Rejected Events</a>
+                  <a href="{% url 'club_leader:list_upcoming_events' %}">Accepted Events</a>
+                </div>
               </div>
-            </div>
-            <a href="{% url 'club_leader:list_documents' %}">
-              <span class="material-icons-sharp">folder_open</span>
-              <h3>Documents</h3>
-            </a>
-            <a href="{% url 'club_leader:list_announcements' %}">
-              <span class="material-icons-sharp">campaign</span>
-              <h3>Announcements</h3>
-            </a>
-            <a href="{% url 'club_leader:manage_requests' %}">
-              <span class="material-icons-sharp">campaign</span>
-              <h3>manage requests</h3>
-            </a>
-            <a href="{% url 'club_leader:faq_leader' %}">
-              <span class="material-icons-sharp">help</span>
-              <h3>Leader FAQ</h3>
-            </a>
-            
+              <a href="{% url 'club_leader:list_documents' %}"><span class="material-icons-sharp">folder_open</span><h3>Documents</h3></a>
+              <a href="{% url 'club_leader:list_announcements' %}"><span class="material-icons-sharp">campaign</span><h3>Announcements</h3></a>
+              <a href="{% url 'club_leader:manage_requests' %}"><span class="material-icons-sharp">campaign</span><h3>Manage Requests</h3></a>
+              <a href="{% url 'club_leader:faq_leader' %}"><span class="material-icons-sharp">help</span><h3>Leader FAQ</h3></a>
             {% endif %}
+
             {% if is_member %}
-            <!-- Club Member Sidebar -->
+              <a href="{% url 'club_member:dashboard' %}"><span class="material-icons-sharp">dashboard</span><h3>Club Member Dashboard</h3></a>
+              <a href="{% url 'club_member:member_announcements' %}"><span class="material-icons-sharp">campaign</span><h3>Announcements</h3></a>
+              <a href="{% url 'voting:self_nominate' %}"><span class="material-icons-sharp">how_to_vote</span><h3>Nominate Yourself</h3></a>
+              <a href="{% url 'club_member:submit_feedback' %}"><span class="material-icons-sharp">feedback</span><h3>Submit Feedback</h3></a>
+              <a href="{% url 'club_member:event_calendar' %}"><span class="material-icons-sharp">event</span><h3>Events</h3></a>
+              <a href="{% url 'club_member:contact' %}"><span class="material-icons-sharp">contact_mail</span><h3>Contact</h3></a>
+            {% endif %}
 
-            <a href="{% url 'club_member:dashboard' %}" class="nominate-button">Club Member Dashboard</a>
-            <a href="{% url 'club_member:member_announcements' %}" class="nominate-button">Announcements</a>
-
-            <a href="{% url 'voting:self_nominate' %}" class="nominate-button">✍️ Nominate Yourself</a>
-            <a href="{% url 'club_member:submit_feedback' %}" class="nominate-button">Submit Feedback</a>
-            <a href="{% url 'club_member:event_calendar' %}" class="nominate-button">Events</a>
-            <a href="{% url 'club_member:contact' %}" class="">Contact</a>
-            <a href="{% url 'club_member:faq_user_member' %}" class="nominate-button">
-              <span class="material-icons-sharp">help_outline</span>
-              <h3>FAQ</h3>
-            </a>
-            
-            {% endif %}
-            {% if is_leader or is_member %}
-            <a href="{% url 'messaging:rooms' %}">
-              <span class="material-icons-sharp">how_to_reg</span>
-              <h3>Messaging</h3>
-            </a>
-            {% endif %}
-            {% if user.get_role == "activity_center_admin" %}
-            <!-- Activity Center Admin Sidebar -->
-            <a href="{% url 'activity_center_admin:dashboard' %}">
-              <span class="material-icons-sharp">admin_panel_settings</span>
-              <h3>Admin Panel</h3>
-            </a>
-            {% endif %}
             {% if not is_leader and not is_member %}
-            <a href="{% url 'users:udashboard' %}">
-              <span class="material-icons-sharp">dashboard</span>
-              <h3>User Dashboard</h3>
-            </a>
+              <a href="{% url 'users:udashboard' %}"><span class="material-icons-sharp">dashboard</span><h3>User Dashboard</h3></a>
             {% endif %}
 
-            <!-- Always Visible -->
-            <a href="{% url 'users:profile' %}">
-              <span class="material-icons-sharp">person</span>
-              <h3>Profile</h3>
-            </a>
-            <a href="{% url 'account_logout' %}" class="logout-btn">
-              <span class="material-icons-sharp">logout</span>
-              <h3>Logout</h3>
-            </a>
+            {% if is_member or user.get_role == "user" %}
+              <a href="{% url 'club_member:faq_user_member' %}"><span class="material-icons-sharp">help_outline</span><h3>FAQ</h3></a>
+            {% endif %}
+
+            {% if is_leader or is_member %}
+              <a href="{% url 'messaging:rooms' %}"><span class="material-icons-sharp">chat</span><h3>Messaging</h3></a>
+            {% endif %}
+
+            {% if user.get_role == "activity_center_admin" %}
+              <a href="{% url 'activity_center_admin:dashboard' %}"><span class="material-icons-sharp">admin_panel_settings</span><h3>Admin Panel</h3></a>
+            {% endif %}
+
+            <a href="{% url 'users:profile' %}"><span class="material-icons-sharp">person</span><h3>Profile</h3></a>
+            <a href="{% url 'account_logout' %}" class="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>
           </div>
         </aside>
       </div>
 
-      <!-- MIDDLE DIV -->
       <div class="middle-div">
-        <!-- NAVBAR DIV -->
         <div class="navbar-div">
           <div class="nav-dashboard-div">
             <div class="nav-dashboard-button">
@@ -183,16 +102,12 @@
                 <small class="text-muted">{{ user.get_role }}</small>
               </div>
               <div class="profile-photo">
-                <img
-                  src="{{ user.profile_picture.url|default_if_none:'/static/profile_pictures/default.jpg' }}"
-                  alt="Profile Picture"
-                />
+                <img src="{{ user.profile_picture.url|default_if_none:'/static/profile_pictures/default.jpg' }}" alt="Profile Picture" />
               </div>
             </div>
           </div>
         </div>
 
-        <!-- CONTENT DIV -->
         <div class="content-div">{% block content %}{% endblock content %}</div>
       </div>
     </div>
