@@ -1,6 +1,6 @@
 from django.urls import path
-from .consumers import VoteConsumer
+from .consumers import LiveResultsConsumer  # ✅ use LiveResultsConsumer
 
 websocket_urlpatterns = [
-    path("ws/election/<int:election_id>/", VoteConsumer.as_asgi()),
+    path("ws/election/<int:election_id>/", LiveResultsConsumer.as_asgi()),
 ]

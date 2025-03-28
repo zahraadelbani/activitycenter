@@ -1,0 +1,23 @@
+{% extends "navbar.html" %} 
+{% block content %}
+<h1>Manage Self-Nominations</h1>
+
+{% if pending_candidates %}
+  <table>
+    <tr><th>Candidate</th><th>Club</th><th>Position</th><th>Actions</th></tr>
+    {% for c in pending_candidates %}
+      <tr>
+        <td>{{ c.user.name }}</td>
+        <td>{{ c.club.name }}</td>
+        <td>{{ c.position.name }}</td>
+        <td>
+          <a href="{% url 'activity_center_admin:approve_nomination' c.id %}">Approve</a> |
+          <a href="{% url 'activity_center_admin:reject_nomination' c.id %}">Reject</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <p>No pending nominations.</p>
+{% endif %}
+{% endblock %}

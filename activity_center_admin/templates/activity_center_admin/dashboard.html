@@ -1,5 +1,6 @@
-{% load static %}
-
+{% extends "navbar.html" %}
+{% block content %}
+{%load static%}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,11 +11,9 @@
 </head>
 <body>
   <header>
-    <h1>Activity Center Admin Dashboard</h1>
     <nav>
       <a href="{% url 'activity_center_admin:club_list' %}">Manage Clubs</a> |
       <a href="{% url 'activity_center_admin:event_list' %}">Manage Events</a> |
-      <a href="{% url 'activity_center_admin:activity_list' %}">Review Activities</a> |
       <a href="{% url 'activity_center_admin:announcement_list' %}">Review Announcements</a>
     </nav>
   </header>
@@ -24,9 +23,15 @@
       <p>Pending Club Activities: {{ pending_activities.count }}</p>
       <p>Pending Announcements: {{ pending_announcements.count }}</p>
     </section>
+
+    <p>Pending Nominations: {{ pending_nominations }}</p>
+<a href="{% url 'activity_center_admin:manage_nominations' %}">Manage Self-Nominations</a>
+<a href="{% url 'activity_center_admin:manage_elections' %}">Manage Elections</a>
+
   </main>
   <footer>
     <p>&copy; {{ now|date:"Y" }} Your Organization Name</p>
   </footer>
 </body>
 </html>
+{% endblock %}

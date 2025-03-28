@@ -1,0 +1,48 @@
+{% extends "navbar.html" %}
+{% load static %}
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* radio buttons */
+input[type="radio"] {
+  -webkit-appearance: radio !important;
+  -moz-appearance: radio !important;
+  appearance: radio !important;
+  display: inline-block;
+  opacity: 1;
+}
+</style>
+
+<div class="max-w-2xl mx-auto p-6">
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">🗳️ Vote in "{{ election.name }}"
+  </h1>
+
+  <form method="POST" class="space-y-6 bg-white shadow rounded p-6 border">
+    {% csrf_token %}
+    {% for field in form %}
+      <fieldset class="border border-gray-300 p-4 rounded">
+        <legend class="text-lg font-semibold text-gray-700 mb-2">{{ field.label }}</legend>
+        <div class="space-y-2">
+          {% for subwidget in field %}
+            <label class="flex items-center space-x-2">
+              {{ subwidget.tag }}
+              <span>{{ subwidget.choice_label }}</span>
+            </label>
+          {% endfor %}
+        </div>
+        {% if field.errors %}
+          <p class="text-red-500 text-sm mt-2">{{ field.errors.0 }}</p>
+        {% endif %}
+      </fieldset>
+    {% endfor %}
+
+    <div class="flex justify-between items-center mt-6">
+      <a href="{% url 'voting:elections' %}" class="text-sm text-gray-600 hover:underline">&larr; Back to Elections</a>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+        Submit Vote
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

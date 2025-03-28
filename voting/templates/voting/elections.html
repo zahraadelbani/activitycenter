@@ -1,36 +1,33 @@
 {% extends "navbar.html" %}
-
+{% load static %}
 {% block content %}
-<h1>Active Elections</h1>
-{% for election in elections %}
-    <h2>{{ election.name }}</h2>
-    {% if not election.has_started %}
-        <p>🕒 Election starts on {{ election.start_date }}</p>
-    {% elif election.has_ended %}
-        <p>❌ Election has ended</p>
-    {% else %}
-        {% for position in election.positions.all %}
-            <h3>{{ position.name }}</h3>
-            {% with candidates=position.candidates.all %}
-                {% if candidates %}
-                    {% for candidate in candidates %}
-                        {% if candidate.approved %}
-                            <h3>{{ candidate.user.name }} - {{ candidate.position.name }}</h3>
-                            <p>{{ candidate.manifesto }}</p>
-                            <form action="{% url 'voting:vote' election.id position.id candidate.id %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit">Vote</button>
-                            </form>
-                        {% endif %}
-                    {% endfor %}
-                {% else %}
-                    <p>No candidates available for this position.</p>
-                {% endif %}
-            {% endwith %}
-        {% endfor %}
-    {% endif %}
-{% empty %}
-    <p>No active elections at the moment.</p>
-{% endfor %}
-{% endblock %}
+<script src="https://cdn.tailwindcss.com"></script>
 
+<div class="max-w-4xl mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-6 text-gray-800">🗳️ Ongoing Elections</h1>
+
+  {% if elections_with_status %}
+    <ul class="space-y-4">
+      {% for item in elections_with_status %}
+        <li class="bg-white shadow-md p-5 rounded border border-gray-200">
+          <h2 class="text-xl font-semibold text-blue-700">{{ item.election.name }}</h2>
+          <p class="text-sm text-gray-600">
+            Voting Period: {{ item.election.start_date|date:"M d, Y H:i" }} to {{ item.election.end_date|date:"M d, Y H:i" }}
+          </p>
+
+          {% if item.has_voted %}
+            <span class="inline-block mt-3 bg-green-100 text-green-700 px-3 py-1 rounded text-sm">Already Voted</span>
+          {% else %}
+            <a href="{% url 'voting:cast_vote' item.election.id %}"
+               class="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+              Cast Your Vote
+            </a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-gray-500 mt-6">No active elections available or you’ve already voted in all of them.</p>
+  {% endif %}
+</div>
+{% endblock %}

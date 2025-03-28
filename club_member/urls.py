@@ -34,5 +34,8 @@ urlpatterns = [
     
     path("cancel-termination-request/<int:request_id>/", views.cancel_termination_request, name="cancel_termination_request"),
     path('faq/', views.faq_user_member, name='faq_user_member'),
+   path('debug-time/', views.debug_time, name='debug_time'),
+
+
 
 ]

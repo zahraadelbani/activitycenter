@@ -1,15 +1,13 @@
-{% extends 'navbar.html' %}
-
+{% extends "navbar.html" %}
 {% block content %}
-<h1>🏆 Nominate Yourself for an Election Position</h1>
-
-<form method="POST">
+<div class="max-w-2xl mx-auto p-6">
+  <h1 class="text-xl font-bold mb-4">Nominate Yourself for President</h1>
+  <form method="POST" class="bg-white shadow p-6 rounded space-y-4">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Submit Nomination</button>
-</form>
-
-<p>⚠️ Your nomination will require admin approval before appearing in the election.</p>
-
-<a href="{% url 'voting:elections' %}">⬅️ Back to Elections</a>
+    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Submit Nomination</button>
+  </form>
+  <p class="text-gray-500 text-sm mt-4">If you're already a leader in any club, you won't be able to run again.</p>
+  <a href="{% url 'club_member:dashboard' %}" class="text-blue-600 hover:underline text-sm">&larr; Back to Dashboard</a>
+</div>
 {% endblock %}

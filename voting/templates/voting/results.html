@@ -1,155 +1,61 @@
 {% extends "navbar.html" %}
-
+{% load static %}
 {% block content %}
-<div class="results-container">
-    <h1 class="title">📊 Election Results for {{ election.name }}</h1>
+<div class="results-container max-w-4xl mx-auto p-6">
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">📊 Election Results for {{ election.name }}</h1>
 
-    {% if election.results_verified %}
-        <p class="verified">✅ Results Verified</p>
-    {% else %}
-        <p class="not-verified">❌ Results Not Verified (Pending Admin Approval)</p>
-    {% endif %}
+  {% if election.results_verified %}
+    <p class="text-green-600 font-semibold mb-4">✅ Results Verified</p>
+  {% else %}
+    <p class="text-red-600 font-semibold mb-4">❌ Results Not Verified</p>
+  {% endif %}
 
-    <!-- Leaderboard -->
-    <div class="leaderboard">
-        <h2>🏆 Leaderboard</h2>
-        {% for candidate in candidates %}
-            <div class="candidate-card">
-                <img src="{{ candidate.user.profile_picture.url }}" class="candidate-img" alt="Candidate Picture">
-                <div class="candidate-info">
-                    <h3>{{ candidate.user.name }}</h3>
-                    <p>Votes: <strong>{{ candidate.votes }}</strong></p>
-                </div>
-            </div>
-        {% empty %}
-            <p>No candidates available for this election.</p>
-        {% endfor %}
-    </div>
+  <div class="leaderboard space-y-4">
+    {% for candidate in candidates %}
+      <div class="bg-white p-4 rounded shadow flex items-center">
+        <img src="{{ candidate.user.profile_picture.url }}" alt="{{ candidate.user.name }}" class="w-12 h-12 rounded-full mr-4">
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold">{{ candidate.user.name }}</h3>
+          <p class="text-gray-600 text-sm">Votes: {{ candidate.votes }}</p>
+        </div>
+      </div>
+    {% empty %}
+      <p>No candidates available for this election.</p>
+    {% endfor %}
+  </div>
 
-    <!-- Vote Chart -->
-    <canvas id="voteChart"></canvas>
+  <canvas id="voteChart" class="mt-6"></canvas>
 </div>
-
-<!-- Chart.js Library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var ctx = document.getElementById("voteChart").getContext("2d");
+  document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById("voteChart").getContext("2d");
+    const labels = [{% for candidate in candidates %}"{{ candidate.user.name|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const data = [{% for candidate in candidates %}{{ candidate.votes }}{% if not forloop.last %}, {% endif %}{% endfor %}];
 
-        {% if candidates %}
-            var labels = [{% for candidate in candidates %}"{{ candidate.user.name|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
-            var data = [{% for candidate in candidates %}{{ candidate.votes }}{% if not forloop.last %}, {% endif %}{% endfor %}];
-        {% else %}
-            var labels = [];
-            var data = [];
-        {% endif %}
-
-        var voteData = {
-            labels: labels,
-            datasets: [{
-                label: "Votes",
-                data: data,
-                backgroundColor: ["#3498db", "#2ecc71", "#e74c3c", "#f1c40f", "#9b59b6"],
-                borderWidth: 1,
-                borderRadius: 5
-            }]
-        };
-
-        var voteChart = new Chart(ctx, {
-            type: "bar",
-            data: voteData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { color: "#333" }
-                    },
-                    x: {
-                        ticks: { color: "#333" }
-                    }
-                }
-            }
-        });
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Votes",
+          data: data,
+          backgroundColor: ["#3498db", "#2ecc71", "#e74c3c", "#f1c40f", "#9b59b6"],
+          borderWidth: 1,
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true },
+          x: { ticks: { color: "#333" } }
+        }
+      }
     });
+  });
 </script>
-
-<!-- CSS for Styling -->
-<style>
-    .results-container {
-        text-align: center;
-        max-width: 800px;
-        margin: auto;
-        padding: 20px;
-        background: #f9f9f9;
-        border-radius: 10px;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .title {
-        color: #2c3e50;
-        margin-bottom: 10px;
-    }
-
-    .verified {
-        color: green;
-        font-weight: bold;
-        margin-bottom: 15px;
-    }
-
-    .not-verified {
-        color: red;
-        font-weight: bold;
-        margin-bottom: 15px;
-    }
-
-    .leaderboard {
-        margin-top: 20px;
-        padding: 15px;
-        background: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .leaderboard h2 {
-        color: #2c3e50;
-    }
-
-    .candidate-card {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: #ecf0f1;
-        padding: 10px;
-        margin: 5px 0;
-        border-radius: 8px;
-    }
-
-    .candidate-img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-right: 15px;
-    }
-
-    .candidate-info {
-        flex: 1;
-        text-align: left;
-    }
-
-    #voteChart {
-        margin-top: 20px;
-        background: #ffffff;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    }
-</style>
-
 {% endblock %}

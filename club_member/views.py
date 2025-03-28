@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from reminders.models import EventReminder
+from voting.models import Election
 from .models import MembershipTerminationRequest
 from clubs.models import Announcement, Club, ClubDocument, Event
 from feedback.models import Feedback
@@ -50,6 +51,8 @@ def dashboard(request):
         "upcoming_events": upcoming_events,
         "termination_requests": termination_requests,
         "available_clubs": available_clubs,
+        "election_class": Election,  # 👈 ADD THIS
+
     }
 
     return render(request, "club_member/dashboard.html", context)
@@ -275,3 +278,12 @@ def contact(request):
 @login_required
 def faq_user_member(request):
     return render(request, 'club_member/faq_user_member.html')
+
+from django.shortcuts import render
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def debug_time(request):
+    current_time = timezone.now()
+    return render(request, "club_member/debug_time.html", {"current_time": current_time})

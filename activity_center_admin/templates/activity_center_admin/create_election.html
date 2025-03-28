@@ -1,0 +1,55 @@
+{% extends "navbar.html" %}
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto; padding: 2rem; background-color: #fefefe; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+  <h1 style="font-size: 2rem; margin-bottom: 1rem; text-align: center;">🗳️ Create Election</h1>
+  <form method="POST">
+    {% csrf_token %}
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}" style="font-weight: 600;">{{ field.label }}</label><br>
+          {{ field }}
+          {% if field.errors %}
+            <div style="color: red;">{{ field.errors }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    <div style="text-align: center; margin-top: 2rem;">
+      <button type="submit" style="background-color: #4f46e5; color: white; padding: 0.75rem 2rem; border: none; border-radius: 0.5rem; font-weight: bold; transition: background-color 0.2s;">
+        Save
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Flatpickr Script -->
+<script>
+  flatpickr("input[name='start_date']", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    defaultDate: new Date(),
+    altInput: true,
+    altFormat: "F j, Y - h:i K"
+  });
+  flatpickr("input[name='end_date']", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    altInput: true,
+    altFormat: "F j, Y - h:i K"
+  });
+  flatpickr("input[name='nomination_start']", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    altInput: true,
+    altFormat: "F j, Y - h:i K"
+  });
+  flatpickr("input[name='nomination_end']", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    altInput: true,
+    altFormat: "F j, Y - h:i K"
+  });
+</script>
+
+{% endblock %}

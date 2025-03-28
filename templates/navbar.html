@@ -52,15 +52,31 @@
             {% if is_member %}
               <a href="{% url 'club_member:dashboard' %}"><span class="material-icons-sharp">dashboard</span><h3>Club Member Dashboard</h3></a>
               <a href="{% url 'club_member:member_announcements' %}"><span class="material-icons-sharp">campaign</span><h3>Announcements</h3></a>
-              <a href="{% url 'voting:self_nominate' %}"><span class="material-icons-sharp">how_to_vote</span><h3>Nominate Yourself</h3></a>
-              <a href="{% url 'club_member:submit_feedback' %}"><span class="material-icons-sharp">feedback</span><h3>Submit Feedback</h3></a>
+              {% if election and election.is_nomination_open and not user_already_nominated %}
+              <a href="{% url 'voting:self_nominate' %}">Nominate Yourself</a>
+            {% endif %}
+            
+
+
+          <a href="{% url 'club_member:submit_feedback' %}"><span class="material-icons-sharp">feedback</span><h3>Submit Feedback</h3></a>
               <a href="{% url 'club_member:event_calendar' %}"><span class="material-icons-sharp">event</span><h3>Events</h3></a>
               <a href="{% url 'club_member:contact' %}"><span class="material-icons-sharp">contact_mail</span><h3>Contact</h3></a>
+              {% if is_member and election and election.has_started and not election.has_ended %}
+              <a href="{% url 'voting:elections' %}">
+                <span class="material-icons-sharp">how_to_vote</span>
+                <h3>Vote Now</h3>
+              </a>
+            {% endif %}
+            
+              
             {% endif %}
 
-            {% if not is_leader and not is_member %}
-              <a href="{% url 'users:udashboard' %}"><span class="material-icons-sharp">dashboard</span><h3>User Dashboard</h3></a>
-            {% endif %}
+            {% if not is_leader and not is_member and user.get_role != "activity_center_admin" %}
+            <a href="{% url 'users:udashboard' %}">
+              <span class="material-icons-sharp">dashboard</span><h3>User Dashboard</h3>
+            </a>
+          {% endif %}
+          
 
             {% if is_member or user.get_role == "user" %}
               <a href="{% url 'club_member:faq_user_member' %}"><span class="material-icons-sharp">help_outline</span><h3>FAQ</h3></a>
@@ -70,9 +86,16 @@
               <a href="{% url 'messaging:rooms' %}"><span class="material-icons-sharp">chat</span><h3>Messaging</h3></a>
             {% endif %}
 
-            {% if user.get_role == "activity_center_admin" %}
-              <a href="{% url 'activity_center_admin:dashboard' %}"><span class="material-icons-sharp">admin_panel_settings</span><h3>Admin Panel</h3></a>
-            {% endif %}
+            {% if user.get_role == "activity_center_admin" %}            
+            <a href="{% url 'activity_center_admin:dashboard' %}"><span class="material-icons-sharp">dashboard</span><h3>Admin Dashboard</h3></a>
+            <a href="{% url 'activity_center_admin:club_list' %}"><span class="material-icons-sharp">apartment</span><h3>Manage Clubs</h3></a>
+            <a href="{% url 'activity_center_admin:event_list' %}"><span class="material-icons-sharp">event</span><h3>Manage Events</h3></a>
+            <a href="{% url 'activity_center_admin:announcement_list' %}"><span class="material-icons-sharp">campaign</span><h3>Review Announcements</h3></a>
+            <a href="{% url 'activity_center_admin:manage_nominations' %}"><span class="material-icons-sharp">how_to_vote</span><h3>Self-Nominations</h3></a>
+            <a href="{% url 'activity_center_admin:manage_elections' %}"><span class="material-icons-sharp">how_to_reg</span><h3>Manage Elections</h3></a>
+            
+          {% endif %}
+          
 
             <a href="{% url 'users:profile' %}"><span class="material-icons-sharp">person</span><h3>Profile</h3></a>
             <a href="{% url 'account_logout' %}" class="logout-btn"><span class="material-icons-sharp">logout</span><h3>Logout</h3></a>

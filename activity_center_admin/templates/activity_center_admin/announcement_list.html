@@ -1,32 +1,41 @@
+{% extends "navbar.html" %}
 {% load static %}
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
 
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Review Club Announcements</h1>
+    <a href="{% url 'activity_center_admin:dashboard' %}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
+  </div>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Review Announcements</title>
-  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
-</head>
-<body>
-  <header>
-    <h1>Announcements</h1>
-    <nav>
-      <a href="{% url 'activity_center_admin:dashboard' %}">Dashboard</a>
-    </nav>
-  </header>
-  <main>
-    <ul>
+  {% if announcements %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {% for announcement in announcements %}
-        <li>
-          {{ announcement.title }} - {{ announcement.club.name }} (Status: {{ announcement.status }})
-          <a href="{% url 'activity_center_admin:announcement_approve' announcement.id %}">Approve</a> |
-          <a href="{% url 'activity_center_admin:announcement_reject' announcement.id %}">Reject</a>
-        </li>
-      {% empty %}
-        <li>No announcements available.</li>
+        <div class="bg-white shadow-md rounded-lg p-5 border border-gray-200 hover:shadow-lg transition">
+          <h2 class="text-lg font-semibold text-blue-700 mb-1">{{ announcement.title }}</h2>
+          <p class="text-sm text-gray-600 mb-2">Club: <strong>{{ announcement.club.name }}</strong></p>
+
+          <div class="mb-3">
+            <span class="text-sm font-medium">Status:</span>
+            <span class="{% if announcement.visible %}text-green-600{% else %}text-yellow-600{% endif %}">
+              {{ announcement.visible|yesno:'Visible,Pending' }}
+            </span>
+          </div>
+
+          <div class="flex flex-wrap gap-3 mt-4">
+            <a href="{% url 'activity_center_admin:announcement_approve' announcement.id %}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm">
+              ✅ Approve
+            </a>
+            <a href="{% url 'activity_center_admin:announcement_reject' announcement.id %}" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm">
+              ❌ Reject
+            </a>
+          </div>
+        </div>
       {% endfor %}
-    </ul>
-  </main>
-</body>
-</html>
+    </div>
+  {% else %}
+    <p class="text-gray-500 mt-6 text-center">No announcements available.</p>
+  {% endif %}
+</div>
+{% endblock %}

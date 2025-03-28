@@ -1,0 +1,69 @@
+{% extends "navbar.html" %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Manage Elections</h1>
+    <a href="{% url 'activity_center_admin:create_election' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+      + Create Election
+    </a>
+  </div>
+
+  {% if elections %}
+    <div class="space-y-4">
+      {% for e in elections %}
+        <div class="bg-white shadow-md rounded-lg p-4 border border-gray-200 hover:shadow-lg transition">
+          <div class="flex justify-between items-start mb-2">
+            <h2 class="text-xl font-semibold text-indigo-700">{{ e.name }}</h2>
+            <span class="text-xs px-2 py-1 rounded {{ e.status_color }}">
+              {{ e.status }}
+            </span>
+          </div>
+
+          <p class="text-gray-600 text-sm mt-1">
+            🗳️ <strong>Nomination:</strong> {{ e.nomination_start|date:"M d, Y" }} – {{ e.nomination_end|date:"M d, Y" }}<br>
+            🗓️ <strong>Voting:</strong> {{ e.start_date|date:"M d, Y" }} – {{ e.end_date|date:"M d, Y" }}
+          </p>
+
+          <div class="mt-4 flex gap-4 flex-wrap">
+            <a href="{% url 'activity_center_admin:edit_election' e.id %}" class="text-yellow-500 hover:text-yellow-600 font-medium text-sm">
+              ✏️ Edit
+            </a>
+          
+            <form method="post" action="{% url 'activity_center_admin:delete_election' e.id %}" onsubmit="return confirm('Are you sure you want to delete this election?');">
+              {% csrf_token %}
+              <button type="submit" class="text-red-500 hover:text-red-600 font-medium text-sm">
+                🗑️ Delete
+              </button>
+            </form>
+          
+            <a href="{% url 'activity_center_admin:toggle_election_active' e.id %}" class="{% if e.is_active %}text-green-600{% else %}text-gray-500{% endif %} hover:underline text-sm">
+              {% if e.is_active %}🟢 Active{% else %}⚪ Inactive{% endif %}
+            </a>
+
+            {% if e.is_active %}
+              <a href="{% url 'voting:live_results' e.id %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-4">
+                🗳️ View Live Results
+              </a>
+              <a href="{% url 'voting:export_results_excel' e.id %}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition mt-4">
+                📊 Export Excel
+              </a>
+              <a href="{% url 'voting:export_results_pdf' e.id %}" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition mt-4">
+                🧾 Export PDF
+              </a>
+              
+              
+            {% endif %}
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-500 text-center mt-6">No elections found.</p>
+  {% endif %}
+</div>
+
+{% endblock %}
