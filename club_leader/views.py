@@ -13,6 +13,8 @@ from feedback.models import Feedback
 from analytics.models import ClubAnalytics
 from django.core.paginator import Paginator
 
+
+
 @login_required
 def club_leader_dashboard(request):
     club = get_leader_club(request.user)
@@ -36,7 +38,6 @@ def club_leader_dashboard(request):
     suggestions_page = suggestion_paginator.get_page(request.GET.get("suggestions_page"))
 
     context = {
-        "termination_requests": termination_requests,
         "announcements": announcements,
         "complaints_page": complaints_page,
         "suggestions_page": suggestions_page,
@@ -244,6 +245,7 @@ def edit_announcement(request, pk):
         form = AnnouncementForm(instance=announcement)
     return render(request, "club_leader/edit_announcement.html", {"form": form})
 
+
 @login_required
 def toggle_visibility(request, pk):
     club = get_leader_club(request.user)
@@ -253,8 +255,11 @@ def toggle_visibility(request, pk):
     announcement = get_object_or_404(Announcement, pk=pk, club=club)
     announcement.visible = not announcement.visible
     announcement.save()
-    messages.success(request, f"Announcement is now {'visible' if announcement.visible else 'hidden'}.")
-    return redirect("club_leader:list_announcements")
+    
+    return JsonResponse({
+        'success': True,
+        'visible': announcement.visible,
+    })
 
 @login_required
 def event_calendar(request):
