@@ -90,7 +90,6 @@
               <a href="{% url 'club_leader:list_upcoming_events' %}">Pending Events</a>
               <a href="{% url 'club_leader:list_documents' %}">Documents</a>
               <a href="{% url 'club_leader:list_announcements' %}">Announcements</a>
-              <a href="{% url 'club_leader:manage_requests' %}">Manage Requests</a>
               <a href="{% url 'club_leader:faq_leader' %}">Leader FAQ</a>
 
 
@@ -110,7 +109,9 @@
             <div class="dropdown-menu">
               <a href="{% url 'club_member:dashboard' %}">Dashboard</a>
               <a href="{% url 'club_member:member_announcements' %}">Announcements</a>
+              {% if election and election.is_nomination_open and not user_already_nominated %}
               <a href="{% url 'voting:self_nominate' %}">Nominate Yourself</a>
+              {% endif %}
               <a href="{% url 'club_member:submit_feedback' %}">Submit Feedback</a>
               <a href="{% url 'club_member:event_calendar' %}">Events</a>
               <a href="{% url 'club_member:contact' %}">Contact</a>
@@ -150,7 +151,7 @@
           {% endif %}
 
 
-          {% if not is_leader and not is_member %}
+          {% if not is_leader and not is_member and not user.get_role == "activity_center_admin" %}
           <a href="{% url 'users:udashboard' %}">
             <span class="material-icons-sharp">dashboard</span>
             <h3>User Dashboard</h3>
