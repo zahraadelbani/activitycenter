@@ -61,7 +61,7 @@
   }
 
   .fc .fc-daygrid-body {
-    min-height: 550px;
+    min-height: 20px;
   }
 
   .fc .fc-daygrid-day-frame {
@@ -90,7 +90,7 @@
   }
 
   .add-event-btn {
-    background: var(--primary-color);
+    background: var(--color-primary);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -105,7 +105,7 @@
   }
 
   .add-event-btn:hover {
-    background: #4338ca;
+    background: var(--color-primary-dark);
     transform: translateY(-1px);
   }
 
@@ -116,8 +116,8 @@
     --fc-neutral-bg-color: #f8fafc;
     --fc-page-bg-color: #ffffff;
     --fc-today-bg-color: #f1f5f9;
-    --fc-event-bg-color: var(--primary-color);
-    --fc-event-border-color: var(--primary-color);
+    --fc-event-bg-color: var(--color-primary-dark);
+    --fc-event-border-color: var(--color-primary);
     font-family: inherit;
   }
 
@@ -144,7 +144,7 @@
 
   .fc .fc-button:hover {
     background: #f1f5f9;
-    color: var(--text-color);
+    color: var(--color-primary-dark);
     border-color: #cbd5e1;
   }
 
@@ -208,6 +208,7 @@
   .fc-event:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+
 
   /* Upcoming Events Sidebar */
   .upcoming-events {
@@ -315,7 +316,7 @@
   }
 
   .edit-btn:hover {
-    color: #4338ca;
+    color: var(--color-primary-dark);
   }
 
   .view-all {
@@ -516,53 +517,83 @@
 
 <!-- JavaScript -->
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     var calendarEl = document.getElementById("calendar");
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "dayGridMonth",
-      height: 'auto',
-      contentHeight: 'auto',
-      headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay"
-      },
-      selectable: true,
-      editable: false,
-      events: "{% url 'club_leader:get_events' %}",
-      eventColor: "var(--primary-color)",
-      eventTextColor: "#ffffff",
-      eventDidMount: function (info) {
-        if (info.event.extendedProps.approval_status === "pending") {
-          info.el.style.backgroundColor = "var(--warning-color)";
-        } else if (info.event.extendedProps.approval_status === "approved") {
-          info.el.style.backgroundColor = "var(--success-color)";
-        } else if (info.event.extendedProps.approval_status === "rejected") {
-          info.el.style.backgroundColor = "var(--danger-color)";
-        }
+        initialView: "dayGridMonth",
+        height: 'auto',
+        contentHeight: 'auto',
+        headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay"
+        },
+        selectable: true,
+        editable: false,
+        events: "{% url 'club_leader:get_events' %}",
+        eventColor: "var(--primary-color)",
+        eventTextColor: "#ffffff",
         
-        info.el.style.transition = 'all 0.2s ease';
-        info.el.addEventListener('mouseenter', () => {
-          info.el.style.transform = 'translateY(-2px)';
-          info.el.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-        });
-        info.el.addEventListener('mouseleave', () => {
-          info.el.style.transform = '';
-          info.el.style.boxShadow = '';
-        });
-      },
-      dateClick: function (info) {
-        let eventDateField = document.querySelector("input[name='event_date']");
-        if (eventDateField) {
-          eventDateField.value = info.dateStr;
-        }
-        openModal();
-      },
+        // Customize the week view
+        views: {
+            timeGridWeek: {
+                allDaySlot: false, 
+                dayHeaderFormat: { weekday: 'short', day: 'numeric' },
+                slotMinTime: "00:00:00", // Start at midnight
+                slotMaxTime: "24:00:00", // End at midnight
+                slotLabelFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    omitZeroMinute: true,
+                    meridiem: 'short'
+                }
+            },
+            timeGridDay: {
+                // Keep all-day slot for day view
+                allDaySlot: false,
+                slotMinTime: "06:00:00", // Adjust as needed
+                slotMaxTime: "22:00:00", // Adjust as needed
+                slotLabelFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    omitZeroMinute: true,
+                    meridiem: 'short'
+                }
+            }
+        },
+        
+        // Rest of your configuration...
+        eventDidMount: function (info) {
+            if (info.event.extendedProps.approval_status === "pending") {
+                info.el.style.backgroundColor = "var(--warning-color)";
+            } else if (info.event.extendedProps.approval_status === "approved") {
+                info.el.style.backgroundColor = "var(--success-color)";
+            } else if (info.event.extendedProps.approval_status === "rejected") {
+                info.el.style.backgroundColor = "var(--danger-color)";
+            }
+            
+            info.el.style.transition = 'all 0.2s ease';
+            info.el.addEventListener('mouseenter', () => {
+                info.el.style.transform = 'translateY(-2px)';
+                info.el.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+            });
+            info.el.addEventListener('mouseleave', () => {
+                info.el.style.transform = '';
+                info.el.style.boxShadow = '';
+            });
+        },
+        dateClick: function (info) {
+            let eventDateField = document.querySelector("input[name='event_date']");
+            if (eventDateField) {
+                eventDateField.value = info.dateStr;
+            }
+            openModal();
+        },
     });
 
     calendar.render();
-  });
+});
 
   function openModal() {
     document.getElementById("event-modal").style.display = "flex";
