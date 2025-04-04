@@ -13,8 +13,6 @@ from feedback.models import Feedback
 from analytics.models import ClubAnalytics
 from django.core.paginator import Paginator
 
-
-
 @login_required
 def club_leader_dashboard(request):
     club = get_leader_club(request.user)
@@ -66,9 +64,18 @@ def club_members(request):
     club = get_leader_club(request.user)
     if not club:
         return HttpResponseForbidden("You're not authorized.")
-    
+
     members = Membership.objects.filter(club=club, membership_type="member")
-    return render(request, "club_leader/members.html", {"members": members, "club": club})
+    termination_requests = MembershipTerminationRequest.objects.filter(club=club, status="pending")
+    membership_requests = Membership.objects.filter(club=club, membership_type="pending")
+
+    return render(request, "club_leader/members.html", {
+        "members": members,
+        "requests": termination_requests,  
+        "membership_requests": membership_requests,  
+        "club": club
+    })
+
 
 @login_required
 def remove_member(request, member_id):
@@ -82,15 +89,6 @@ def remove_member(request, member_id):
         messages.success(request, "Member successfully removed from the club.")
         return redirect("club_leader:club_members")
     raise PermissionDenied
-
-@login_required
-def termination_requests(request):
-    club = get_leader_club(request.user)
-    if not club:
-        return HttpResponseForbidden("You're not authorized.")
-    
-    requests = MembershipTerminationRequest.objects.filter(club=club, status="pending")
-    return render(request, "club_leader/termination_requests.html", {"requests": requests, "club": club})
 
 @login_required
 def approve_termination_request(request, request_id):
@@ -313,18 +311,6 @@ def list_upcoming_events(request):
     events = Event.objects.filter(club=club).order_by('event_date')
     form = EventRequestForm()
     return render(request, 'club_leader/list_upcoming_events.html', {'events': events, 'form': form})
-
-@login_required
-def manage_membership_requests(request):
-    memberships = Membership.objects.filter(
-        club__memberships__user=request.user,
-        club__memberships__membership_type='leader',
-        membership_type='pending'
-    ).select_related("club", "user")
-
-    return render(request, "club_leader/manage_requests.html", {
-        "requests": memberships
-    })
 
 @login_required
 def update_membership_status(request, membership_id, action):

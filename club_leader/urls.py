@@ -28,10 +28,8 @@ urlpatterns = [
     path('event/edit/<int:event_id>/', views.edit_event, name='edit_event'),
     path("club-members/", views.club_members, name="club_members"),
     path("remove-member/<int:member_id>/", views.remove_member, name="remove_member"),
-    path("termination-requests/", views.termination_requests, name="termination_requests"),
     path('review-feedback/<int:feedback_id>/', views.review_feedback, name='review_feedback'),
     path('list_upcoming_events/', views.list_upcoming_events, name='list_upcoming_events'), 
-    path("manage-requests/", views.manage_membership_requests, name="manage_requests"),
     path("update-request/<int:membership_id>/<str:action>/", views.update_membership_status, name="update_membership_status"),
     path('faq-leader/', faq_leader, name='faq_leader'),
 
