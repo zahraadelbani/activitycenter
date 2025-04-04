@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 
 from activity_center_admin.forms import ElectionForm
+from clubs.forms import ClubForm
 from clubs.models import Club, Meeting, Event, Announcement
 from voting.models import Candidate, Election
 
@@ -32,7 +33,7 @@ class ClubListView(ListView):
 
 class ClubCreateView(CreateView):
     model = Club
-    fields = ['name', 'description', 'quota']
+    form_class = ClubForm  # Use the custom form with image fields
     template_name = 'activity_center_admin/club_form.html'
     success_url = reverse_lazy('activity_center_admin:club_list')
 
@@ -42,7 +43,7 @@ class ClubCreateView(CreateView):
 
 class ClubUpdateView(UpdateView):
     model = Club
-    fields = ['name', 'description', 'quota']
+    form_class = ClubForm
     template_name = 'activity_center_admin/club_form.html'
     success_url = reverse_lazy('activity_center_admin:club_list')
 

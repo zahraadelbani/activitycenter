@@ -3,28 +3,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  {% if view.object %}
-    <title>Update Club</title>
-  {% else %}
-    <title>Create Club</title>
-  {% endif %}
+  <title>{% if view.object %}Update Club{% else %}Create Club{% endif %}</title>
   <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 </head>
 <body>
   <header>
-    {% if view.object %}
-      <h1>Update Club</h1>
-    {% else %}
-      <h1>Create Club</h1>
-    {% endif %}
+    <h1>{% if view.object %}Update Club{% else %}Create Club{% endif %}</h1>
   </header>
+
   <main>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit">Submit</button>
+
+      {% if view.object.logo %}
+        <p><strong>Current Logo:</strong></p>
+        <img src="{{ view.object.logo.url }}" alt="Current Logo" style="max-width: 150px;">
+      {% endif %}
+
+      {% if view.object.background_image %}
+        <p><strong>Current Background Image:</strong></p>
+        <img src="{{ view.object.background_image.url }}" alt="Current Background" style="max-width: 300px;">
+      {% endif %}
+
+      <button type="submit">{% if view.object %}Update{% else %}Create{% endif %}</button>
+      <a href="{% url 'activity_center_admin:club_list' %}">Cancel</a>
     </form>
-    <a href="{% url 'activity_center_admin:club_list' %}">Cancel</a>
   </main>
 </body>
 </html>

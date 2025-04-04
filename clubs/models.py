@@ -6,6 +6,8 @@ class Club(models.Model):
     description = models.TextField()
     quota = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    logo = models.ImageField(upload_to='club_logos/', blank=True, null=True)
+    background_image = models.ImageField(upload_to='club_backgrounds/', blank=True, null=True)
 
     def __str__(self):
         return self.name

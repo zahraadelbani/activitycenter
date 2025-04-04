@@ -14,10 +14,28 @@
   {% if clubs %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {% for club in clubs %}
-        <div class="bg-white shadow-md rounded-lg p-5 border border-gray-200 hover:shadow-lg transition">
-          <h2 class="text-xl font-semibold text-blue-700 mb-2">{{ club.name }}</h2>
-          <p class="text-gray-600 mb-2">{{ club.description|truncatechars:100 }}</p>
+        <div class="bg-white shadow-md rounded-lg p-5 border border-gray-200 hover:shadow-lg transition relative">
 
+          <!-- Background Image -->
+          <div class="h-32 w-full rounded-lg mb-4 bg-cover bg-center"
+          style="background-image: url('{% if club.background_image %}{{ club.background_image.url }}{% else %}{% static 'emu.png' %}{% endif %}');">
+     </div>
+
+          <!-- Club Logo -->
+          {% if club.logo %}
+          <img src="{{ club.logo.url }}" ... >
+        {% else %}
+          <img src="{% static 'emu.png' %}" ... >
+        {% endif %}
+        
+
+          <!-- Club Name -->
+          <h2 class="text-xl font-semibold text-blue-700 mb-2 text-center">{{ club.name }}</h2>
+
+          <!-- Description -->
+          <p class="text-gray-600 mb-2 text-sm text-center">{{ club.description|truncatechars:100 }}</p>
+
+          <!-- Details -->
           <ul class="text-sm text-gray-700 space-y-1 mb-3">
             <li><strong>Quota:</strong> {{ club.quota }}</li>
             <li><strong>Leader:</strong> {{ club.leader|default:"Not confirmed" }}</li>
@@ -25,11 +43,12 @@
             <li><strong>Events:</strong> {{ club.events.count }}</li>
           </ul>
 
-          <div class="flex justify-between mt-4">
-            <a href="{% url 'activity_center_admin:club_update' club.id %}" class="text-yellow-500 hover:text-yellow-600 font-medium">
+          <!-- Action Buttons -->
+          <div class="flex justify-between mt-4 text-sm font-medium">
+            <a href="{% url 'activity_center_admin:club_update' club.id %}" class="text-yellow-500 hover:text-yellow-600">
               <i class="fas fa-edit mr-1"></i>Edit
             </a>
-            <a href="{% url 'activity_center_admin:club_delete' club.id %}" class="text-red-500 hover:text-red-600 font-medium">
+            <a href="{% url 'activity_center_admin:club_delete' club.id %}" class="text-red-500 hover:text-red-600">
               <i class="fas fa-trash mr-1"></i>Delete
             </a>
           </div>
