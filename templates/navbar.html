@@ -151,13 +151,14 @@
           {% endif %}
 
 
-          {% if not is_leader and not is_member and not user.get_role == "activity_center_admin" %}
+          {% if not is_leader and not is_member and not user.get_role == "activity_center_admin"%}
           <a href="{% url 'users:udashboard' %}">
             <span class="material-icons-sharp">dashboard</span>
             <h3>User Dashboard</h3>
           </a>
 
           {% endif %}
+
           <a href="{% url 'users:profile' %}">
             <span class="material-icons-sharp">person</span>
             <h3>Profile</h3>
